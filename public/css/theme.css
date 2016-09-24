@@ -1,0 +1,270 @@
+body {
+  /*padding-top: 70px;*/
+  padding-bottom: 30px;
+  background-color: #EADFD5;
+}
+
+.theme-dropdown .dropdown-menu {
+  position: static;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.theme-showcase > p > .btn {
+  margin: 5px 0;
+}
+
+.theme-showcase .navbar .container {
+  width: auto;
+}
+
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    padding-left: 200px;
+}
+
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 200px;
+    width: 0;
+    height: 100%;
+    margin-left: -200px;
+    overflow-y: auto;
+    background: #364357;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 200px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    /*width: auto;*/
+    position: absolute;
+    margin-right: -200px;
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 200px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+    color: #999999;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav span.sidebar-nav-button-content {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.sidebar-nav div.sidebar-nav-button-content {
+    text-indent: 20px;
+    line-height: 40px;
+    text-decoration: none;
+    color: #fff;
+}
+
+.sidebar-nav div.sidebar-nav-button-content:hover{
+    /*background-color: #EB7260;*/
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav div.sidebar-nav-button-content.selected{
+    background: #3A97D4;
+}
+
+.sidebar-nav > .sidebar-brand {
+    display: table-cell;
+    vertical-align: bottom;
+    height: 130px;
+    width: 200px;
+    font-size: 16px;
+    line-height: 60px;
+    background: url("../images/healthcoin-logo.png") no-repeat 36px 0px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+
+.top-content {
+  width: 100%;
+  background-color: #3A97D4;
+  /*position: fixed;*/
+}
+
+.top-content .container { 
+  width:100%;
+}
+.wallet-stats {
+  height: 63px;
+}
+.wallet-stats .text {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+ 
+.wallet-stats .left {
+  text-align: right;
+}
+
+.wallet-stats .center{
+  text-align: center;
+}
+
+.wallet-stats .right{
+  text-align: left;
+}
+
+.button-settings{
+  float: left;
+  font-size:35px;
+  color: white;
+  padding: 17px 0px 0px 5px;
+  cursor: pointer;
+}
+
+.button-refresh{
+  float: right;
+  font-size:35px;
+  color: white;
+  padding: 17px 5px 0px 0px;
+  cursor: pointer;
+}
+
+.wallet-nav {
+  background-color: #364357;
+}
+
+.wallet-nav div.wallet-nav-button-content {
+  height:100px;
+}
+
+.wallet-nav div.wallet-nav-button-content:hover{
+  background-color: #EB7260;
+}
+
+.wallet-nav div.wallet-nav-button-content.selected{
+  background-color: #EB7260;
+  border-bottom: 7px solid white;
+}
+
+.wallet-nav.container{
+  /*padding: 0px;*/
+  
+}
+
+.wallet-nav .glyph{
+  color: white;
+  padding-top: 20px;
+  text-align: center;
+  font-size: 30px;
+}
+
+.wallet-nav .text{
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  padding-top: 0px;
+  text-align: center;
+}
+
+.wallet-nav-button {
+
+}
+
+#main {
+  margin-top: 30px;  
+  /*padding-top: 200px;*/
+}
+
+.table-striped > tbody > tr:nth-of-type(2n) {
+  background-color: #ffffff;
+}
+
+.table-striped > tbody > tr:hover:nth-of-type(2n) {
+  background-color: #f5f5f5;
+}
+
+.history-timereceived {
+  width: 15%;
+}
+
+.history-category {
+  width: 10%;
+}
+
+.history-address {
+  width: 20%;
+}
+
+.history-txcomment {
+  width: 40%;
+}
+
+.history-ammount {
+  width: 15%;
+}
+
+#receive-container .glyph-icon-plus{
+  color: green;
+}
+
+.console-out .pre-scrollable{
+  font-size: 10px;
+  /*height:200px;*/
+}
+
+.confirmation-body{
+  width: 100%;
+}

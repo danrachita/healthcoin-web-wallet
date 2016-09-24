@@ -1,0 +1,22 @@
+<div class="container" data-bind="with: console">
+    <!-- ko if: isLoading --><p>Loading...</p><!--/ko -->
+    <div class="row">
+        <div class="col-sm-12">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" placeholder="Console Command" data-bind="textInput: commandText">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary btn-sm" type="submit" data-bind="click: runCommand">Run</button>
+                        </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.form-group -->
+            </form>
+        </div><!-- /.col-sm-12 -->
+    </div><!-- /.row-flo -->
+    <div class="row console-out">
+        <div class="col-sm-12">
+        <pre class="pre-scrollable " data-bind="text: commandOutput" />
+        </div>
+    </div>
+</div>

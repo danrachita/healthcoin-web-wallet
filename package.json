@@ -1,0 +1,30 @@
+{
+  "name": "Healthcoin App",
+  "version": "1.0.1",
+  "private": true,
+  "node-main": "./app.js",
+  "main": "loading.html",
+  "window": {
+    "show": true,
+    "title": "Healthcoin App",
+    "icon": "./images/healthcoin-logo.png",
+    "toolbar": false,
+    "frame": true,
+    "width": 1024,
+    "height": 700,
+    "position": "center",
+    "min_width": 800,
+    "min_height": 600
+  },
+  "dependencies": {
+    "express": "3.4.8",
+    "cookie":"0.1.1",
+    "ejs": "0.8.5",
+    "async": "0.2.10",
+    "mongode": "0.1.6",
+    "node-healthcoin": "0.3.5",
+    "socket.io": "0.9.16",
+    "cryptoaddress-validator": "0.0.1",
+    "xss":"0.1.7"
+  }
+}

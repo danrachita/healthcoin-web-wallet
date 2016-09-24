@@ -1,0 +1,22 @@
+<div id="receive-container" class="container" data-bind="with:receive">
+    <table class="table table-hover table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Label</th>
+                <th>Address</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: addresses">
+            <tr>
+                <td data-bind="text: account"></td>
+                <td data-bind="text: address"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div>
+    <button type="button" class="btn btn-default" data-bind="click: newAddress" >
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Address
+    </button>
+    </div>
+</div>

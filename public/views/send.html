@@ -1,0 +1,35 @@
+<div class="container" data-bind="with:send">
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="recipient">Pay To:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="recipient" data-bind="textInput:recipientAddress" placeholder="Enter a Healthcoin address (e.g. H34lFEaCKE1QB8oMi9NUSpic9qD1Cfk2Rf)">
+            </div>
+        </div>
+        <!--div class="form-group">
+            <label class="control-label col-sm-2" for="label">Label:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="label" data-bind="textInput:label" placeholder="Assign a label to the address (e.g. Joey)">
+            </div>
+        </div-->
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="amount">Amount:</label>
+            <div class="col-sm-4">
+                <input type="number" class="form-control" id="amount" data-bind="numericInput, textInput: amount" placeholder="Amount in HCN">
+            </div>
+            <div class="col-sm-2">
+            <select class="form-control" id="sel1">
+                <option>HCN</option>
+                <!--<option>mHCN</option>
+                <option>µHCN</option>-->
+            </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default" data-bind="disable: !$data.canSend(), click: sendSubmit">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
