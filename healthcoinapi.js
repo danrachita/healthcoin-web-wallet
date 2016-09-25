@@ -26,6 +26,7 @@ conf_data = fs.readFileSync(filepath, 'utf8', function (err) {
 arrayFromConf = conf_data.match(/[^\r\n]+/g); //Turn all lines to an array
 var rpcuser = arrayFromConf['0'].substring(arrayFromConf['0'].indexOf("=") + 1); //Only get specific line, and get value after '='
 var rpcpass = arrayFromConf['1'].substring(arrayFromConf['1'].indexOf("=") + 1); //Only get specific line, and get value after '='
+var rpchost = arrayFromConf['2'].substring(arrayFromConf['2'].indexOf("=") + 1); //Only get specific line, and get value after '='
 
 var healthcoin = require('node-healthcoin')();
 healthcoin.auth(rpcuser, rpcpass);

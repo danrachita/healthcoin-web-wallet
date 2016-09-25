@@ -11,15 +11,15 @@ if (process.platform == "darwin") {
 }
 
 window.onload = function() {
-  
+
   console.log("Starting healthcoind Process...");
   //startHCN();
   if (process.platform == 'darwin') { //If Mac OS X
   	filepath = process.env.HOME + '/Library/Application Support/Healthcoin/healthcoin.conf';
-	ExecuteProcess('healthcoin/osx/healthcoind','-conf=' + filepath);
+	  ExecuteProcess('healthcoin/osx/healthcoind','-conf=' + filepath);
 	} else if (process.platform == 'linux') { //If Linux
     filepath = process.env.HOME + '/.healthcoin/healthcoin.conf';
-	ExecuteProcess('healthcoin/linux/healthcoind','-conf=' + filepath);
+	  ExecuteProcess('healthcoin/linux/healthcoind','-conf=' + filepath);
 	} else { //Else it's Windows
     filepath = process.env.APPDATA + '/Healthcoin/healthcoin.conf';
     if ( process.arch == 'x64' ) { //If Windows 64bit
