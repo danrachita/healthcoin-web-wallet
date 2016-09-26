@@ -29,7 +29,7 @@ var rpcpass = arrayFromConf['1'].substring(arrayFromConf['1'].indexOf("=") + 1);
 var rpchost = arrayFromConf['2'].substring(arrayFromConf['2'].indexOf("=") + 1); //Only get specific line, and get value after '='
 
 var healthcoin = require('node-healthcoin')();
-healthcoin.auth(rpcuser, rpcpass);
+healthcoin.auth(rpcuser, rpcpass, rpchost);
 
 module.exports = healthcoin;
 

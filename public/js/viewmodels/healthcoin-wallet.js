@@ -85,7 +85,7 @@ function(ko, dialog, WalletStatus, Healthcoin, Send, Receive, History, Console, 
     };
 
     walletType.prototype.promptToEncrypt = function(){
-        new WalletPassphrase().userPrompt(true,'Encrypt', 'Encrypt','OK')
+        new WalletPassphrase().userPrompt(true, 'Encrypt', 'Encrypt','OK')
             .done(function(result){
                 console.log(result);
                 dialog.notification("Wallet successfully encrypted. Restart your healthcoind daemon to continue.");

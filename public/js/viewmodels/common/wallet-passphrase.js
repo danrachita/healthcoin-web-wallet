@@ -1,12 +1,13 @@
 define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','viewmodels/common/command'], function(ko,dialog,ConfirmationDialog,Command) {
     var defaultWalletStakingUnlockTime = 999999;
     var walletPassphraseType = function(options){
-        var self = this;
-        this.forEncryption = ko.observable(options.forEncryption) || ko.observable(false);
-        this.walletPassphrase = ko.observable(options.walletPassphrase || '');
+        var self = this,
+            opts = options || {};
+        this.forEncryption = ko.observable(opts.forEncryption) || ko.observable(false);
+        this.walletPassphrase = ko.observable(opts.walletPassphrase || '');
         this.walletPassphraseConfirm = ko.observable('');
-        this.stakingOnly = options.stakingOnly === false ? ko.observable(false) : ko.observable(true);
-        this.canSpecifyStaking = options.canSpecifyStaking === true ? ko.observable(true) : ko.observable(false);
+        this.stakingOnly = opts.stakingOnly === false ? ko.observable(false) : ko.observable(true);
+        this.canSpecifyStaking = opts.canSpecifyStaking === true ? ko.observable(true) : ko.observable(false);
         this.canSubmit = ko.computed(function(){
             //return true;
             var passphrase = self.walletPassphrase(),
@@ -47,9 +48,9 @@ define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','view
     };
 
     walletPassphraseType.prototype.openWallet = function(encrypt){
-        var self = this, openWalletDeferred= $.Deferred(), 
-            walletPassphraseCommand = encrypt ? new Command('encryptwallet', [self.walletPassphrase()]) :
-                new Command('walletpassphrase', [encodeURIComponent(self.walletPassphrase()), defaultWalletStakingUnlockTime,  self.stakingOnly()]);
+        var self = this,
+            openWalletDeferred = $.Deferred(),
+            walletPassphraseCommand = encrypt ? new Command('encryptwallet', [self.walletPassphrase()]) : new Command('walletpassphrase', [encodeURIComponent(self.walletPassphrase()), defaultWalletStakingUnlockTime,  self.stakingOnly()]);
         walletPassphraseCommand.execute()
             .done(function(result){
                 openWalletDeferred.resolve(result);
