@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Note: To stop run: daemon --stop --name healthcoin-web-wallet
+
 trap "exit 255" SIGINT SIGTERM
 
 while :
