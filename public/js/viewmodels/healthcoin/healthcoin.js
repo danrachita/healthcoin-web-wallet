@@ -114,7 +114,13 @@ define(['knockout',
     
     sendType.prototype.sendToAddress = function(auth) { 
         var self = this;
-        sendCommand = new Command('sendtoaddress', [self.recipientAddress(), self.amount(), "", "", self.txcommentBiomarker()]).execute()
+        // hash the text and append to 'hcbm:'
+        var hcbm = "hcbm:" + crypto
+          .createHmac('sha256', self.txcommentBiomarker()) // TODO: convert form fields/values to json and put in biomarker string.
+          .update(val)
+          .digest('base64')
+          .replace(/=+$/, '');
+        sendCommand = new Command('sendtoaddress', [self.recipientAddress(), self.amount(), "", "", hcbm]).execute()
             .done(function(){
                 console.log("Send Success");
                 self.txcommentBiomarker('');
