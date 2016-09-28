@@ -12,19 +12,16 @@ define(['knockout',
                 pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
                 required: true
             });
-
-        this.recipientAddress = ko.observable("HR4fAsYMoPxJSokSSSJhfnTe2WB25gPRtP").extend(  // TODO: parameterize this
+        this.recipientAddress = ko.observable("HR4fAsYMoPxJSokSSSJhfnTe2WB25gPRtP").extend(  // TODO: pull from fhirbase user account.
             { 
                 pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                 required: true
             });
-
         this.amount = ko.observable(sendOptions.amount || 0.0001).extend(
             { 
                 number: true,
                 required: true
             });
-
         this.minerFee = ko.observable(sendOptions.minerFee || 0.0002);
         this.canSend = ko.computed(function(){
             var amount = self.amount(),
@@ -102,7 +99,7 @@ define(['knockout',
                 title: 'Send Confirm',
                 context: self,
                 allowClose: false,
-                message: 'You are about to send bio-marker data worth ' + amount + ' HCN, in addition to any minor fees the transaction may incur (e.g. 0.0001 HCN). Do you wish to continue?',
+                message: 'You are about to send encrypted bio-marker data to the Healthcoin (HCN) network. Do you wish to continue?',
                 affirmativeButtonText: 'Yes',
                 negativeButtonText: 'No',
                 affirmativeHandler: function(){ sendConfirmDeferred.resolve(); },

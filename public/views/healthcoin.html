@@ -1,5 +1,5 @@
 <div class="container" data-bind="with: healthcoin">
-
+    <h1>Update your Healthcoin&reg;&nbsp; bio-stats:</h1>
     <form class="form-horizontal" role="form">
         <div class="form-group">
             <label class="control-label col-sm-2" for="txcomment">Bio-Marker:</label>
@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-sm-2" for="recipient">Pay To:</label>
+            <label class="control-label col-sm-2" for="recipient">Send To:</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="recipient" data-bind="disable: true, textInput:recipientAddress" placeholder="HCGwFEaCKE1QB8oMi9NUSpic9qD1Cfk2Rf">
             </div>
@@ -16,7 +16,7 @@
         <div class="form-group">
             <label class="control-label col-sm-2" for="amount">Amount:</label>
             <div class="col-sm-4">
-                <input type="number" class="form-control" id="amount" data-bind="disable: true, numericInput, textInput: amount" placeholder="0.0001">
+                <input type="number" class="form-control" id="amount" data-bind="disable: true, numericInput, textInput:amount" placeholder="0.0001">
             </div>
             <div class="col-sm-2">
             <select class="form-control" id="sel1" data-bind="disable: true">
