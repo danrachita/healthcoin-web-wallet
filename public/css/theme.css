@@ -262,7 +262,7 @@ body {
 
 .console-out .pre-scrollable{
   font-size: 10px;
-  /*height:200px;*/
+  min-height: 200px;
 }
 
 .confirmation-body{
