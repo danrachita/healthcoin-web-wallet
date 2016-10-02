@@ -32,4 +32,3 @@ var healthcoin = require('node-healthcoin')();
 healthcoin.auth(rpcuser, rpcpass, rpchost);
 
 module.exports = healthcoin;
-

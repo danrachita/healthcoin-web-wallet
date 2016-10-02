@@ -6,47 +6,32 @@
     <meta http-equiv="pragma" content="no-cache"/> 
     <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/> 
     <meta name="format-detection" content="telephone=no" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="white" />
-    <meta name="viewport" content="user-scalable=0, initial-scale=1, maximum-scale=1, minimum-scale=1,target-densitydpi=device-dpi" />
-	<link rel="apple-touch-icon" href="images/Icon.png" />
-	<link rel="shortcut icon" href="images/Icon.png">
-     
-	<style>
-		.tab{margin-left:10px;}
-		.tab-2{margin-left:20px;}
-	</style>
+    <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+    <meta name="viewport" content="user-scalable=0, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+    <link rel="apple-touch-icon" href="images/Icon.png" />
+    <link rel="shortcut icon" href="images/Icon.png">
+    <title>Healthcoin - Error</title>
 
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/css/theme.css" rel="stylesheet">
 
-
-	<title>Healthcoin Node Information</title>
+    <style>
+		body{margin-left:20px;}
+		.tab{margin-left:20px;}
+		.tab-2{margin-left:40px;}
+    </style>
   </head>
   <body>
-<%
-		 function timeConverter(UNIX_timestamp){
-	   var a = new Date(UNIX_timestamp*1000);
-	   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-     var year = a.getFullYear();
-     var month = months[a.getMonth()];
-     var date = a.getDate();
-     var hour = a.getHours();
-     var min = a.getMinutes();
-     var sec = a.getSeconds();
-	   var ampm = "am";
-
-	   if (hour > 12){
-		     hour -= 12;
-		     ampm = "pm";
-	   }
-     var time = month + ' ' + date + ', ' + year + ' ' + hour + ':' + min + ':' + sec + ' ' + ampm ;
-     return time;
- }
-%>
-  
-		<span><h2>Healthcoin - Node Information Server</h2></span>
+		<span><h2>Healthcoin - An Error Occurred</h2></span>
 		<div>
-			<span><h4>Error Information</h4></span>
-			<span>Error: <%= message %></span><br /><br />
-			<span>Status: <%= error.status %></span><br /><br />
+			<span class=tab>Error: <%= message %></span><br /><br />
+			<span class=tab>Status: <%= error.status %></span><br /><br />
 			</div>
 		</div>
   </body>

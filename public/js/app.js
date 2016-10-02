@@ -1,15 +1,14 @@
 define( [ 
-        "knockout",  
-        "viewmodels/healthcoin-wallet", 
-        "common/dialog", 
-        "knockout-amd-helpers", 
+        "knockout",
+        "viewmodels/healthcoin-wallet",
+        "common/dialog",
+        "knockout-amd-helpers",
         "knockout-validation",
-        "text", 
-        "bindinghandlers/modal", 
+        "text",
+        "bindinghandlers/modal",
         "bindinghandlers/numeric-text",
-        "bindinghandlers/numeric-input"], function( ko, Wallet, dialog) {
+        "bindinghandlers/numeric-input"], function( ko, Wallet, dialog){
     var App = function(){
-
     };
     ko.amdTemplateEngine.defaultPath = "../views";
     ko.amdTemplateEngine.defaultSuffix = ".html";
@@ -42,7 +41,8 @@ define( [
                 wallet.currentView('console');                 
             });
 
-        }).run('#healthcoin');
+        //}).run('#healthcoin');
+        }).run('/');
     };
     return new App();
 });

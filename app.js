@@ -6,30 +6,31 @@ var count = 0;
 function timeout() {
     setTimeout(function () {
         count += 1;
-  //console.log(count);
-  if (process.platform == 'darwin') { //If Mac OS X
-    ExecuteProcess('sh','./check.sh');
-    } else if (process.platform == 'linux') { //If Linux
-    ExecuteProcess('sh','./check.sh');
-    } else { //Else it's Windows
-    ExecuteProcess('check.bat','');
-}
-  if (count <= 3) {
-        timeout();
-  } else {
-healthcoinapp();
-  }
+    	/* Healthcoin-web-wallet does not start a local instance of healthcoind.
+        if (process.platform == 'darwin') { //If Mac OS X
+          ExecuteProcess('sh','./check.sh');
+        } else if (process.platform == 'linux') { //If Linux
+          ExecuteProcess('sh','./check.sh');
+        } else { //Else it's Windows
+          ExecuteProcess('check.bat','');
+        }
+        */
+          if (count <= 0) { // Add a startup delay (Use 10 if starting a local healthcoind.)
+              timeout();
+          } else {
+              healthcoinapp();
+          }
     }, 5000);
 }
 
 timeout();
 
-//Start Process by passing executable and its attribute.
+//Start child process by passing executable and its attribute.
 function ExecuteProcess(prcs,atrbs) {
   var spawn = require('child_process').spawn,
   HealthcoinExec = spawn(prcs, [atrbs]);
   HealthcoinExec.stdout.on('data', function (data) {
-    //console.log('stdout: ' + data);
+  //console.log('stdout: ' + data);
   if ( data === 0 ) {
   console.log('no process is running...');
   } else {
@@ -37,11 +38,11 @@ function ExecuteProcess(prcs,atrbs) {
   count = 10;
   }
   });
-  
+
   HealthcoinExec.stderr.on('data', function (data) {
     console.log('stderr: ' + data);
   });
-  
+
   HealthcoinExec.on('close', function (code) {
     console.log('child process exited with code ' + code);
   });
@@ -62,7 +63,31 @@ var healthcoin=require("./healthcoinapi");
 var querystring = require('querystring');
 var crypto = require('crypto');
 
-// all environments
+// Auth begin
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var morgan = require('morgan');
+var mongoose = require('mongoose');
+var passport = require('passport');
+var flash = require('connect-flash');
+
+var configDB = require('./healthcoin/database.js');
+mongoose.connect(configDB.url);
+require('./healthcoin/passport')(passport);
+
+app.use(morgan('dev'));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(session({secret: 'nequals1',
+				 saveUninitialized: true,
+				 resave: true}));
+
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+// Auth end
+
+// All environments
 app.use(cors());
 app.set('port', process.env.PORT || 8181);
 app.set('views', path.join(__dirname, 'views'));
@@ -105,8 +130,8 @@ app.use(function(err, req, res, next) {
     });
 });
 
-console.log('Healthcoin Node Starting');
-
+// Start the Healthcoin Express server
+console.log('Healthcoin Express server starting');
 var server = http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
@@ -137,6 +162,8 @@ function healthcoinHandler(err, result){
     this.res.send(JSON.stringify(response));
 }
 
+// RPC functions
+
 app.get('/getinfo', function(req,res){ callHealthcoin('getInfo', res, healthcoinHandler); } );
 app.get('/getinterestrate', function(req,res){ callHealthcoin('getInterestRate', res, healthcoinHandler); } );
 app.get('/getinflationrate', function(req,res){ callHealthcoin('getInflationRate', res, healthcoinHandler); } );
@@ -146,8 +173,6 @@ app.get('/getnewaddress/:account?', function(req, res){
     var accountName = req.params.account || '';
     callHealthcoin('getnewaddress', res, healthcoinHandler, accountName);
 });
-
-//app.get('/listtransactions', function(req, res){ callHealthcoin('listTransactions', res, healthcoinHandler, '*', 10, 0) } );
 
 // pagination view
 app.get('/listtransactions/:account?/:page?', function(req, res){
@@ -193,13 +218,9 @@ app.get('/help/:commandname?', function(req, res){
         callHealthcoin('help', res, healthcoinHandler);
 });
 
-
 //app.get('/', function(req,res){
 //	res.render('index');
 //	});
-
-
-// RPC functions //////////////
 
 app.get('/getaccount/:address', function(req, res){
 	healthcoin.getaccount(req.params.address, function(err, result){
@@ -221,7 +242,6 @@ app.get('/getbalance', function(req, res){
 	});
 });
 
-
 app.get('/getnewaddress', function(req, res){
 	healthcoin.getnewaddress(function(err, result){
 		console.log("err:"+err+" result:"+result);
@@ -231,17 +251,6 @@ app.get('/getnewaddress', function(req, res){
 			res.send(JSON.stringify(result));
 	});
 });
-
-// listaccounts is broken. use listaddressgroupings
-//app.get('/listaccounts', function(req, res){
-//	healthcoin.listaccounts(function(err, result){
-//		console.log("err:"+err+" result:"+result);
-//		if(err)
-//			res.send(err);
-//		else
-//			res.send(JSON.stringify(result));
-//	});
-//});
 
 app.get('/listaddressgroupings', function(req, res){
 	healthcoin.listaddressgroupings(function(err, result){
@@ -263,25 +272,6 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount', function(req, res){
 	});
 });
 
-//sendtoaddress <Healthcoinaddress> <amount> [comment] [comment-to]
-// TODO: Add optional comments
-/*app.get('/sendtoaddress/:toaddress/:amount', function(req, res){
-    function formatError(err){
-        return err.substr(err.indexOf('{'));
-    }
-
-	healthcoin.sendtoaddress(req.params.toaddress, parseInt(req.params.amount), function(err, result){
-		console.log("err:"+err+" result:"+result);
-        res.send(JSON.stringify(packageResponse(err, result)));
-		if(err){
-			res.send(err.message);
-        }
-		else
-			res.send(JSON.stringify(result));
-        
-	});
-});*/
-
 app.get('/setaccount/:address/:account', function(req, res){
 	healthcoin.setaccount(req.params.address, req.params.account, function(err, result){
 		console.log("err:"+err+" result:"+result);
@@ -302,8 +292,7 @@ app.get('/setadressbookname/:address/:label', function(req, res){
 	});
 });
 
-
-// Custom functions ////////////
+// Custom functions
 
 app.get('/totalhealthcoin', function(req, res){
 	healthcoin.getinfo(function(err, result){
@@ -377,6 +366,68 @@ app.get('/getpeers', function(req, res){
 	});
 });
 
+// Authentication
+
+var User = require('./public/js/viewmodels/auth/user');
+module.exports = function(app, passport){
+	//app.get('/', function(req, res){
+	//	res.render('index.ejs');
+	//});
+
+	app.get('/login', function(req, res){
+		res.render('login.ejs', { message: req.flash('loginMessage') });
+	});
+	app.post('/login', passport.authenticate('local-login', {
+		successRedirect: '/profile',
+		failureRedirect: '/login',
+		failureFlash: true
+	}));
+
+	app.get('/signup', function(req, res){
+		res.render('signup.ejs', { message: req.flash('signupMessage') });
+	});
+
+	app.post('/signup', passport.authenticate('local-signup', {
+		successRedirect: '/',
+		failureRedirect: '/signup',
+		failureFlash: true
+	}));
+
+	app.get('/profile', isLoggedIn, function(req, res){
+		res.render('profile.ejs', { user: req.user });
+	});
+
+	// Facebook auth
+	app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+	app.get('/auth/facebook/callback', 
+	  passport.authenticate('facebook', { successRedirect: '/#healthcoin',
+	                                      failureRedirect: '/' }));
+
+	// Google auth
+	app.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}));
+	app.get('/auth/google/callback', 
+	  passport.authenticate('google', { successRedirect: '/#healthcoin',
+	                                      failureRedirect: '/' }));
+
+	// Twitter auth
+	app.get('/auth/twitter', passport.authenticate('twitter', {scope: ['email']}));
+	app.get('/auth/twitter/callback', 
+	  passport.authenticate('twitter', { successRedirect: '/#healthcoin',
+	                                      failureRedirect: '/' }));
+
+	app.get('/logout', function(req, res){
+		req.logout();
+		res.redirect('/');
+	});
+};
+
+function isLoggedIn(req, res, next) {
+	if(req.isAuthenticated()){
+		return next();
+	}
+
+	res.redirect('/login');
+}
 
 //------- app.js CODE ENDS -------
 }

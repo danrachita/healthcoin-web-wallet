@@ -1,6 +1,6 @@
 {
-  "name": "Healthcoin App",
-  "version": "1.0.1",
+  "name": "Healthcoin",
+  "version": "1.0.0",
   "private": true,
   "node-main": "./app.js",
   "main": "loading.html",
@@ -17,14 +17,27 @@
     "min_height": 600
   },
   "dependencies": {
-    "express": "3.4.8",
-    "cookie":"0.1.1",
-    "ejs": "0.8.5",
     "async": "0.2.10",
-    "mongode": "0.1.6",
-    "node-healthcoin": "0.3.5",
-    "socket.io": "0.9.16",
+    "bcryptjs": "~2.3.0",
+    "body-parser": "latest",
+    "connect-flash": "~0.1.1",
+    "cookie": "0.3.1",
+    "cookie-parser": "latest",
     "cryptoaddress-validator": "0.0.1",
-    "xss":"0.1.7"
+    "ejs": "0.8.5",
+    "express": "3.4.8",
+    "express-session": "latest",
+    "mongode": "0.1.6",
+    "mongoose": "latest",
+    "morgan": "~1.5.3",
+    "node-healthcoin": "0.3.5",
+    "passport": "~0.2.2",
+    "passport-facebook": "~2.0.0",
+    "passport-google-oauth": "^1.0.0",
+    "passport-local": "~1.0.0",
+    "passport-oauth2": "~1.0.0",
+    "passport-twitter": "^1.0.4",
+    "socket.io": "0.9.16",
+    "xss": "0.1.7"
   }
 }
