@@ -370,9 +370,9 @@ app.get('/getpeers', function(req, res){
 
 var User = require('./public/js/viewmodels/auth/user');
 module.exports = function(app, passport){
-	//app.get('/', function(req, res){
-	//	res.render('index.ejs');
-	//});
+	app.get('/', function(req, res){
+		res.render('index.ejs');
+	});
 
 	app.get('/login', function(req, res){
 		res.render('login.ejs', { message: req.flash('loginMessage') });
