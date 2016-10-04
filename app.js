@@ -55,13 +55,12 @@ function healthcoinapp() {
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var routes = require('./routes');
 var http = require('http');
 var path = require('path');
 var app = express();
-var healthcoin=require("./healthcoinapi");
-var querystring = require('querystring');
-var crypto = require('crypto');
+var healthcoin = require("./healthcoinapi");
+var isLocal = healthcoin.isLocal;
+//var isLocal = false;
 
 // Auth begin
 var cookieParser = require('cookie-parser');
@@ -85,6 +84,8 @@ app.use(session({secret: 'nequals1',
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
+
+require('./routes/auth.js')(app, passport);
 // Auth end
 
 // All environments
@@ -162,6 +163,20 @@ function healthcoinHandler(err, result){
     this.res.send(JSON.stringify(response));
 }
 
+//app.get('/', function(req,res){
+//	res.render('index');
+//});
+
+// Not an RPC call, but returns true if the RPC node is localhost.
+app.get('/islocal', function(req,res){
+    var response = {
+        error: null,
+        result: isLocal
+    };
+    res.send(JSON.stringify(response));
+});
+
+
 // RPC functions
 
 app.get('/getinfo', function(req,res){ callHealthcoin('getInfo', res, healthcoinHandler); } );
@@ -217,10 +232,6 @@ app.get('/help/:commandname?', function(req, res){
     else
         callHealthcoin('help', res, healthcoinHandler);
 });
-
-//app.get('/', function(req,res){
-//	res.render('index');
-//	});
 
 app.get('/getaccount/:address', function(req, res){
 	healthcoin.getaccount(req.params.address, function(err, result){
@@ -365,69 +376,6 @@ app.get('/getpeers', function(req, res){
 			res.render('getpeers',{peers:JSON.parse(data).peers});
 	});
 });
-
-// Authentication
-
-var User = require('./public/js/viewmodels/auth/user');
-module.exports = function(app, passport){
-	app.get('/', function(req, res){
-		res.render('index.ejs');
-	});
-
-	app.get('/login', function(req, res){
-		res.render('login.ejs', { message: req.flash('loginMessage') });
-	});
-	app.post('/login', passport.authenticate('local-login', {
-		successRedirect: '/profile',
-		failureRedirect: '/login',
-		failureFlash: true
-	}));
-
-	app.get('/signup', function(req, res){
-		res.render('signup.ejs', { message: req.flash('signupMessage') });
-	});
-
-	app.post('/signup', passport.authenticate('local-signup', {
-		successRedirect: '/',
-		failureRedirect: '/signup',
-		failureFlash: true
-	}));
-
-	app.get('/profile', isLoggedIn, function(req, res){
-		res.render('profile.ejs', { user: req.user });
-	});
-
-	// Facebook auth
-	app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
-	app.get('/auth/facebook/callback', 
-	  passport.authenticate('facebook', { successRedirect: '/#healthcoin',
-	                                      failureRedirect: '/' }));
-
-	// Google auth
-	app.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}));
-	app.get('/auth/google/callback', 
-	  passport.authenticate('google', { successRedirect: '/#healthcoin',
-	                                      failureRedirect: '/' }));
-
-	// Twitter auth
-	app.get('/auth/twitter', passport.authenticate('twitter', {scope: ['email']}));
-	app.get('/auth/twitter/callback', 
-	  passport.authenticate('twitter', { successRedirect: '/#healthcoin',
-	                                      failureRedirect: '/' }));
-
-	app.get('/logout', function(req, res){
-		req.logout();
-		res.redirect('/');
-	});
-};
-
-function isLoggedIn(req, res, next) {
-	if(req.isAuthenticated()){
-		return next();
-	}
-
-	res.redirect('/login');
-}
 
 //------- app.js CODE ENDS -------
 }

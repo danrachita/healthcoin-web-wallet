@@ -3,8 +3,10 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 
-var User       = require('../public/js/viewmodels/auth/user');
+var User       = require('./user');
 var configAuth = require('./auth');
+
+var validator = require('validator');
 
 module.exports = function(passport) {
 
@@ -24,16 +26,34 @@ module.exports = function(passport) {
 		passReqToCallback: true
 	},
 	function(req, email, password, done){
+		if (!validator.isEmail(email)){
+			return done(null, false, req.flash('signupMessage', 'That does not appear to be a valid email address. Please try again.'));
+		}
+		if (!validator.isByteLength(password, {min:8, max:255})){
+			return done(null, false, req.flash('signupMessage', 'The password should be at least 8 characters. Please try again.'));
+		}
+		email = validator.normalizeEmail(email);
 		process.nextTick(function(){
 			User.findOne({'local.username': email}, function(err, user){
 				if(err)
 					return done(err);
 				if(user){
-					return done(null, false, req.flash('signupMessage', 'That email already taken'));
+					return done(null, false, req.flash('signupMessage', 'You already have an account. Please login, instead.'));
 				} else {
 					var newUser = new User();
 					newUser.local.username = email;
 					newUser.local.password = newUser.generateHash(password);
+					newUser.role = "User";
+					newUser.name = "Test User";
+					newUser.email = email;
+					newUser.image = "<img src=/images/healthcoin-logo.png>";
+					newUser.description = "I am here for testing purposes only.<br>Thanks for your patience while I find my way around...";
+					newUser.age = 42;
+					newUser.weight = 98;
+					newUser.gender = "M";
+					newUser.ethnicity = "";
+					newUser.hcn_label = "HCBM Address";
+					newUser.hcn_address = "HBUb5SXtvgS22Hb3G39u8AzrSunBk5FX66";
 
 					newUser.save(function(err){
 						if(err)
@@ -51,14 +71,15 @@ module.exports = function(passport) {
 			passReqToCallback: true
 		},
 		function(req, email, password, done){
+			email = validator.normalizeEmail(email);
 			process.nextTick(function(){
 				User.findOne({ 'local.username': email}, function(err, user){
 					if(err)
 						return done(err);
 					if(!user)
-						return done(null, false, req.flash('loginMessage', 'No User found'));
+						return done(null, false, req.flash('loginMessage', 'No user account found.'));
 					if(!user.validPassword(password)){
-						return done(null, false, req.flash('loginMessage', 'invalid password'));
+						return done(null, false, req.flash('loginMessage', 'Invalid password.'));
 					}
 					return done(null, user);
 

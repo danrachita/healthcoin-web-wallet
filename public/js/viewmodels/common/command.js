@@ -36,7 +36,7 @@ define(['knockout'],function(ko){
             console.log(textStatus);
             console.log(errorThrown);
             deferred.reject({ code: jqXHR.status, message: "Request failed: " + jqXHR.responseText });
-        });;
+        });
         return deferred.promise();
     };
 

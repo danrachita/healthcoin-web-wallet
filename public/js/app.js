@@ -22,8 +22,8 @@ define( [
         dialog.init($('#defaultModal')[0]);         
 
         Sammy(function() {
-            this.get('#healthcoin', function() {
-                wallet.currentView('healthcoin');                 
+            this.get('#biomarkers', function() {
+                wallet.currentView('biomarkers');                 
             });
             this.get('#send', function() {
                 wallet.currentView('send');                 
@@ -41,7 +41,7 @@ define( [
                 wallet.currentView('console');                 
             });
 
-        //}).run('#healthcoin');
+        //}).run('#biomarkers');
         }).run('/');
     };
     return new App();

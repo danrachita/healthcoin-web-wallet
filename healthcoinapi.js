@@ -23,12 +23,19 @@ conf_data = fs.readFileSync(filepath, 'utf8', function (err) {
   }
 });
 
-arrayFromConf = conf_data.match(/[^\r\n]+/g); //Turn all lines to an array
-var rpcuser = arrayFromConf['0'].substring(arrayFromConf['0'].indexOf("=") + 1); //Only get specific line, and get value after '='
-var rpcpass = arrayFromConf['1'].substring(arrayFromConf['1'].indexOf("=") + 1); //Only get specific line, and get value after '='
-var rpchost = arrayFromConf['2'].substring(arrayFromConf['2'].indexOf("=") + 1); //Only get specific line, and get value after '='
+arrayFromConf = conf_data.match(/[^\r\n]+/g); // Turn lines to array
+// Get specific line and value after '='
+var rpcuser = arrayFromConf['0'].substring(arrayFromConf['0'].indexOf("=") + 1);
+var rpcpass = arrayFromConf['1'].substring(arrayFromConf['1'].indexOf("=") + 1);
+var rpchost = arrayFromConf['2'].substring(arrayFromConf['2'].indexOf("=") + 1).toLowerCase();
+
+if (rpchost === "127.0.0.1"){
+    rpchost = "localhost";
+}
 
 var healthcoin = require('node-healthcoin')();
 healthcoin.auth(rpcuser, rpcpass, rpchost);
+var isLocal = (healthcoin.get("host") === "localhost" ? true : false);
 
 module.exports = healthcoin;
+module.exports.isLocal = isLocal;

@@ -18,6 +18,7 @@ var userSchema = mongoose.Schema({
 		token: String,
 	},
 	profile: {
+		role: String,
 		name: String,
 		email: String,
 		image: String,

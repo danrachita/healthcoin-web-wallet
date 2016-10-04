@@ -1,8 +1,8 @@
 Number.prototype.formatMoney = function(c, d, t){
         var n = this,
         c = isNaN(c = Math.abs(c)) ? 2 : c,
-        d = d == undefined ? "." : d,
-        t = t == undefined ? "," : t,
+        d = d === undefined ? "." : d,
+        t = t === undefined ? "," : t,
         s = n < 0 ? "-" : "",
         i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
         j = (j = i.length) > 3 ? j % 3 : 0;
@@ -24,17 +24,31 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
         self.totalFmt = ko.pureComputed(function(){return (self.total()).formatMoney(2, '.', ',');});
         self.stakeFmt = ko.pureComputed(function(){return (self.stake()).formatMoney(2, '.', ',');});
         self.availableFmt = ko.pureComputed(function(){return (self.total() - self.stake()).formatMoney(2, '.', ',');});
+        self.isLocalWallet = ko.observable(false); // Is the node local?
+
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();
             return (total - stake);
         }).extend({ rateLimit: 500 });
     };
 
+    walletStatusType.prototype.isLocal = function(){
+        var self = this,
+            isLocalCommand = new Command('islocal',[]);
+        var statusPromise = $.when(isLocalCommand.execute())
+            .done(function(isLocalData){
+                console.log('isLocalData: ' + isLocalData);
+                self.isLocalWallet(isLocalData);
+            });
+    };
+ 
     walletStatusType.prototype.load = function(){
         var self = this,
-            getInfoCommand = new Command('getinfo',[]), 
+            getInfoCommand = new Command('getinfo',[]),
             getBlockCountCommand = new Command('getblockcount',[]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
+        self.isLocal();
+        console.log('isLocalWallet: ' + self.isLocalWallet());
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBlockCountCommand.execute(), getStakingInfoCommand.execute())
             .done(function(getInfoData, getBlockCountData, getStakingInfoData){
