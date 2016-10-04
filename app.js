@@ -102,6 +102,14 @@ app.use(bodyParser.json());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
+// CORS headers
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
