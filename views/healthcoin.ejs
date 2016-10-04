@@ -41,11 +41,13 @@
                 <li> <a href="#receive"><div data-bind="css: { selected: $data.currentView() === 'receive' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-inbox" aria-hidden="true"><span class="sidebar-nav-button-content">Receive</span></div></div></a> </li>
                 <li> <a href="#history"><div data-bind="css: { selected: $data.currentView() === 'history' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-time" aria-hidden="true"><span class="sidebar-nav-button-content">History</span></div></div></a> </li>
                 <li> <a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-console" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a> </li>
-                <!-- ko if: walletStatus.isUnlocked() === 'Yes' -->
+                <!-- ko if: walletStatus.isLocalWallet() -->
+                    <!-- ko if: walletStatus.isUnlocked() === 'Yes' -->
                 <li> <a href="#"><div data-bind="click:lockWallet" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-eye-open" aria-hidden="true"><span class="sidebar-nav-button-content">Lock Wallet</span></div></div></a> </li>
-                <!-- /ko -->
-                <!-- ko if: walletStatus.isUnlocked() !== 'Yes' -->
+                    <!-- /ko -->
+                    <!-- ko if: walletStatus.isUnlocked() !== 'Yes' -->
                 <li> <a href="#"><div data-bind="click:unlockWallet" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-lock" aria-hidden="true"><span class="sidebar-nav-button-content">Unlock Wallet</span></div></div></a> </li>
+                    <!-- /ko -->
                 <!-- /ko -->
                 <li> <span class="sidebar-nav-button-content"></span> </li>
                 <li> Blocks: <span data-bind="text: walletStatus.blocks"></span> / <span data-bind="text:walletStatus.totalBlocks"></span></li>
