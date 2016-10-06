@@ -22,7 +22,7 @@ app.set('view engine', 'ejs');
 app.use(session({secret: 'nequals1',
                  saveUninitialized: true,
                  resave: true}));
-app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(flash()); // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
