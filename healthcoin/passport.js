@@ -10,6 +10,10 @@ var validator = require('validator');
 
 module.exports = function(passport) {
 
+	var callHealthcoin = require('../app.js').callHealthcoin;
+	var healthcoinHandler = require('../app.js').healthcoinHandler;
+	console.log('DEBUG: callHealthcoin:' + callHealthcoin);
+
 	passport.serializeUser(function(user, done){
 		done(null, user.id);
 	});
@@ -26,6 +30,7 @@ module.exports = function(passport) {
 		passReqToCallback: true
 	},
 	function(req, email, password, done){
+		console.log('DEBUG: callHealthcoin:' + callHealthcoin);
 		if (!validator.isEmail(email)){
 			return done(null, false, req.flash('signupMessage', 'That does not appear to be a valid email address. Please try again.'));
 		}
@@ -33,6 +38,13 @@ module.exports = function(passport) {
 			return done(null, false, req.flash('signupMessage', 'The password should be at least 8 characters. Please try again.'));
 		}
 		email = validator.normalizeEmail(email);
+		var res = {};
+		callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+		var hcn_address = res;
+		console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+		if (hcn_address === ""){
+			return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+		}
 		process.nextTick(function(){
 			User.findOne({'local.username': email}, function(err, user){
 				if(err)
@@ -44,16 +56,16 @@ module.exports = function(passport) {
 					newUser.local.username = email;
 					newUser.local.password = newUser.generateHash(password);
 					newUser.role = "User";
-					newUser.name = "Test User";
+					newUser.name = "New User";
 					newUser.email = email;
-					newUser.image = "<img src=/images/healthcoin-logo.png>";
-					newUser.description = "I am here for testing purposes only.<br>Thanks for your patience while I find my way around...";
-					newUser.age = 42;
-					newUser.weight = 98;
-					newUser.gender = "M";
+					newUser.photo = "/images/healthcoin-logo.png";
+					newUser.description = "";
+					newUser.age = "";
+					newUser.weight = "";
+					newUser.gender = "";
 					newUser.ethnicity = "";
-					newUser.hcn_label = "HCBM Address";
-					newUser.hcn_address = "HBUb5SXtvgS22Hb3G39u8AzrSunBk5FX66";
+					newUser.hcn_account = email; // associate unique email with HCN account
+					newUser.hcn_address = hcn_address;
 
 					newUser.save(function(err){
 						if(err)
@@ -94,6 +106,14 @@ module.exports = function(passport) {
 	    callbackURL: configAuth.facebookAuth.callbackURL
 	  },
 	  function(accessToken, refreshToken, profile, done) {
+			var email = validator.normalizeEmail(profile.emails[0].value);
+			var res = {};
+			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+			var hcn_address = res;
+			console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+			if (hcn_address === ""){
+				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+			}
 	    	process.nextTick(function(){
 	    		User.findOne({'facebook.id': profile.id}, function(err, user){
 	    			if(err)
@@ -104,8 +124,17 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.facebook.id = profile.id;
 	    				newUser.facebook.token = accessToken;
+						newUser.role = "User";
 	    				newUser.name = profile.name.givenName + ' ' + profile.name.familyName;
-	    				newUser.email = profile.emails[0].value;
+	    				newUser.email = email;
+						newUser.photo = profile.photos[0].value;
+						newUser.description = "";
+						newUser.age = "";
+						newUser.weight = "";
+						newUser.gender = "";
+						newUser.ethnicity = "";
+						newUser.hcn_account = email; // associate unique email with HCN account
+						newUser.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -125,6 +154,14 @@ module.exports = function(passport) {
 	    callbackURL: configAuth.googleAuth.callbackURL
 	  },
 	  function(accessToken, refreshToken, profile, done) {
+			var email = validator.normalizeEmail(profile.emails[0].value);
+			var res = {};
+			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+			var hcn_address = res;
+			console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+			if (hcn_address === ""){
+				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+			}
 	    	process.nextTick(function(){
 	    		User.findOne({'google.id': profile.id}, function(err, user){
 	    			if(err)
@@ -135,8 +172,17 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.google.id = profile.id;
 	    				newUser.google.token = accessToken;
+						newUser.role = "User";
 	    				newUser.name = profile.displayName;
-	    				newUser.email = profile.emails[0].value;
+	    				newUser.email = email;
+						newUser.photo = profile.photos[0].value;
+						newUser.description = "";
+						newUser.age = "";
+						newUser.weight = "";
+						newUser.gender = "";
+						newUser.ethnicity = "";
+						newUser.hcn_account = email; // associate unique email with HCN account
+						newUser.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -156,6 +202,14 @@ module.exports = function(passport) {
 	    callbackURL: configAuth.twitterAuth.callbackURL
 	  },
 	  function(token, tokenSecret, profile, done) {
+			var email = validator.normalizeEmail(profile.emails[0].value);
+			var res = {};
+			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+			var hcn_address = res;
+			console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+			if (hcn_address === ""){
+				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+			}
 	    	process.nextTick(function(){
 	    		User.findOne({'twitter.id': profile.id}, function(err, user){
 	    			if(err)
@@ -166,8 +220,17 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.twitter.id = profile.id;
 	    				newUser.twitter.token = token;
+						newUser.role = "User";
 	    				newUser.name = profile.displayName;
-	    				newUser.email = profile.emails[0].value;
+	    				newUser.email = email;
+						newUser.photo = profile.photos[0].value;
+						newUser.description = "";
+						newUser.age = "";
+						newUser.weight = "";
+						newUser.gender = "";
+						newUser.ethnicity = "";
+						newUser.hcn_account = email; // associate unique email with HCN account
+						newUser.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)

@@ -7,7 +7,7 @@ define(['knockout'],function(ko){
 
     function parseCommand(commandText, args){
         //var url = 'http://127.0.0.1:8181/';
-        var url = 'http://' + window.location.hostname + ':8181/'; // SDW
+        var url = 'http://' + window.location.hostname + ':8181/'; // Allow CORS
         url = url.concat(commandText.concat('/'));
         if(args && args.length > 0){
             url = url.concat(args.join('/'));

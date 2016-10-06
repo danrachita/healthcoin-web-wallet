@@ -14,7 +14,7 @@ RUN apt-get --yes update
 RUN apt-get --yes upgrade
 
 # Install utils.
-RUN apt-get install --yes git sudo openssh-server vim aptitude daemon nodejs
+RUN apt-get install --yes git sudo openssh-server vim aptitude daemon nodejs inetutils-ping telnet
 
 RUN useradd --user-group --create-home --shell /bin/bash healthcoin \
     && echo 'healthcoin:healthcoin' | chpasswd && adduser healthcoin sudo
