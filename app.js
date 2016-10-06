@@ -92,34 +92,34 @@ healthcoinappObj.callHealthcoin = callHealthcoin;
 healthcoinappObj.healthcoinHandler = healthcoinHandler;
 module.exports = healthcoinappObj;
 
-// Auth begin
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var morgan = require('morgan');
-var mongoose = require('mongoose');
-var passport = require('passport');
-var flash = require('connect-flash');
-
-var configDB = require('./healthcoin/database.js');
-mongoose.connect(configDB.url);
-require('./healthcoin/passport')(passport); // Requires healthcoinappObj export.
-
-app.use(morgan('dev'));
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(session({secret: 'nequals1',
-                 saveUninitialized: true,
-                 resave: true}));
-
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
-
-require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
-// Auth end
-
 //------- app.js CODE GOES HERE -------
 function healthcoinapp() {
+
+    // Auth begin
+    var cookieParser = require('cookie-parser');
+    var session = require('express-session');
+    var morgan = require('morgan');
+    var mongoose = require('mongoose');
+    var passport = require('passport');
+    var flash = require('connect-flash');
+
+    var configDB = require('./healthcoin/database.js');
+    mongoose.connect(configDB.url);
+    require('./healthcoin/passport')(passport); // Requires healthcoinappObj export.
+
+    app.use(morgan('dev'));
+    app.use(cookieParser());
+    app.use(bodyParser.urlencoded({extended: false}));
+    app.use(session({secret: 'nequals1',
+                     saveUninitialized: true,
+                     resave: true}));
+
+    app.use(passport.initialize());
+    app.use(passport.session()); // persistent login sessions
+    app.use(flash()); // use connect-flash for flash messages stored in session
+
+    require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
+    // Auth end
 
     // Start the Healthcoin Express server
     console.log('Healthcoin Express server starting');
