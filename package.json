@@ -39,7 +39,6 @@
     "passport-twitter": "^1.0.4",
     "socket.io": "0.9.16",
     "validator": "~6.0.0",
-    "knockout": "latest",
     "xss": "0.1.7"
   }
 }
