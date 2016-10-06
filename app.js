@@ -114,6 +114,8 @@ app.use(session({secret: 'nequals1',
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
+
+require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
 // Auth end
 
 //------- app.js CODE GOES HERE -------
@@ -126,9 +128,6 @@ function healthcoinapp() {
     });
 
     // Non-RPC routes
-
-    // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
-    require('./routes/auth.js')(app, passport);
 
     // Not an RPC call, but returns true if the RPC node is localhost.
     app.get('/islocal', function(req,res){
