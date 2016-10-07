@@ -6,7 +6,7 @@ define(['knockout',
         'patterns'], function(ko,dialog,ConfirmationDialog,WalletPassphrase,Command,patterns){
     var sendType = function(options){
         var self = this, sendOptions = options || {};
-        this.wallet= sendOptions.parent;
+        this.wallet = sendOptions.parent;
         this.recipientAddress = ko.observable("").extend( 
             { 
                 pattern: { params: patterns.healthcoin, message: 'Not a valid address' },

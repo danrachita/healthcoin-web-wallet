@@ -12,6 +12,7 @@ Number.prototype.formatMoney = function(c, d, t){
 define(['knockout','viewmodels/common/command'],function(ko,Command){
     var walletStatusType = function(){
         var self = this;
+        self.userAccount = { account: "", address: "" };
         self.total = ko.observable(0);
         self.stake = ko.observable(0);
         self.isLoadingStatus = ko.observable(false);
@@ -37,18 +38,29 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
             isLocalCommand = new Command('islocal',[]);
         var statusPromise = $.when(isLocalCommand.execute())
             .done(function(isLocalData){
-                console.log('isLocalData: ' + isLocalData);
                 self.isLocalWallet(isLocalData);
             });
     };
- 
+
+    walletStatusType.prototype.getUserAccount = function(){
+        var self = this,
+            getUserAccountCommand = new Command('getuseraccount',[]);
+        var statusPromise = $.when(getUserAccountCommand.execute())
+            .done(function(getUserAccountData){
+                var accountData = getUserAccountData;
+                self.userAccount.account = accountData.account;
+                self.userAccount.address = accountData.address;
+                console.log('userAccount.address: ' + self.userAccount.address);
+            });
+    };
+
     walletStatusType.prototype.load = function(){
         var self = this,
             getInfoCommand = new Command('getinfo',[]),
             getBlockCountCommand = new Command('getblockcount',[]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
         self.isLocal();
-        console.log('isLocalWallet: ' + self.isLocalWallet());
+        self.getUserAccount();
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBlockCountCommand.execute(), getStakingInfoCommand.execute())
             .done(function(getInfoData, getBlockCountData, getStakingInfoData){
@@ -68,8 +80,6 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
                 }
                 self.isLoadingStatus(false); 
             });
-        //console.log('statusPromise:');
-        //console.log(statusPromise);
         return statusPromise;
     };
 

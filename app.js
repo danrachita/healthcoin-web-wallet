@@ -46,9 +46,12 @@ app.use(bodyParser.json());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Functions for calling healthcoind node
-var healthcoinappObj = {}; // healthcoinappObj exported for other modules.
-healthcoinappObj.response = "";
+// Functions for calling healthcoind from client
+var healthcoinappObj         = {}; // healthcoinappObj exported for other modules.
+healthcoinappObj.response    = "";
+healthcoinappObj.hcn_account = "";
+healthcoinappObj.hcn_address = "";
+
 function callHealthcoin(command, res, handler) {
     var args = Array.prototype.slice.call(arguments, 3);
     var callargs = args.concat([handler.bind({res:res})]);
@@ -67,9 +70,10 @@ function healthcoinHandler(err, result){
         healthcoinappObj.response = response.result;
     }
 }
-healthcoinappObj.callHealthcoin = callHealthcoin;
+healthcoinappObj.callHealthcoin    = callHealthcoin;
 healthcoinappObj.healthcoinHandler = healthcoinHandler;
 module.exports = healthcoinappObj;
+//app.set('healthcoinappObj', healthcoinappObj);
 
 // Auth begin
 var configDB = require('./healthcoin/database.js');
@@ -128,11 +132,20 @@ Object.defineProperty(Error.prototype, 'toJSON', {
 
 // Non-RPC routes //
 
-// Not an RPC call, but returns true if the RPC node is localhost.
+// Returns true if the RPC node is localhost.
 app.get('/islocal', function(req,res){
     var response = {
         error: null,
         result: isLocal
+    };
+    res.send(JSON.stringify(response));
+});
+
+// Returns user account and address.
+app.get('/getuseraccount', function(req,res){
+    var response = {
+        error: null,
+        result: { account: healthcoinappObj.hcn_account, address: healthcoinappObj.hcn_address }
     };
     res.send(JSON.stringify(response));
 });

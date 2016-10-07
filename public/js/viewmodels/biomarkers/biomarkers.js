@@ -1,42 +1,47 @@
 define(['knockout',
         'common/dialog',
+        'viewmodels/wallet-status',
         'viewmodels/common/confirmation-dialog',
         'viewmodels/common/wallet-passphrase',
         'viewmodels/common/command',
-        'patterns'], function(ko,dialog,ConfirmationDialog,WalletPassphrase,Command,patterns){
+        'patterns'], function(ko,dialog,WalletStatus,ConfirmationDialog,WalletPassphrase,Command,patterns){
         var sendType = function(options){
-        var self = this, sendOptions = options || {};
-        this.wallet= sendOptions.parent;
-        this.txcommentBiomarker = ko.observable("").extend( 
-            { 
-                pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
-                required: true
-            });
-        this.recipientAddress = ko.observable("HR4fAsYMoPxJSokSSSJhfnTe2WB25gPRtP").extend(  // TODO: pull from fhirbase user account.
-            { 
-                pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
-                required: true
-            });
-        this.amount = ko.observable(sendOptions.amount || 0.0001).extend(
-            { 
-                number: true,
-                required: true
-            });
-        this.minerFee = ko.observable(sendOptions.minerFee || 0.0002);
-        this.canSend = ko.computed(function(){
-            var amount = self.amount(),
-                isNumber = !isNaN(amount),
-                biomarker = self.txcommentBiomarker(),
-                biomarkerValid = self.txcommentBiomarker.isValid(),
-                address = self.recipientAddress(),
-                addressValid = self.recipientAddress.isValid(),
-                amountValid = self.amount.isValid(),
-                available = self.wallet.walletStatus.available(),
-                canSend;
+            var self = this, sendOptions = options || {};
+            this.wallet = sendOptions.parent;
 
-            canSend = isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
-            return canSend;
-        });
+            this.hcn_account = self.wallet.walletStatus.userAccount.account;
+            this.hcn_address = self.wallet.walletStatus.userAccount.address;
+
+            this.txcommentBiomarker = ko.observable("").extend( 
+                {
+                    pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
+                    required: true
+                });
+            this.recipientAddress = ko.observable(this.hcn_address || "").extend(  // Send to self.
+                {
+                    pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
+                    required: true
+                });
+            this.amount = ko.observable(sendOptions.amount || 0.0001).extend(
+                {
+                    number: true,
+                    required: true
+                });
+            this.minerFee = ko.observable(sendOptions.minerFee || 0.0002);
+            this.canSend = ko.computed(function(){
+                var amount = self.amount(),
+                    isNumber = !isNaN(amount),
+                    biomarker = self.txcommentBiomarker(),
+                    biomarkerValid = self.txcommentBiomarker.isValid(),
+                    address = self.recipientAddress(),
+                    addressValid = self.recipientAddress.isValid(),
+                    amountValid = self.amount.isValid(),
+                    available = self.wallet.walletStatus.available(),
+                    canSend;
+
+                canSend = isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
+                return canSend;
+            });
     };
 
     function lockWallet(){
