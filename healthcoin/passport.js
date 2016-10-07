@@ -10,9 +10,9 @@ var validator = require('validator');
 
 module.exports = function(passport) {
 
-	var callHealthcoin = require('../app.js').callHealthcoin;
-	var healthcoinHandler = require('../app.js').healthcoinHandler;
-	console.log('DEBUG: callHealthcoin:' + callHealthcoin);
+	var healthcoinappObj = require('../app.js');
+	var callHealthcoin = healthcoinappObj.callHealthcoin;
+	var healthcoinHandler = healthcoinappObj.healthcoinHandler;
 
 	passport.serializeUser(function(user, done){
 		done(null, user.id);
@@ -30,7 +30,6 @@ module.exports = function(passport) {
 		passReqToCallback: true
 	},
 	function(req, email, password, done){
-		console.log('DEBUG: callHealthcoin:' + callHealthcoin);
 		if (!validator.isEmail(email)){
 			return done(null, false, req.flash('signupMessage', 'That does not appear to be a valid email address. Please try again.'));
 		}
@@ -38,10 +37,8 @@ module.exports = function(passport) {
 			return done(null, false, req.flash('signupMessage', 'The password should be at least 8 characters. Please try again.'));
 		}
 		email = validator.normalizeEmail(email);
-		var res = {};
-		callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-		var hcn_address = res;
-		console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+		callHealthcoin('getnewaddress', {}, healthcoinHandler, email); // Set res to empty object so healthcoinHandler knows it's not from express http.
+		var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
 		if (hcn_address === ""){
 			return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 		}
@@ -54,18 +51,18 @@ module.exports = function(passport) {
 				} else {
 					var newUser = new User();
 					newUser.local.username = email;
-					newUser.local.password = newUser.generateHash(password);
-					newUser.role = "User";
-					newUser.name = "New User";
-					newUser.email = email;
-					newUser.photo = "/images/healthcoin-logo.png";
-					newUser.description = "";
-					newUser.age = "";
-					newUser.weight = "";
-					newUser.gender = "";
-					newUser.ethnicity = "";
-					newUser.hcn_account = email; // associate unique email with HCN account
-					newUser.hcn_address = hcn_address;
+					newUser.local.password = newUser.profile.generateHash(password);
+					newUser.profile.role = "User";
+					newUser.profile.name = "New User";
+					newUser.profile.email = email;
+					newUser.profile.photo = "/images/healthcoin-logo.png";
+					newUser.profile.description = "";
+					newUser.profile.age = "";
+					newUser.profile.weight = "";
+					newUser.profile.gender = "";
+					newUser.profile.ethnicity = "";
+					newUser.profile.hcn_account = email; // associate unique email with HCN account
+					newUser.profile.hcn_address = hcn_address;
 
 					newUser.save(function(err){
 						if(err)
@@ -107,10 +104,8 @@ module.exports = function(passport) {
 	  },
 	  function(accessToken, refreshToken, profile, done) {
 			var email = validator.normalizeEmail(profile.emails[0].value);
-			var res = {};
-			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-			var hcn_address = res;
-			console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+			callHealthcoin('getnewaddress', {}, healthcoinHandler, email); // Set res to empty object so healthcoinHandler knows it's not from express http.
+			var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
@@ -124,17 +119,17 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.facebook.id = profile.id;
 	    				newUser.facebook.token = accessToken;
-						newUser.role = "User";
-	    				newUser.name = profile.name.givenName + ' ' + profile.name.familyName;
-	    				newUser.email = email;
-						newUser.photo = profile.photos[0].value;
-						newUser.description = "";
-						newUser.age = "";
-						newUser.weight = "";
-						newUser.gender = "";
-						newUser.ethnicity = "";
-						newUser.hcn_account = email; // associate unique email with HCN account
-						newUser.hcn_address = hcn_address;
+						newUser.profile.role = "User";
+	    				newUser.profile.name = profile.name.givenName + ' ' + profile.name.familyName;
+	    				newUser.profile.email = email;
+						newUser.profile.photo = profile.photos[0].value;
+						newUser.profile.description = "";
+						newUser.profile.age = "";
+						newUser.profile.weight = "";
+						newUser.profile.gender = "";
+						newUser.profile.ethnicity = "";
+						newUser.profile.hcn_account = email; // associate unique email with HCN account
+						newUser.profile.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -155,10 +150,8 @@ module.exports = function(passport) {
 	  },
 	  function(accessToken, refreshToken, profile, done) {
 			var email = validator.normalizeEmail(profile.emails[0].value);
-			var res = {};
-			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-			var hcn_address = res;
-			console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+			callHealthcoin('getnewaddress', {}, healthcoinHandler, email); // Set res to empty object so healthcoinHandler knows it's not from express http.
+			var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
@@ -172,17 +165,17 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.google.id = profile.id;
 	    				newUser.google.token = accessToken;
-						newUser.role = "User";
-	    				newUser.name = profile.displayName;
-	    				newUser.email = email;
-						newUser.photo = profile.photos[0].value;
-						newUser.description = "";
-						newUser.age = "";
-						newUser.weight = "";
-						newUser.gender = "";
-						newUser.ethnicity = "";
-						newUser.hcn_account = email; // associate unique email with HCN account
-						newUser.hcn_address = hcn_address;
+						newUser.profile.role = "User";
+	    				newUser.profile.name = profile.displayName;
+	    				newUser.profile.email = email;
+						newUser.profile.photo = profile.photos[0].value;
+						newUser.profile.description = "";
+						newUser.profile.age = "";
+						newUser.profile.weight = "";
+						newUser.profile.gender = "";
+						newUser.profile.ethnicity = "";
+						newUser.profile.hcn_account = email; // associate unique email with HCN account
+						newUser.profile.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -203,10 +196,8 @@ module.exports = function(passport) {
 	  },
 	  function(token, tokenSecret, profile, done) {
 			var email = validator.normalizeEmail(profile.emails[0].value);
-			var res = {};
-			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-			var hcn_address = res;
-			console.log('DEBUG: res:' + res + 'hcn_address:' + hcn_address);
+			callHealthcoin('getnewaddress', {}, healthcoinHandler, email); // Set res to empty object so healthcoinHandler knows it's not from express http.
+			var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
@@ -220,17 +211,17 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.twitter.id = profile.id;
 	    				newUser.twitter.token = token;
-						newUser.role = "User";
-	    				newUser.name = profile.displayName;
-	    				newUser.email = email;
-						newUser.photo = profile.photos[0].value;
-						newUser.description = "";
-						newUser.age = "";
-						newUser.weight = "";
-						newUser.gender = "";
-						newUser.ethnicity = "";
-						newUser.hcn_account = email; // associate unique email with HCN account
-						newUser.hcn_address = hcn_address;
+						newUser.profile.role = "User";
+	    				newUser.profile.name = profile.displayName;
+	    				newUser.profile.email = email;
+						newUser.profile.photo = profile.photos[0].value;
+						newUser.profile.description = "";
+						newUser.profile.age = "";
+						newUser.profile.weight = "";
+						newUser.profile.gender = "";
+						newUser.profile.ethnicity = "";
+						newUser.profile.hcn_account = email; // associate unique email with HCN account
+						newUser.profile.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)

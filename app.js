@@ -8,8 +8,14 @@ var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
 var app = express();
+
+var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var morgan = require('morgan');
+var mongoose = require('mongoose');
+var passport = require('passport');
 var flash = require('connect-flash');
+
 var healthcoin = require("./healthcoinapi");
 var isLocal = healthcoin.isLocal;
 //var isLocal = false;
@@ -19,10 +25,18 @@ app.use(cors());
 app.set('port', process.env.PORT || 8181);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+// Auth
+app.use(morgan('dev'));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({secret: 'nequals1',
                  saveUninitialized: true,
                  resave: true}));
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
+
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -33,45 +47,37 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Functions for calling healthcoind node
+var healthcoinappObj = {}; // healthcoinappObj exported for other modules.
+healthcoinappObj.response = "";
 function callHealthcoin(command, res, handler) {
     var args = Array.prototype.slice.call(arguments, 3);
     var callargs = args.concat([handler.bind({res:res})]);
     return healthcoin[command].apply(healthcoin, callargs);
 }
 function healthcoinHandler(err, result){
-    console.log("err:"+err+" result:"+result);
+    // DEBUG: console.log("err:"+err+" result:"+result);
     var response = {
         error: JSON.parse(err ? err.message : null),
         result: result
     };
-    this.res.send(JSON.stringify(response));
+    // Check res from express http response. It will be empty if it came from another module via healthcoinappObj (i.e. passport.js).
+    if (typeof this.res.send !== 'undefined' && this.res.send){
+        this.res.send(JSON.stringify(response));
+    } else {
+        healthcoinappObj.response = response.result;
+    }
 }
-
-var healthcoinappObj = {}; // healthcoinappObj exported for other modules.
 healthcoinappObj.callHealthcoin = callHealthcoin;
 healthcoinappObj.healthcoinHandler = healthcoinHandler;
 module.exports = healthcoinappObj;
 
 // Auth begin
-var cookieParser = require('cookie-parser');
-var morgan = require('morgan');
-var mongoose = require('mongoose');
-var passport = require('passport');
-
 var configDB = require('./healthcoin/database.js');
 mongoose.connect(configDB.url);
-
-app.use(morgan('dev'));
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: false}));
-
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
 
 require('./healthcoin/passport')(passport); // Requires healthcoinappObj to be exported first.
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
 // Auth end
-
 
 // CORS headers
 app.all('*', function(req, res, next) {
