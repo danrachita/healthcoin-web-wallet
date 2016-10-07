@@ -27,7 +27,7 @@ var userSchema = mongoose.Schema({
 		weight: String,
 		gender: String,
 		ethnicity: String,
-		hcn_label: String,
+		hcn_account: String,
 		hcn_address: String
 	}
 });

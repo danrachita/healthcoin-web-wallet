@@ -60,16 +60,17 @@
 							<h3><span class="fa fa-user"></span> Profile</h3>
 								<p>
 									<strong>Uid</strong>: <%= user._id %><br>
-									<strong>Role</strong>: <%= user.role %><br>
-									<strong>Name</strong>: <%= user.name %><br>
-									<strong>Email</strong>: <%= user.email %><br>
-									<strong>Image</strong>: <%= user.image %><br>
-									<strong>Description</strong>: <%= user.description %><br>
-									<strong>Age</strong>: <%= user.age %><br>
-									<strong>Weight</strong>: <%= user.weight %><br>
-									<strong>Gender</strong>: <%= user.gender %><br>
-									<strong>Ethnicity</strong>: <%= user.ethnicity %><br>
-									<strong>HCN Address</strong>: <%= user.hcn_label - user.hcn_address %><br>
+									<strong>Role</strong>: <%= user.profile.role %><br>
+									<strong>Name</strong>: <%= user.profile.name %><br>
+									<strong>Email</strong>: <%= user.profile.email %><br>
+									<strong>Image</strong>: <%= user.profile.image %><br>
+									<strong>Description</strong>: <%= user.profile.description %><br>
+									<strong>Age</strong>: <%= user.profile.age %><br>
+									<strong>Weight</strong>: <%= user.profile.weight %><br>
+									<strong>Gender</strong>: <%= user.profile.gender %><br>
+									<strong>Ethnicity</strong>: <%= user.profile.ethnicity %><br>
+									<strong>HCN Account</strong>: <%= user.profile.hcn_account %><br>
+									<strong>HCN Address</strong>: <%= user.profile.hcn_address %><br>
 								</p>
 						</div>
 					</div>
