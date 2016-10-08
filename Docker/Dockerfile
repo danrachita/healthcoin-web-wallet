@@ -14,15 +14,15 @@ RUN apt-get --yes update
 RUN apt-get --yes upgrade
 
 # Install utils.
-RUN apt-get install --yes git sudo openssh-server vim aptitude daemon nodejs inetutils-ping telnet
+RUN apt-get install --yes git sudo openssh-server vim aptitude daemon nodejs inetutils-ping telnet cron
 
 RUN useradd --user-group --create-home --shell /bin/bash healthcoin \
     && echo 'healthcoin:healthcoin' | chpasswd && adduser healthcoin sudo
 RUN echo 'healthcoin ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-COPY healthcoin-web-wallet.sh /home/healthcoin/
-RUN chmod a+rwx /home/healthcoin/healthcoin-web-wallet.sh
-RUN chown healthcoin:healthcoin /home/healthcoin/healthcoin-web-wallet.sh
+COPY run_healthcoin-web-wallet /home/healthcoin/
+RUN chmod a+rwx /home/healthcoin/run_healthcoin-web-wallet
+RUN chown healthcoin:healthcoin /home/healthcoin/run_healthcoin-web-wallet
 RUN mkdir /home/healthcoin/.healthcoin
 COPY healthcoin.conf /home/healthcoin/.healthcoin/
 RUN chown -R healthcoin:healthcoin /home/healthcoin/.healthcoin
@@ -41,5 +41,4 @@ VOLUME  ['/home/healthcoin']
 
 WORKDIR /home/healthcoin
 
-CMD ./healthcoin-web-wallet.sh
-
+CMD ./run_healthcoin-web-wallet
