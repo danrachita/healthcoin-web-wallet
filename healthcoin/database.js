@@ -1,3 +1,4 @@
+// NOT USED : Look in app.js
 module.exports = {
-	'url'	: 'mongodb://nequals1.io:27017/healthcoin'
+	'url'	: 'mongodb://localhost:27017/healthcoin'
 };

@@ -23,19 +23,73 @@ conf_data = fs.readFileSync(filepath, 'utf8', function (err) {
   }
 });
 
-arrayFromConf = conf_data.match(/[^\r\n]+/g); // Turn lines to array
-// Get specific line and value after '='
-var rpcuser = arrayFromConf['0'].substring(arrayFromConf['0'].indexOf("=") + 1);
-var rpcpass = arrayFromConf['1'].substring(arrayFromConf['1'].indexOf("=") + 1);
-var rpchost = arrayFromConf['2'].substring(arrayFromConf['2'].indexOf("=") + 1).toLowerCase();
-
-if (rpchost === "127.0.0.1"){
-    rpchost = "localhost";
+function wordTrim(str){
+    str.trim();
+    var idx = str.indexOf(/^\s+$/); // look for whitespace after first word (ie. comments)
+    if (idx !== -1){
+        str = str.substring(0, idx);
+    }
+    return str;
 }
+
+arrayFromConf = conf_data.match(/[^\r\n]+/g); // Turn lines into array
+
+var rpcuser = "";
+var rpcpass = "";
+var rpchost = "";
+var rpcport = "";
+var mdbhost = "";
+var mdbport = "";
+
+for (var k in arrayFromConf){
+    if (arrayFromConf.hasOwnProperty(k)){
+        // Get specific parm and value before and after '='
+        var p = wordTrim(arrayFromConf[k].substring(0, arrayFromConf[k].indexOf("=")));
+        var v = wordTrim(arrayFromConf[k].substring(arrayFromConf[k].indexOf("=") + 1));
+        switch(p){
+            case ("rpcuser"):
+                rpcuser = v;
+                break;
+            case ("rpcpass"):
+                rpcpass = v;
+                break;
+            case ("rpchost"):
+                rpchost = v.toLowerCase();
+                break;
+            case ("rpcport"):
+                rpcport = v;
+                break;
+            case ("mdbhost"):
+                mdbhost = v.toLowerCase();
+                break;
+            case ("mdbport"):
+                mdbport = v;
+                break;
+            default:
+                break;
+        }
+    }
+}
+// Validation check
+if (rpchost === "") rpchost = "localhost";
+if (rpcport === "") rpcport = "18184";
+if (mdbhost === "") mdbhost = "localhost";
+if (mdbport === "") mdbport = "27017";
 
 var healthcoin = require('node-healthcoin')();
 healthcoin.auth(rpcuser, rpcpass, rpchost);
-var isLocal = (healthcoin.get("host") === "localhost" ? true : false);
+
+var isLocal = false;
+if (rpchost === "localhost" || rpchost === "127.0.0.1" || rpchost.indexOf(".") === -1){
+    isLocal = true;
+}
+
+// DEBUG
+//console.log("DEBUG: " + mdbhost + ":" + mdbport);
 
 module.exports = healthcoin;
+module.exports.rpcHost = rpchost;
+module.exports.rpcPort = rpcport;
+module.exports.mdbHost = mdbhost;
+module.exports.mdbPort = mdbport;
 module.exports.isLocal = isLocal;

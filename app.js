@@ -18,6 +18,10 @@ var flash = require('connect-flash');
 
 var healthcoin = require("./healthcoinapi");
 var isLocal = healthcoin.isLocal;
+var rpcHost = healthcoin.rpcHost;
+var rpcPort = healthcoin.rpcPort;
+var mdbHost = healthcoin.mdbHost;
+var mdbPort = healthcoin.mdbPort;
 
 // All environments
 app.use(cors());
@@ -74,8 +78,9 @@ healthcoinObj.healthcoinHandler = healthcoinHandler;
 module.exports = healthcoinObj;
 
 // Auth begin
-var configDB = require('./healthcoin/database.js');
-mongoose.connect(configDB.url);
+//var configDB = require('./healthcoin/database.js');
+//mongoose.connect(configDB.url);
+mongoose.connect('mongodb://' + mdbHost + ':' + mdbPort + '/healthcoin');
 
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
 require('./healthcoin/passport')(passport); // Requires healthcoinObj to be exported first.
