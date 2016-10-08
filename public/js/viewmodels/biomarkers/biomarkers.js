@@ -9,15 +9,12 @@ define(['knockout',
             var self = this, biomarkersOptions = options || {};
             self.wallet = biomarkersOptions.parent;
 
-            this.hcn_account = ko.observable("");
-            this.hcn_address = ko.observable("");
-
             this.txcommentBiomarker = ko.observable("").extend( 
                 {
                     pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
                     required: true
                 });
-            this.recipientAddress = ko.observable(this.hcn_address() || "").extend(  // Send to self.
+            this.recipientAddress = self.wallet.walletStatus.hcn_address.extend(  // Send to self (hcn_address is ko.observable).
                 {
                     pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                     required: true
@@ -42,16 +39,6 @@ define(['knockout',
                 canSend = isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
                 return canSend;
             });
-
-            self.loadRecipientAddress();
-    };
-
-    biomarkersType.prototype.loadRecipientAddress = function(){
-        this.wallet.walletStatus.getUserAccount();
-        this.hcn_account(this.wallet.walletStatus.hcn_account());
-        this.hcn_address(this.wallet.walletStatus.hcn_address());
-        this.recipientAddress(this.hcn_address());
-        console.log('hcn_address: ' + this.hcn_address());
     };
 
     function lockWallet(){

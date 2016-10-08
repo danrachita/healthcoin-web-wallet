@@ -40,6 +40,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
         var statusPromise = $.when(isLocalCommand.execute())
             .done(function(isLocalData){
                 self.isLocalWallet(isLocalData);
+                console.log('isLocalWallet: ' + self.isLocalWallet());
             });
     };
 
@@ -51,6 +52,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
                 var accountData = getUserAccountData;
                 self.hcn_account(accountData.account);
                 self.hcn_address(accountData.address);
+                console.log('hcn_address: ' + self.hcn_address());
             });
     };
 
@@ -59,8 +61,8 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
             getInfoCommand = new Command('getinfo',[]),
             getBlockCountCommand = new Command('getblockcount',[]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
-        self.isLocal();
-        self.getUserAccount();
+        //self.isLocal();
+        //self.getUserAccount();
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBlockCountCommand.execute(), getStakingInfoCommand.execute())
             .done(function(getInfoData, getBlockCountData, getStakingInfoData){

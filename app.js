@@ -18,7 +18,6 @@ var flash = require('connect-flash');
 
 var healthcoin = require("./healthcoinapi");
 var isLocal = healthcoin.isLocal;
-//var isLocal = false;
 
 // All environments
 app.use(cors());
@@ -37,7 +36,7 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 
-app.use(express.favicon());
+//app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
@@ -148,6 +147,7 @@ app.get('/getuseraccount', function(req,res){
     };
     res.send(JSON.stringify(response));
 });
+
 
 // RPC routes //
 

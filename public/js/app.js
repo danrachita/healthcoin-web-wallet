@@ -1,4 +1,4 @@
-define( [ 
+define( [
         "knockout",
         "viewmodels/healthcoin-wallet",
         "common/dialog",
@@ -13,35 +13,39 @@ define( [
     ko.amdTemplateEngine.defaultPath = "../views";
     ko.amdTemplateEngine.defaultSuffix = ".html";
     ko.amdTemplateEngine.defaultRequireTextPluginName = "text";
-    ko.bindingHandlers.module.baseDir = "viewmodels"; 
+    ko.bindingHandlers.module.baseDir = "viewmodels";
 
     App.prototype.init = function() {
         var wallet = new Wallet();
 
         ko.applyBindings(wallet, $('#wrapper')[0]);
-        dialog.init($('#defaultModal')[0]);         
+        dialog.init($('#defaultModal')[0]);
 
         Sammy(function() {
             this.get('#biomarkers', function() {
-                wallet.currentView('biomarkers');                 
+                wallet.currentView('biomarkers');
             });
             this.get('#send', function() {
-                wallet.currentView('send');                 
+                wallet.currentView('send');
             });
  
             this.get('#receive', function() {
-                wallet.currentView('receive');                 
+                wallet.currentView('receive');
             });
-        
+
             this.get('#history', function() {
-                wallet.currentView('history');                 
+                wallet.currentView('history');
             });
 
             this.get('#console', function() {
-                wallet.currentView('console');                 
+                wallet.currentView('console');
             });
 
         }).run('#biomarkers');
+
+        // Init data required for wallet.
+        wallet.walletStatus.isLocal();
+        wallet.walletStatus.getUserAccount();
     };
     return new App();
 });
