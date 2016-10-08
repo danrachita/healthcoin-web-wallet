@@ -47,10 +47,10 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Functions for calling healthcoind from client
-var healthcoinappObj         = {}; // healthcoinappObj exported for other modules.
-healthcoinappObj.response    = "";
-healthcoinappObj.hcn_account = "";
-healthcoinappObj.hcn_address = "";
+var healthcoinObj         = {}; // healthcoinObj exported for other modules.
+healthcoinObj.response    = "";
+healthcoinObj.hcn_account = "";
+healthcoinObj.hcn_address = "";
 
 function callHealthcoin(command, res, handler) {
     var args = Array.prototype.slice.call(arguments, 3);
@@ -63,24 +63,23 @@ function healthcoinHandler(err, result){
         error: JSON.parse(err ? err.message : null),
         result: result
     };
-    // Check res from express http response. It will be empty if it came from another module via healthcoinappObj (i.e. passport.js).
+    // Check res from express http response. It will be empty if it came from another module via healthcoinObj (i.e. passport.js).
     if (typeof this.res.send !== 'undefined' && this.res.send){
         this.res.send(JSON.stringify(response));
     } else {
-        healthcoinappObj.response = response.result;
+        healthcoinObj.response = response.result;
     }
 }
-healthcoinappObj.callHealthcoin    = callHealthcoin;
-healthcoinappObj.healthcoinHandler = healthcoinHandler;
-module.exports = healthcoinappObj;
-//app.set('healthcoinappObj', healthcoinappObj);
+healthcoinObj.callHealthcoin    = callHealthcoin;
+healthcoinObj.healthcoinHandler = healthcoinHandler;
+module.exports = healthcoinObj;
 
 // Auth begin
 var configDB = require('./healthcoin/database.js');
 mongoose.connect(configDB.url);
 
-require('./healthcoin/passport')(passport); // Requires healthcoinappObj to be exported first.
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
+require('./healthcoin/passport')(passport); // Requires healthcoinObj to be exported first.
 // Auth end
 
 // CORS headers
@@ -145,7 +144,7 @@ app.get('/islocal', function(req,res){
 app.get('/getuseraccount', function(req,res){
     var response = {
         error: null,
-        result: { account: healthcoinappObj.hcn_account, address: healthcoinappObj.hcn_address }
+        result: { account: healthcoinObj.hcn_account, address: healthcoinObj.hcn_address }
     };
     res.send(JSON.stringify(response));
 });
@@ -344,7 +343,7 @@ app.get('/getpeers', function(req, res){
 });
 
 // Start it up!
-function healthcoinapp(app) {
+function startHealthcoin(app) {
     // Start the Healthcoin Express server
     console.log('Healthcoin Express server starting');
     var server = http.createServer(app).listen(app.get('port'), function(){
@@ -352,4 +351,4 @@ function healthcoinapp(app) {
     });
 }
 
-healthcoinapp(app);
+startHealthcoin(app);

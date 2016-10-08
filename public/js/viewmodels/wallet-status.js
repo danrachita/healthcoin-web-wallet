@@ -12,7 +12,8 @@ Number.prototype.formatMoney = function(c, d, t){
 define(['knockout','viewmodels/common/command'],function(ko,Command){
     var walletStatusType = function(){
         var self = this;
-        self.userAccount = { account: "", address: "" };
+        self.hcn_account = ko.observable("");
+        self.hcn_address = ko.observable("");
         self.total = ko.observable(0);
         self.stake = ko.observable(0);
         self.isLoadingStatus = ko.observable(false);
@@ -48,9 +49,8 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
         var statusPromise = $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
                 var accountData = getUserAccountData;
-                self.userAccount.account = accountData.account;
-                self.userAccount.address = accountData.address;
-                console.log('userAccount.address: ' + self.userAccount.address);
+                self.hcn_account(accountData.account);
+                self.hcn_address(accountData.address);
             });
     };
 

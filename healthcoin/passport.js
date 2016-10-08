@@ -10,9 +10,9 @@ var validator = require('validator');
 
 module.exports = function(passport) {
 
-	var healthcoinappObj = require('../app.js');
-	var callHealthcoin = healthcoinappObj.callHealthcoin;
-	var healthcoinHandler = healthcoinappObj.healthcoinHandler;
+	var healthcoinObj = require('../app.js');
+	var callHealthcoin = healthcoinObj.callHealthcoin;
+	var healthcoinHandler = healthcoinObj.healthcoinHandler;
 
 	passport.serializeUser(function(user, done){
 		done(null, user.id);
@@ -39,7 +39,7 @@ module.exports = function(passport) {
 		email = validator.normalizeEmail(email);
 		var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
 		callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-		var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
+		var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 		if (hcn_address === ""){
 			return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 		}
@@ -69,8 +69,8 @@ module.exports = function(passport) {
 						if(err)
 							throw err;
 						// Set these globally
-						healthcoinappObj.hcn_account = newUser.profile.hcn_account;
-						healthcoinappObj.hcn_address = newUser.profile.hcn_address;
+						healthcoinObj.hcn_account = newUser.profile.hcn_account;
+						healthcoinObj.hcn_address = newUser.profile.hcn_address;
 						return done(null, newUser);
 					});
 				}
@@ -95,8 +95,8 @@ module.exports = function(passport) {
 						return done(null, false, req.flash('loginMessage', 'Invalid password.'));
 					}
 					// Set these globally
-					healthcoinappObj.hcn_account = user.profile.hcn_account;
-					healthcoinappObj.hcn_address = user.profile.hcn_address;
+					healthcoinObj.hcn_account = user.profile.hcn_account;
+					healthcoinObj.hcn_address = user.profile.hcn_address;
 					return done(null, user);
 
 				});
@@ -113,7 +113,7 @@ module.exports = function(passport) {
 			var email = validator.normalizeEmail(profile.emails[0].value);
 			var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
 			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-			var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
+			var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
@@ -123,8 +123,8 @@ module.exports = function(passport) {
 	    				return done(err); // Connection error
 	    			if(user){
 						// Set these globally
-						healthcoinappObj.hcn_account = user.profile.hcn_account;
-						healthcoinappObj.hcn_address = user.profile.hcn_address;
+						healthcoinObj.hcn_account = user.profile.hcn_account;
+						healthcoinObj.hcn_address = user.profile.hcn_address;
 	    				return done(null, user); // User found
 	    			}
 	    			else {
@@ -147,8 +147,8 @@ module.exports = function(passport) {
 	    					if(err)
 	    						throw err;
 							// Set these globally
-							healthcoinappObj.hcn_account = newUser.profile.hcn_account;
-							healthcoinappObj.hcn_address = newUser.profile.hcn_address;
+							healthcoinObj.hcn_account = newUser.profile.hcn_account;
+							healthcoinObj.hcn_address = newUser.profile.hcn_address;
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);
@@ -167,7 +167,7 @@ module.exports = function(passport) {
 			var email = validator.normalizeEmail(profile.emails[0].value);
 			var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
 			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-			var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
+			var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
@@ -177,8 +177,8 @@ module.exports = function(passport) {
 	    				return done(err); // Connection error
 	    			if(user){
 						// Set these globally
-						healthcoinappObj.hcn_account = user.profile.hcn_account;
-						healthcoinappObj.hcn_address = user.profile.hcn_address;
+						healthcoinObj.hcn_account = user.profile.hcn_account;
+						healthcoinObj.hcn_address = user.profile.hcn_address;
 	    				return done(null, user); // User found
 	    			}
 	    			else {
@@ -201,8 +201,8 @@ module.exports = function(passport) {
 	    					if(err)
 	    						throw err;
 							// Set these globally
-							healthcoinappObj.hcn_account = newUser.profile.hcn_account;
-							healthcoinappObj.hcn_address = newUser.profile.hcn_address;
+							healthcoinObj.hcn_account = newUser.profile.hcn_account;
+							healthcoinObj.hcn_address = newUser.profile.hcn_address;
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);
@@ -221,7 +221,7 @@ module.exports = function(passport) {
 			var email = validator.normalizeEmail(profile.emails[0].value);
 			var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
 			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
-			var hcn_address = healthcoinappObj.response; // Response set by healthcoinHandler;
+			var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
@@ -231,8 +231,8 @@ module.exports = function(passport) {
 	    				return done(err); // Connection error
 	    			if(user){
 						// Set these globally
-						healthcoinappObj.hcn_account = user.profile.hcn_account;
-						healthcoinappObj.hcn_address = user.profile.hcn_address;
+						healthcoinObj.hcn_account = user.profile.hcn_account;
+						healthcoinObj.hcn_address = user.profile.hcn_address;
 	    				return done(null, user); // User found
 	    			}
 	    			else {
@@ -255,8 +255,8 @@ module.exports = function(passport) {
 	    					if(err)
 	    						throw err;
 							// Set these globally
-							healthcoinappObj.hcn_account = newUser.profile.hcn_account;
-							healthcoinappObj.hcn_address = newUser.profile.hcn_address;
+							healthcoinObj.hcn_account = newUser.profile.hcn_account;
+							healthcoinObj.hcn_address = newUser.profile.hcn_address;
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);

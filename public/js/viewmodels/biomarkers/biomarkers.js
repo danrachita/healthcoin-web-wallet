@@ -5,29 +5,29 @@ define(['knockout',
         'viewmodels/common/wallet-passphrase',
         'viewmodels/common/command',
         'patterns'], function(ko,dialog,WalletStatus,ConfirmationDialog,WalletPassphrase,Command,patterns){
-        var sendType = function(options){
-            var self = this, sendOptions = options || {};
-            this.wallet = sendOptions.parent;
+        var biomarkersType = function(options){
+            var self = this, biomarkersOptions = options || {};
+            self.wallet = biomarkersOptions.parent;
 
-            this.hcn_account = self.wallet.walletStatus.userAccount.account;
-            this.hcn_address = self.wallet.walletStatus.userAccount.address;
+            this.hcn_account = ko.observable("");
+            this.hcn_address = ko.observable("");
 
             this.txcommentBiomarker = ko.observable("").extend( 
                 {
                     pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
                     required: true
                 });
-            this.recipientAddress = ko.observable(this.hcn_address || "").extend(  // Send to self.
+            this.recipientAddress = ko.observable(this.hcn_address() || "").extend(  // Send to self.
                 {
                     pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                     required: true
                 });
-            this.amount = ko.observable(sendOptions.amount || 0.0001).extend(
+            this.amount = ko.observable(biomarkersOptions.amount || 0.00001).extend(
                 {
                     number: true,
                     required: true
                 });
-            this.minerFee = ko.observable(sendOptions.minerFee || 0.0002);
+            this.minerFee = ko.observable(biomarkersOptions.minerFee || 0.0002);
             this.canSend = ko.computed(function(){
                 var amount = self.amount(),
                     isNumber = !isNaN(amount),
@@ -42,20 +42,30 @@ define(['knockout',
                 canSend = isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
                 return canSend;
             });
+
+            self.loadRecipientAddress();
+    };
+
+    biomarkersType.prototype.loadRecipientAddress = function(){
+        this.wallet.walletStatus.getUserAccount();
+        this.hcn_account(this.wallet.walletStatus.hcn_account());
+        this.hcn_address(this.wallet.walletStatus.hcn_address());
+        this.recipientAddress(this.hcn_address());
+        console.log('hcn_address: ' + this.hcn_address());
     };
 
     function lockWallet(){
-        var sendCommand = new Command('walletlock').execute()
+        var walletlockCommand = new Command('walletlock').execute()
             .done(function(){
                 console.log('Wallet relocked');
             })
             .fail(function(error){
                 dialog.notification(error.message, "Failed to re-lock wallet");
             });
-        return sendCommand;
+        return walletlockCommand;
     }
-   
-    sendType.prototype.unlockWallet= function(){
+
+    biomarkersType.prototype.unlockWallet= function(){
         var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
             passphraseDialogPromise = $.Deferred();
 
@@ -69,7 +79,7 @@ define(['knockout',
         return passphraseDialogPromise;
     };
 
-    sendType.prototype.sendSubmit = function(){
+    biomarkersType.prototype.sendSubmit = function(){
         var self = this;
         console.log("Send request submitted, unlocking wallet for sending...");
         if(self.canSend()){
@@ -97,7 +107,7 @@ define(['knockout',
         }
     };
 
-    sendType.prototype.sendConfirm = function(amount){
+    biomarkersType.prototype.sendConfirm = function(amount){
         var self = this, 
             sendConfirmDeferred = $.Deferred(),
             sendConfirmDialog = new ConfirmationDialog({
@@ -113,8 +123,8 @@ define(['knockout',
         sendConfirmDialog.open();
         return sendConfirmDeferred.promise();
     };
-    
-    sendType.prototype.sendToAddress = function(auth) { 
+
+    biomarkersType.prototype.sendToAddress = function(auth) { 
         var self = this;
         // hash the text and append to 'hcbm:'
         var hcbm = "hcbm:" + crypto
@@ -152,5 +162,5 @@ define(['knockout',
             });
    
     };   
-    return sendType; 
+    return biomarkersType; 
 });

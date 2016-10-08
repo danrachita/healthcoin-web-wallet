@@ -16,7 +16,7 @@ define( [
     ko.bindingHandlers.module.baseDir = "viewmodels"; 
 
     App.prototype.init = function() {
-        var wallet = new Wallet();  
+        var wallet = new Wallet();
 
         ko.applyBindings(wallet, $('#wrapper')[0]);
         dialog.init($('#defaultModal')[0]);         
@@ -41,8 +41,7 @@ define( [
                 wallet.currentView('console');                 
             });
 
-        //}).run('#biomarkers');
-        }).run('/');
+        }).run('#biomarkers');
     };
     return new App();
 });

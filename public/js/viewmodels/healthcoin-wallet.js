@@ -10,6 +10,7 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
         self.sidebarToggled = ko.observable(false);
         self.isEncrypted = ko.observable(-1);
         self.walletStatus = new WalletStatus({parent: self});
+
         self.biomarkers = new Biomarkers({parent: self});
         self.send = new Send({parent: self});
         self.receive = new Receive({parent: self});
