@@ -34,6 +34,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
         }).extend({ rateLimit: 500 });
     };
 
+    // Called once from client app.js at startup.
     walletStatusType.prototype.isLocal = function(){
         var self = this,
             isLocalCommand = new Command('islocal',[]);
@@ -44,6 +45,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
             });
     };
 
+    // Called once from client app.js at startup.
     walletStatusType.prototype.getUserAccount = function(){
         var self = this,
             getUserAccountCommand = new Command('getuseraccount',[]);
@@ -61,8 +63,6 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
             getInfoCommand = new Command('getinfo',[]),
             getBlockCountCommand = new Command('getblockcount',[]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
-        //self.isLocal();
-        //self.getUserAccount();
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBlockCountCommand.execute(), getStakingInfoCommand.execute())
             .done(function(getInfoData, getBlockCountData, getStakingInfoData){
