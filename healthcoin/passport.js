@@ -37,8 +37,9 @@ module.exports = function(passport) {
 			return done(null, false, req.flash('signupMessage', 'The password should be at least 8 characters. Please try again.'));
 		}
 		email = validator.normalizeEmail(email);
-		var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
-		callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+		var res = {}, // Set res to empty object so healthcoinHandler knows it's not from express http.
+			hcn_account = email;
+		callHealthcoin('getnewaddress', res, healthcoinHandler, hcn_account);
 		var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 		if (hcn_address === ""){
 			return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
@@ -56,13 +57,12 @@ module.exports = function(passport) {
 					newUser.profile.role = "User";
 					newUser.profile.name = "New User";
 					newUser.profile.email = email;
-					newUser.profile.photo = "/images/healthcoin-logo.png";
 					newUser.profile.description = "";
 					newUser.profile.age = "";
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
-					newUser.profile.hcn_account = email; // associate unique email with HCN account
+					newUser.profile.hcn_account = hcn_account;
 					newUser.profile.hcn_address = hcn_address;
 
 					newUser.save(function(err){
@@ -110,12 +110,16 @@ module.exports = function(passport) {
 	    callbackURL: configAuth.facebookAuth.callbackURL
 	  },
 	  function(accessToken, refreshToken, profile, done) {
-			var email = validator.normalizeEmail(profile.emails[0].value);
-			var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
-			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+			var res = {}, // Set res to empty object so healthcoinHandler knows it's not from express http
+				email = "",
+				hcn_account = profile.id;
+			if (typeof profile.emails !== 'undefined' && profile.emails[0]){
+				email = validator.normalizeEmail(profile.emails[0].value);
+			}
+			callHealthcoin('getnewaddress', res, healthcoinHandler, hcn_account);
 			var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
-				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+				return done(null, false, null);
 			}
 	    	process.nextTick(function(){
 	    		User.findOne({'facebook.id': profile.id}, function(err, user){
@@ -132,15 +136,14 @@ module.exports = function(passport) {
 	    				newUser.facebook.id = profile.id;
 	    				newUser.facebook.token = accessToken;
 						newUser.profile.role = "User";
-	    				newUser.profile.name = profile.name.givenName + ' ' + profile.name.familyName;
+	    				newUser.profile.name = profile.displayName;
 	    				newUser.profile.email = email;
-						newUser.profile.photo = profile.photos[0].value;
 						newUser.profile.description = "";
 						newUser.profile.age = "";
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.profile.hcn_account = email; // associate unique email with HCN account
+						newUser.profile.hcn_account = hcn_account;
 						newUser.profile.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
@@ -164,12 +167,16 @@ module.exports = function(passport) {
 	    callbackURL: configAuth.googleAuth.callbackURL
 	  },
 	  function(accessToken, refreshToken, profile, done) {
-			var email = validator.normalizeEmail(profile.emails[0].value);
-			var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
-			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+			var res = {}, // Set res to empty object so healthcoinHandler knows it's not from express http.
+				email = "",
+				hcn_account = profile.id;
+			if (typeof profile.emails !== 'undefined' && profile.emails[0]){
+				email = validator.normalizeEmail(profile.emails[0].value);
+			}
+			callHealthcoin('getnewaddress', res, healthcoinHandler, hcn_account);
 			var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
-				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+				return done(null, false, null);
 			}
 	    	process.nextTick(function(){
 	    		User.findOne({'google.id': profile.id}, function(err, user){
@@ -188,13 +195,12 @@ module.exports = function(passport) {
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
 	    				newUser.profile.email = email;
-						newUser.profile.photo = profile.photos[0].value;
 						newUser.profile.description = "";
 						newUser.profile.age = "";
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.profile.hcn_account = email; // associate unique email with HCN account
+						newUser.profile.hcn_account = hcn_account;
 						newUser.profile.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
@@ -218,12 +224,16 @@ module.exports = function(passport) {
 	    callbackURL: configAuth.twitterAuth.callbackURL
 	  },
 	  function(token, tokenSecret, profile, done) {
-			var email = validator.normalizeEmail(profile.emails[0].value);
-			var res = {}; // Set res to empty object so healthcoinHandler knows it's not from express http.
-			callHealthcoin('getnewaddress', res, healthcoinHandler, email);
+			var res = {}, // Set res to empty object so healthcoinHandler knows it's not from express http.
+				email = "",
+				hcn_account = profile.id;
+			if (typeof profile.emails !== 'undefined' && profile.emails[0]){
+				email = validator.normalizeEmail(profile.emails[0].value);
+			}
+			callHealthcoin('getnewaddress', res, healthcoinHandler, hcn_account);
 			var hcn_address = healthcoinObj.response; // Response set by healthcoinHandler;
 			if (hcn_address === ""){
-				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+				return done(null, false, null);
 			}
 	    	process.nextTick(function(){
 	    		User.findOne({'twitter.id': profile.id}, function(err, user){
@@ -242,13 +252,12 @@ module.exports = function(passport) {
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
 	    				newUser.profile.email = email;
-						newUser.profile.photo = profile.photos[0].value;
 						newUser.profile.description = "";
 						newUser.profile.age = "";
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.profile.hcn_account = email; // associate unique email with HCN account
+						newUser.profile.hcn_account = hcn_account;
 						newUser.profile.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){

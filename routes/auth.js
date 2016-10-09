@@ -5,6 +5,11 @@ module.exports = function(app, passport){
 		res.render('healthcoin.ejs'); // If logged in, allow access to Healthcoin App
 	});
 
+	// Stupid Facebook callback bug in Chrome. https://developers.facebook.com/bugs/196125357123225
+	app.get('/#_=_', function(req, res){ // TODO: Fix not working
+		res.redirect('/'); // If logged in, allow access to Healthcoin App
+	});
+
 	app.get('/login', function(req, res){
 		res.render('login.ejs', { message: req.flash('loginMessage') });
 	});
@@ -29,7 +34,7 @@ module.exports = function(app, passport){
 	});
 
 	// Facebook auth
-	app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+	app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email', 'public_profile']}));
 	app.get('/auth/facebook/callback', 
 	  passport.authenticate('facebook', { successRedirect: '/',
 	                                      failureRedirect: '/' })

@@ -34,12 +34,12 @@ function wordTrim(str){
 
 arrayFromConf = conf_data.match(/[^\r\n]+/g); // Turn lines into array
 
-var rpcuser = "";
-var rpcpass = "";
-var rpchost = "";
-var rpcport = "";
-var mdbhost = "";
-var mdbport = "";
+var rpcUser = "";
+var rpcPass = "";
+var rpcHost = "";
+var rpcPort = "";
+var mdbHost = "";
+var mdbPort = "";
 
 for (var k in arrayFromConf){
     if (arrayFromConf.hasOwnProperty(k)){
@@ -48,22 +48,22 @@ for (var k in arrayFromConf){
         var v = wordTrim(arrayFromConf[k].substring(arrayFromConf[k].indexOf("=") + 1));
         switch(p){
             case ("rpcuser"):
-                rpcuser = v;
+                rpcUser = v;
                 break;
-            case ("rpcpass"):
-                rpcpass = v;
+            case ("rpcpassword"):
+                rpcPass = v;
                 break;
             case ("rpchost"):
-                rpchost = v.toLowerCase();
+                rpcHost = v.toLowerCase();
                 break;
             case ("rpcport"):
-                rpcport = v;
+                rpcPort = v;
                 break;
             case ("mdbhost"):
-                mdbhost = v.toLowerCase();
+                mdbHost = v.toLowerCase();
                 break;
             case ("mdbport"):
-                mdbport = v;
+                mdbPort = v;
                 break;
             default:
                 break;
@@ -71,26 +71,26 @@ for (var k in arrayFromConf){
     }
 }
 // Validation checks
-if (rpchost === "") rpchost = "localhost";
-if (rpcport === "") rpcport = "18184";
-if (mdbhost === "") mdbhost = "localhost";
-if (mdbport === "") mdbport = "27017";
+if (rpcHost === "") rpcHost = "localhost";
+if (rpcPort === "") rpcPort = "18184";
+if (mdbHost === "") mdbHost = "localhost";
+if (mdbPort === "") mdbPort = "27017";
 
 var healthcoin = require('node-healthcoin')();
-healthcoin.auth(rpcuser, rpcpass, rpchost);
+healthcoin.auth(rpcUser, rpcPass, rpcHost);
 
 var isLocal = false;
-if (rpchost === "localhost" || rpchost === "127.0.0.1" || rpchost.indexOf(".") === -1){
+if (rpcHost === "localhost" || rpcHost === "127.0.0.1" || rpcHost.indexOf(".") === -1){
     isLocal = true;
 }
 
-// DEBUG
-console.log("DEBUG: " + rpchost + ":" + rpcport);
-console.log("DEBUG: " + mdbhost + ":" + mdbport);
+//console.log("DEBUG: rpcUser:" + rpcUser + " rpcPass:" + rpcPass);
+//console.log("DEBUG: rpcHost:" + rpcHost + " rpcPort:" + rpcPort);
+//console.log("DEBUG: mdbHost:" + mdbHost + " mdbPort:" + mdbPort);
 
-module.exports = healthcoin;
-module.exports.rpcHost = rpchost;
-module.exports.rpcPort = rpcport;
-module.exports.mdbHost = mdbhost;
-module.exports.mdbPort = mdbport;
+module.exports.healthcoin = healthcoin;
+module.exports.rpcHost = rpcHost;
+module.exports.rpcPort = rpcPort;
+module.exports.mdbHost = mdbHost;
+module.exports.mdbPort = mdbPort;
 module.exports.isLocal = isLocal;

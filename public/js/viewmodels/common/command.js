@@ -17,6 +17,7 @@ define(['knockout'],function(ko){
 
     commandType.prototype.execute = function(){
         var self = this, deferred = $.Deferred();
+        //console.log('DEBUG: commandName' + self.commandName() + ' args:' + self.args());
         $.ajax({
             async: true,
             method: 'GET',
@@ -26,8 +27,7 @@ define(['knockout'],function(ko){
             console.log(data);
             if(data.error){
                 deferred.reject(data.error.error);
-            }
-            else{
+            } else {
                 deferred.resolve(data.result);
             }
         }).fail(function(jqXHR,textStatus,errorThrown){

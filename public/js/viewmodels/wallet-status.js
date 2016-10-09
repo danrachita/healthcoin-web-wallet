@@ -41,7 +41,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
         var statusPromise = $.when(isLocalCommand.execute())
             .done(function(isLocalData){
                 self.isLocalWallet(isLocalData);
-                console.log('isLocalWallet: ' + self.isLocalWallet());
+                //console.log('DEBUG: isLocalWallet: ' + self.isLocalWallet());
             });
     };
 
@@ -54,7 +54,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
                 var accountData = getUserAccountData;
                 self.hcn_account(accountData.account);
                 self.hcn_address(accountData.address);
-                console.log('hcn_address: ' + self.hcn_address());
+                //console.log('DEBUG: hcn_account: ' + self.hcn_account() + ' hcn_address: ' + self.hcn_address());
             });
     };
 

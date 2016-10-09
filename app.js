@@ -2,6 +2,17 @@
  * Module dependencies.
  */
 
+Object.defineProperty(Error.prototype, 'toJSON', {
+    value: function () {
+        var alt = {};
+        Object.getOwnPropertyNames(this).forEach(function (key) {
+            alt[key] = this[key];
+        }, this);
+        return alt;
+    },
+    configurable: true
+});
+
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
@@ -16,20 +27,15 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-var healthcoin = require("./healthcoinapi");
-var isLocal = healthcoin.isLocal;
-var rpcHost = healthcoin.rpcHost;
-var rpcPort = healthcoin.rpcPort;
-var mdbHost = healthcoin.mdbHost;
-var mdbPort = healthcoin.mdbPort;
+var healthcoinApi = require("./healthcoinapi");
+var healthcoin = healthcoinApi.healthcoin; // healthcoin opts
+var rpcHost = healthcoinApi.rpcHost;
+var rpcPort = healthcoinApi.rpcPort;
+var mdbHost = healthcoinApi.mdbHost;
+var mdbPort = healthcoinApi.mdbPort;
+var isLocal = healthcoinApi.isLocal;
 
-// All environments
-app.use(cors());
-app.set('port', process.env.PORT || 8181);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-// Auth
+// Auth modules
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -40,7 +46,13 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 
-//app.use(express.favicon());
+// All environments
+app.use(cors());
+app.set('port', process.env.PORT || 8181);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
@@ -55,36 +67,37 @@ healthcoinObj.response    = "";
 healthcoinObj.hcn_account = "";
 healthcoinObj.hcn_address = "";
 
-function callHealthcoin(command, res, handler) {
-    var args = Array.prototype.slice.call(arguments, 3);
-    var callargs = args.concat([handler.bind({res:res})]);
+function callHealthcoin(command, res, handler){
+    var args = Array.prototype.slice.call(arguments, 3); // Args a after the 3rd function parameter
+    var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
+    //console.log("DEBUG: command:"+command+" args:"+args);
     return healthcoin[command].apply(healthcoin, callargs);
 }
+
 function healthcoinHandler(err, result){
     //console.log("DEBUG: err:"+err+" result:"+result);
     var response = {
         error: JSON.parse(err ? err.message : null),
         result: result
     };
-    // Check res from express http response. It will be empty if it came from another module via healthcoinObj (i.e. passport.js).
+    // res will be empty if it came from another module via healthcoinObj (i.e. passport.js).
     if (typeof this.res.send !== 'undefined' && this.res.send){
         this.res.send(JSON.stringify(response));
     } else {
         healthcoinObj.response = response.result;
     }
 }
+
 healthcoinObj.callHealthcoin    = callHealthcoin;
 healthcoinObj.healthcoinHandler = healthcoinHandler;
 module.exports = healthcoinObj;
 
-// Auth begin
+// DB/Auth
 //var configDB = require('./healthcoin/database.js');
 //mongoose.connect(configDB.url);
 mongoose.connect('mongodb://' + mdbHost + ':' + mdbPort + '/healthcoin');
-
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
 require('./healthcoin/passport')(passport); // Requires healthcoinObj to be exported first.
-// Auth end
 
 // CORS headers
 app.all('*', function(req, res, next) {
@@ -119,17 +132,6 @@ app.use(function(err, req, res, next) {
         message: err.message,
         error: {}
     });
-});
-
-Object.defineProperty(Error.prototype, 'toJSON', {
-    value: function () {
-        var alt = {};
-        Object.getOwnPropertyNames(this).forEach(function (key) {
-            alt[key] = this[key];
-        }, this);
-        return alt;
-    },
-    configurable: true
 });
 
 

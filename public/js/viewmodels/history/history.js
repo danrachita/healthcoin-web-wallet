@@ -4,7 +4,9 @@ define(['knockout',
     var historyType = function(options){
         var self = this;
         var opts = options || {};
-        self.account = typeof opts.account !== 'undefined' ? ko.observable(opts.account) : ko.observable('*');
+        self.wallet = opts.parent;
+        //self.account = typeof opts.account !== 'undefined' ? ko.observable(opts.account) : ko.observable('*');
+        self.account = typeof self.wallet.walletStatus.hcn_account !== 'undefined' ? self.wallet.walletStatus.hcn_account : ko.observable('*'); // hcn_account is ko.observable
         self.page = ko.observable(1);
         self.pageFirst = ko.observable(-1);
         self.pagePrev = ko.observable(0);
