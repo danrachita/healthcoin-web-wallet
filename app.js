@@ -61,7 +61,7 @@ function callHealthcoin(command, res, handler) {
     return healthcoin[command].apply(healthcoin, callargs);
 }
 function healthcoinHandler(err, result){
-    // DEBUG: console.log("err:"+err+" result:"+result);
+    //console.log("DEBUG: err:"+err+" result:"+result);
     var response = {
         error: JSON.parse(err ? err.message : null),
         result: result

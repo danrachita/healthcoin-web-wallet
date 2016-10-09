@@ -25,7 +25,7 @@ conf_data = fs.readFileSync(filepath, 'utf8', function (err) {
 
 function wordTrim(str){
     str.trim();
-    var idx = str.indexOf(/^\s+$/); // look for whitespace after first word (ie. comments)
+    var idx = str.search(/\s/); // look for whitespace after first word (ie. comments)
     if (idx !== -1){
         str = str.substring(0, idx);
     }
@@ -70,7 +70,7 @@ for (var k in arrayFromConf){
         }
     }
 }
-// Validation check
+// Validation checks
 if (rpchost === "") rpchost = "localhost";
 if (rpcport === "") rpcport = "18184";
 if (mdbhost === "") mdbhost = "localhost";
@@ -85,7 +85,8 @@ if (rpchost === "localhost" || rpchost === "127.0.0.1" || rpchost.indexOf(".") =
 }
 
 // DEBUG
-//console.log("DEBUG: " + mdbhost + ":" + mdbport);
+console.log("DEBUG: " + rpchost + ":" + rpcport);
+console.log("DEBUG: " + mdbhost + ":" + mdbport);
 
 module.exports = healthcoin;
 module.exports.rpcHost = rpchost;
