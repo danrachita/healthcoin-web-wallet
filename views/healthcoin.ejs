@@ -1,4 +1,4 @@
-<!-- views/home.ejs -->
+<!-- views/healthcoin.ejs -->
 <!doctype html>
 <html lang="en">
     <head>
@@ -43,12 +43,13 @@
                 <li> <a href="/profile"><div class="sidebar-nav-button-content"><div class="glyphicon glyphicon-user" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a> </li>
                 <li> <a href="/logout"><div class="sidebar-nav-button-content"><div class="glyphicon glyphicon-lock" aria-hidden="true"><span class="sidebar-nav-button-content">Logout</span></div></div></a> </li>
 
+                <!-- ko if: walletStatus.isLocalWallet() -->
                 <li> <span class="sidebar-nav-button-content"></span> </li>
                 <li> Blocks: <span data-bind="text: walletStatus.blocks"></span> / <span data-bind="text:walletStatus.totalBlocks"></span></li>
                 <li> Wallet Encrypted: <span data-bind="text: walletStatus.isEncrypted"></span></li>
                 <li> Staking Enabled: <span data-bind="text: walletStatus.isEnabled"></span></li>
                 <li> Currently Staking: <span data-bind="text: walletStatus.isStaking"></span></li>
-                <!-- li> Unlocked:  <span data-bind="text: walletStatus.isUnlocked"></span></li -->
+                <!-- /ko -->
             </ul>
         </div>
         <div id='page-content-wrapper'>
