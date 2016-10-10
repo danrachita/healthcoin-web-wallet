@@ -23,7 +23,7 @@ define(['knockout',
         };
 
         historyType.prototype.load = function(){
-            this.getTransactions(self.account(), self.page());
+            this.getTransactions(this.account(), this.page());
         };
 
         historyType.prototype.firstPage = function(){
