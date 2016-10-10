@@ -17,9 +17,13 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
         self.history = new History({parent: self});
         self.console = new Console({parent: self});
 
-        self.refresh();
+        self.timeout = 1000; // First timeout is 1 sec.
+
+        // Init data required for wallet.
+        self.walletStatus.isLocal();
+        self.walletStatus.getUserAccount();
+
         self.pollWalletStatus();
-        self.checkEncryptionStatus();
     };
 
     walletType.prototype.toggleSidebar = function(){
@@ -34,9 +38,13 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
         var self = this;
         setTimeout(function(){
             self.refresh().then(function(){
+                if (self.timeout < 60000){ // First time
+                    self.timeout = 60000;
+                    self.checkEncryptionStatus();
+                }
                 self.pollWalletStatus();
             });
-        },60000);
+        },self.timeout);
     };
 
     walletType.prototype.unlockWallet = function(){
@@ -79,13 +87,13 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
             .done(function(getInfoData){
                 self.isEncrypted(typeof getInfoData.unlocked_until !== 'undefined' ? getInfoData.unlocked_until : -1);
                 switch(self.isEncrypted()){
-                case -1: //wallet is unencrypted
+                case -1: // wallet is unencrypted
                     self.promptToEncrypt();
                     break;
-                case 0: //wallet is locked
+                case 0: // wallet is locked
                     self.promptToUnlockForStaking();
                     break;
-                default: //wallet is already unlocked for staking
+                default: // wallet is already unlocked for staking
                     break;
                 }
             });

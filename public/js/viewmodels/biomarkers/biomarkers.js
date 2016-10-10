@@ -6,8 +6,8 @@ define(['knockout',
         'viewmodels/common/command',
         'patterns'], function(ko,dialog,WalletStatus,ConfirmationDialog,WalletPassphrase,Command,patterns){
         var biomarkersType = function(options){
-            var self = this, biomarkersOptions = options || {};
-            self.wallet = biomarkersOptions.parent;
+            var self = this, opts = options || {};
+            self.wallet = opts.parent;
 
             this.txcommentBiomarker = ko.observable("").extend( 
                 {
@@ -19,12 +19,12 @@ define(['knockout',
                     pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                     required: true
                 });
-            this.amount = ko.observable(biomarkersOptions.amount || 0.00001).extend(
+            this.amount = ko.observable(opts.amount || 0.00001).extend(
                 {
                     number: true,
                     required: true
                 });
-            this.minerFee = ko.observable(biomarkersOptions.minerFee || 0.0002);
+            this.minerFee = ko.observable(opts.minerFee || 0.0002);
             this.canSend = ko.computed(function(){
                 var amount = self.amount(),
                     isNumber = !isNaN(amount),

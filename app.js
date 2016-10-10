@@ -165,23 +165,26 @@ app.get('/getblockcount', function(req,res){ callHealthcoin('getBlockCount', res
 app.get('/getstakinginfo', function(req,res) { callHealthcoin('getStakingInfo', res, healthcoinHandler); } );
 
 // pagination view
-app.get('/listtransactions/:account?/:page?', function(req, res){
+app.get('/listtransactions/:account/:page', function(req, res){
     var account = (req.params.account || '*'),
         page = (req.params.page || 1),
         count = 10,     // TODO: Parameterize this.
         from = 0;
     if (page < 1) page = 1;
     from = count * page - count;
-    callHealthcoin('listTransactions', res, healthcoinHandler, account, count, from);
+    if (account.length > 1)
+        callHealthcoin('listTransactions', res, healthcoinHandler, account, count, from);
+    else
+        res.send(JSON.stringify("Error: Invalid Account."));
 });
 
 // Force new addresses to have an account
 app.get('/getnewaddress/:account', function(req, res){
-    var accountName = req.params.account || '';
-    if(accountName === "")
-        res.send(JSON.stringify("Error: Account cannot be blank."));
+    var account = req.params.account || '*';
+    if(account.length > 1)
+        callHealthcoin('getnewaddress', res, healthcoinHandler, account);
     else
-        callHealthcoin('getnewaddress', res, healthcoinHandler, accountName);
+        res.send(JSON.stringify("Error: Invalid Account."));
 });
 
 app.get('/sendtoaddress/:toaddress/:amount', function(req, res){

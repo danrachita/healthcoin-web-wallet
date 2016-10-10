@@ -42,10 +42,6 @@ define( [
             });
 
         }).run('#biomarkers');
-
-        // Init data required for wallet.
-        wallet.walletStatus.isLocal();
-        wallet.walletStatus.getUserAccount();
     };
     return new App();
 });
