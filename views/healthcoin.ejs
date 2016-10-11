@@ -65,8 +65,8 @@
                 <div class='wallet-stats container'>
                     <div class="row" data-bind="with: walletStatus">
                         <div class="col-sm-4 left text">Total: <span data-bind='text: totalFmt'></span> HCN</div>
-                        <div class="col-sm-4 center text" data-bind="css: { visibilty: $data.isLocalWallet() ? 'visible' : 'hidden' }">Available: <span data-bind='text: availableFmt'></span> HCN</div>
-                        <div class="col-sm-4 right text" data-bind="css: { visibilty: $data.isLocalWallet() ? 'visible' : 'hidden' }">Staking: <span data-bind='text: stakeFmt'></span> HCN</div>
+                        <div class="col-sm-4 center text" data-bind="if: $data.isLocalWallet()">Available: <span data-bind='text: availableFmt'></span> HCN</div>
+                        <div class="col-sm-4 right text" data-bind="if: $data.isLocalWallet()">Staking: <span data-bind='text: stakeFmt'></span> HCN</div>
                     </div>
                 </div>
             </div>
