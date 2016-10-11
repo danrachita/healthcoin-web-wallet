@@ -27,7 +27,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-var healthcoinApi = require("./healthcoinapi");
+var healthcoinApi = require("./healthcoin/healthcoinapi");
 var healthcoin = healthcoinApi.healthcoin; // healthcoin opts
 var rpcHost = healthcoinApi.rpcHost;
 var rpcPort = healthcoinApi.rpcPort;
@@ -178,6 +178,14 @@ app.get('/listtransactions/:account/:page', function(req, res){
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
+app.get('/getbalance/:account', function(req, res){
+    var account = req.params.account || '*';
+    if(account.length > 1)
+        callHealthcoin('getbalance', res, healthcoinHandler, account);
+    else
+        res.send(JSON.stringify("Error: Invalid Account."));
+});
+
 // Force new addresses to have an account
 app.get('/getnewaddress/:account', function(req, res){
     var account = req.params.account || '*';
@@ -222,16 +230,6 @@ app.get('/listreceivedbyaddress/:minconf?/:includeempty?', function(req, res){
 
 app.get('/getaccount/:address', function(req, res){
     healthcoin.getaccount(req.params.address, function(err, result){
-        console.log("err:"+err+" result:"+result);
-        if(err)
-            res.send(err);
-        else
-            res.send(JSON.stringify(result));
-    });
-});
-
-app.get('/getbalance', function(req, res){
-    healthcoin.getbalance(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);

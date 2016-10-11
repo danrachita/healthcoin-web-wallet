@@ -18,7 +18,6 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
         self.stake = ko.observable(0);
         self.isLoadingStatus = ko.observable(false);
         self.blocks = ko.observable(0);
-        self.totalBlocks = ko.observable(0);
         self.isEnabled = ko.observable("No");
         self.isStaking = ko.observable("No");
         self.isEncrypted = ko.observable("No");
@@ -61,17 +60,23 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
     walletStatusType.prototype.load = function(){
         var self = this,
             getInfoCommand = new Command('getinfo',[]),
-            getBlockCountCommand = new Command('getblockcount',[]),
+            getBalanceCommand = new Command('getbalance',[self.hcn_account()]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
         self.isLoadingStatus(true);
-        var statusPromise = $.when(getInfoCommand.execute(), getBlockCountCommand.execute(), getStakingInfoCommand.execute())
-            .done(function(getInfoData, getBlockCountData, getStakingInfoData){
+        var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute(), getStakingInfoCommand.execute())
+            .done(function(getInfoData, getBalanceData, getStakingInfoData){
                 console.log(getInfoData);
+                console.log(getBalanceData);
                 console.log(getStakingInfoData);
-                self.stake(getInfoData.stake);
-                self.total(getInfoData.balance + self.stake());
+                if (self.isLocalWallet()){
+                    self.stake(getInfoData.stake);
+                    self.total(getInfoData.balance + self.stake());
+                } else {
+                    // Only show details related to account
+                    self.stake(0);
+                    self.total(getBalanceData);
+                }
                 self.blocks(getInfoData.blocks);
-                self.totalBlocks(getBlockCountData);
                 self.isEnabled(getStakingInfoData.Enabled ? "Yes" : "No");
                 self.isStaking(getStakingInfoData.Staking ? "Yes" : "No");
                 self.isEncrypted(typeof getInfoData.unlocked_until !== 'undefined' ? "Yes" : "No");

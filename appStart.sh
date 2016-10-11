@@ -1,9 +1,9 @@
 #!/bin/sh
 # Start the Healthcoin node.
 
-echo Looking for Healthcoin daemon...
-if [ `pgrep healthcoind` ] ; then
-        cd ${HOME}
+#echo Looking for Healthcoin daemon...
+#if [ `pgrep healthcoind` ] ; then
+    cd ${HOME}
 	echo Starting Healthcoin nodejs...
 	/usr/bin/daemon --running --name healthcoin-web-wallet
 	if [ $? -eq 1 ] ; then
@@ -14,6 +14,6 @@ if [ `pgrep healthcoind` ] ; then
 	else
 	        echo "Info : healthcoin-web-wallet is already running."
 	fi
-else
-        echo "Error : healthcoind is not running."
-fi
+#else
+#        echo "Error : healthcoind is not running."
+#fi

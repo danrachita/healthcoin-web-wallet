@@ -52,7 +52,7 @@ window.onload = function() {
 	timeout();
 	
 	function check_healthcoinrpc_connection() {
-		var healthcoin=require("./healthcoinapi");
+		var healthcoin=require("./healthcoin/healthcoinapi");
 		healthcoin.getinfo(function(err,result) {
 			if(err) {
 				//handle the error

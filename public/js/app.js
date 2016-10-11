@@ -41,6 +41,10 @@ define( [
                 wallet.currentView('console');
             });
 
+            this.get('#profile', function() {
+                wallet.currentView('profile');
+            });
+
         }).run('#biomarkers');
     };
     return new App();

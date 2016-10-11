@@ -1,5 +1,5 @@
-define(['knockout','common/dialog','viewmodels/wallet-status','viewmodels/biomarkers/biomarkers','viewmodels/send/send','viewmodels/receive/receive','viewmodels/history/history','viewmodels/console/console', 'bindinghandlers/modal','viewmodels/common/wallet-passphrase', 'viewmodels/common/command'], 
-function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, Modal, WalletPassphrase, Command){
+define(['knockout','common/dialog','viewmodels/wallet-status','viewmodels/biomarkers/biomarkers','viewmodels/send/send','viewmodels/receive/receive','viewmodels/history/history','viewmodels/console/console','viewmodels/profile/profile', 'bindinghandlers/modal','viewmodels/common/wallet-passphrase', 'viewmodels/common/command'], 
+function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
         var self = this;
@@ -16,6 +16,7 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
         self.receive = new Receive({parent: self});
         self.history = new History({parent: self});
         self.console = new Console({parent: self});
+        self.profile = new Profile({parent: self});
 
         self.timeout = 1000; // First timeout is 1 sec.
 

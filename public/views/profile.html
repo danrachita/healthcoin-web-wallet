@@ -1,0 +1,66 @@
+<div id="profile-container" class="container" data-bind="with: profile">
+    <h1>Your Healthcoin<sup>&reg;</sup> Profile</h1>
+	<div class="row">
+		<!-- GENERAL INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3><span class="fa fa-user"></span> Profile</h3>
+					<p>
+						<strong>Uid</strong>: <%= user._id %><br>
+						<strong>Role</strong>: <%= user.profile.role %><br>
+						<strong>Name</strong>: <%= user.profile.name %><br>
+						<strong>Email</strong>: <%= user.profile.email %><br>
+						<strong>Image</strong>: <%= user.profile.image %><br>
+						<strong>Description</strong>: <%= user.profile.description %><br>
+						<strong>Age</strong>: <%= user.profile.age %><br>
+						<strong>Weight</strong>: <%= user.profile.weight %><br>
+						<strong>Gender</strong>: <%= user.profile.gender %><br>
+						<strong>Ethnicity</strong>: <%= user.profile.ethnicity %><br>
+						<strong>HCN Account</strong>: <%= user.profile.hcn_account %><br>
+						<strong>HCN Address</strong>: <%= user.profile.hcn_address %><br>
+					</p>
+			</div>
+		</div>
+		<!-- LOCAL INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3><span class="fa fa-file"></span> Local</h3>
+					<p>
+						<strong>id</strong>: <%= user._id %><br>
+						<strong>email</strong>: <%= user.local.username %><br>
+						<strong>password</strong>: <%= user.local.password %>
+					</p>
+			</div>
+		</div>
+		 <!-- FACEBOOK INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+				<p>
+					<strong>id</strong>: <%= user.facebook.id %><br>
+					<strong>token</strong>: <%= user.facebook.token %><br>
+				</p>
+			</div>
+		</div>
+		 <!-- GOOGLE INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3 class="text-primary"><span class="fa fa-google-plus"></span> Google</h3>
+				<p>
+					<strong>id</strong>: <%= user.google.id %><br>
+					<strong>token</strong>: <%= user.google.token %><br>
+				</p>
+			</div>
+		</div>
+		 <!-- TWITTER INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3 class="text-primary"><span class="fa fa-twitter"></span> Twitter</h3>
+				<p>
+					<strong>id</strong>: <%= user.twitter.id %><br>
+					<strong>token</strong>: <%= user.twitter.token %><br>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
