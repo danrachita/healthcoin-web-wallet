@@ -1,10 +1,17 @@
 define(['knockout',
-        'viewmodels/wallet-status'], function(WalletStatus){
+        'viewmodels/wallet-status'], function(ko,WalletStatus){
     var profileType = function(options){
         var self = this;
         self.wallet = options.parent;
-        account = self.wallet.walletStatus.hcn_account; // hcn_account is ko.observable
-        address = self.wallet.walletStatus.hcn_address; // hcn_account is ko.observable
+
+        this.User = ko.observable("");
     };
+
+    profileType.prototype.load = function(User){
+        if (this.User() === "")
+            this.User(User); // First time load
+        console.log('DEBUG: this.User: ' + JSON.stringify(this.User));
+    };
+
     return profileType;
 });

@@ -8,9 +8,9 @@ var configAuth = require('./auth');
 
 var validator = require('validator');
 
-module.exports = function(passport) {
+module.exports = function(healthcoinObj, passport) {
 
-	var healthcoinObj = require('../app.js');
+	//var healthcoinObj = require('../app.js');
 	var callHealthcoin = healthcoinObj.callHealthcoin;
 	var healthcoinHandler = healthcoinObj.healthcoinHandler;
 
@@ -62,15 +62,16 @@ module.exports = function(passport) {
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
-					newUser.profile.hcn_account = hcn_account;
-					newUser.profile.hcn_address = hcn_address;
+					newUser.wallet.hcn_node_id = healthcoinObj.rpcHost;
+					newUser.wallet.hcn_account = hcn_account;
+					newUser.wallet.hcn_address = hcn_address;
 
 					newUser.save(function(err){
 						if(err)
 							throw err;
-						// Set these globally
-						healthcoinObj.hcn_account = newUser.profile.hcn_account;
-						healthcoinObj.hcn_address = newUser.profile.hcn_address;
+						// Set globally
+						newUser.local.password = "XXXXXXXX";
+						healthcoinObj.User = newUser;
 						return done(null, newUser);
 					});
 				}
@@ -94,11 +95,10 @@ module.exports = function(passport) {
 					if(!user.validPassword(password)){
 						return done(null, false, req.flash('loginMessage', 'Invalid password.'));
 					}
-					// Set these globally
-					healthcoinObj.hcn_account = user.profile.hcn_account;
-					healthcoinObj.hcn_address = user.profile.hcn_address;
+					// Set globally
+	    			user.local.password = "XXXXXXXX";
+					healthcoinObj.User = user;
 					return done(null, user);
-
 				});
 			});
 		}
@@ -126,9 +126,9 @@ module.exports = function(passport) {
 	    			if(err)
 	    				return done(err); // Connection error
 	    			if(user){
-						// Set these globally
-						healthcoinObj.hcn_account = user.profile.hcn_account;
-						healthcoinObj.hcn_address = user.profile.hcn_address;
+						// Set globally
+		    			user.facebook.token = "XXXXXXXX";
+						healthcoinObj.User = user;
 	    				return done(null, user); // User found
 	    			}
 	    			else {
@@ -143,15 +143,16 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.profile.hcn_account = hcn_account;
-						newUser.profile.hcn_address = hcn_address;
+						newUser.wallet.hcn_node_id = healthcoinObj.rpcHost;
+						newUser.wallet.hcn_account = hcn_account;
+						newUser.wallet.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)
 	    						throw err;
-							// Set these globally
-							healthcoinObj.hcn_account = newUser.profile.hcn_account;
-							healthcoinObj.hcn_address = newUser.profile.hcn_address;
+							// Set globally
+		    				newUser.facebook.token = "XXXXXXXX";
+							healthcoinObj.User = newUser;
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);
@@ -183,9 +184,9 @@ module.exports = function(passport) {
 	    			if(err)
 	    				return done(err); // Connection error
 	    			if(user){
-						// Set these globally
-						healthcoinObj.hcn_account = user.profile.hcn_account;
-						healthcoinObj.hcn_address = user.profile.hcn_address;
+						// Set globally
+	    				user.google.token = "XXXXXXXX";
+						healthcoinObj.User = user;
 	    				return done(null, user); // User found
 	    			}
 	    			else {
@@ -200,15 +201,16 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.profile.hcn_account = hcn_account;
-						newUser.profile.hcn_address = hcn_address;
+						newUser.wallet.hcn_node_id = healthcoinObj.rpcHost;
+						newUser.wallet.hcn_account = hcn_account;
+						newUser.wallet.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
 	    					if(err)
 	    						throw err;
-							// Set these globally
-							healthcoinObj.hcn_account = newUser.profile.hcn_account;
-							healthcoinObj.hcn_address = newUser.profile.hcn_address;
+							// Set globally
+		    				newUser.google.token = "XXXXXXXX";
+							healthcoinObj.User = newUser;
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);
@@ -240,9 +242,9 @@ module.exports = function(passport) {
 	    			if(err)
 	    				return done(err); // Connection error
 	    			if(user){
-						// Set these globally
-						healthcoinObj.hcn_account = user.profile.hcn_account;
-						healthcoinObj.hcn_address = user.profile.hcn_address;
+						// Set globally
+		    			user.twitter.token = "XXXXXXXX";
+						healthcoinObj.User = user;
 	    				return done(null, user); // User found
 	    			}
 	    			else {
@@ -257,15 +259,16 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.profile.hcn_account = hcn_account;
-						newUser.profile.hcn_address = hcn_address;
+						newUser.wallet.hcn_node_id = healthcoinObj.rpcHost;
+						newUser.wallet.hcn_account = hcn_account;
+						newUser.wallet.hcn_address = hcn_address;
 
 	    				newUser.save(function(err){
-	    					if(err)
-	    						throw err;
-							// Set these globally
-							healthcoinObj.hcn_account = newUser.profile.hcn_account;
-							healthcoinObj.hcn_address = newUser.profile.hcn_address;
+							if(err)
+								throw err;
+							// Set globally
+		    				newUser.twitter.token = "XXXXXXXX";
+							healthcoinObj.User = newUser;
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);

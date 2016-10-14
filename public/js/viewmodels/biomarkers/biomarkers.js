@@ -1,44 +1,53 @@
 define(['knockout',
-        'common/dialog',
-        'viewmodels/wallet-status',
-        'viewmodels/common/confirmation-dialog',
-        'viewmodels/common/wallet-passphrase',
-        'viewmodels/common/command',
-        'patterns'], function(ko,dialog,WalletStatus,ConfirmationDialog,WalletPassphrase,Command,patterns){
-        var biomarkersType = function(options){
-            var self = this, opts = options || {};
-            self.wallet = opts.parent;
+    'common/dialog',
+    'viewmodels/wallet-status',
+    'viewmodels/common/confirmation-dialog',
+    'viewmodels/common/wallet-passphrase',
+    'viewmodels/common/command',
+    'patterns'], function(ko,dialog,WalletStatus,ConfirmationDialog,WalletPassphrase,Command,patterns){
+    var biomarkersType = function(options){
+        var self = this, opts = options || {};
+        self.wallet = opts.parent;
 
-            this.txcommentBiomarker = ko.observable("").extend( 
-                {
-                    pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
-                    required: true
-                });
-            this.recipientAddress = self.wallet.walletStatus.hcn_address.extend(  // Send to self (hcn_address is ko.observable).
-                {
-                    pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
-                    required: true
-                });
-            this.amount = ko.observable(opts.amount || 0.00001).extend(
-                {
-                    number: true,
-                    required: true
-                });
-            this.minerFee = ko.observable(opts.minerFee || 0.0002);
-            this.canSend = ko.computed(function(){
-                var amount = self.amount(),
-                    isNumber = !isNaN(amount),
-                    biomarker = self.txcommentBiomarker(),
-                    biomarkerValid = self.txcommentBiomarker.isValid(),
-                    address = self.recipientAddress(),
-                    addressValid = self.recipientAddress.isValid(),
-                    amountValid = self.amount.isValid(),
-                    available = self.wallet.walletStatus.available(),
-                    canSend;
-
-                canSend = isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
-                return canSend;
+        this.txcommentBiomarker = ko.observable("").extend(
+            {
+                pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
+                required: true
             });
+
+        this.recipientAddress = ko.observable("").extend(
+            {
+                pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
+                required: true
+            });
+
+        this.amount = ko.observable(0.00001).extend(
+            {
+                number: true,
+                required: true
+            });
+
+        this.minerFee = ko.observable(0.0001);
+
+        this.canSend = ko.computed(function(){
+            var amount = self.amount(),
+                isNumber = !isNaN(amount),
+                biomarker = self.txcommentBiomarker(),
+                biomarkerValid = self.txcommentBiomarker.isValid(),
+                address = self.recipientAddress(),
+                addressValid = self.recipientAddress.isValid(),
+                amountValid = self.amount.isValid(),
+                available = self.wallet.walletStatus.available(),
+                canSend;
+
+            canSend = isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
+            return canSend;
+        });
+    };
+
+    biomarkersType.prototype.load = function(User){
+        if (this.recipientAddress() === "")
+            this.recipientAddress(User.wallet.hcn_address); // First time load
     };
 
     function lockWallet(){
@@ -148,6 +157,6 @@ define(['knockout',
                 dialog.notification(error.message);
             });
    
-    };   
-    return biomarkersType; 
+    };
+    return biomarkersType;
 });

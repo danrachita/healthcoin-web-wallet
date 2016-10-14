@@ -1,66 +1,84 @@
-<div id="profile-container" class="container" data-bind="with: profile">
+<div class="container" <span data-bind="with:profile">
     <h1>Your Healthcoin<sup>&reg;</sup> Profile</h1>
 	<div class="row">
 		<!-- GENERAL INFORMATION -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3><span class="fa fa-user"></span> Profile</h3>
+					<!-- ko if: User().profile -->
 					<p>
-						<strong>Uid</strong>: <%= user._id %><br>
-						<strong>Role</strong>: <%= user.profile.role %><br>
-						<strong>Name</strong>: <%= user.profile.name %><br>
-						<strong>Email</strong>: <%= user.profile.email %><br>
-						<strong>Image</strong>: <%= user.profile.image %><br>
-						<strong>Description</strong>: <%= user.profile.description %><br>
-						<strong>Age</strong>: <%= user.profile.age %><br>
-						<strong>Weight</strong>: <%= user.profile.weight %><br>
-						<strong>Gender</strong>: <%= user.profile.gender %><br>
-						<strong>Ethnicity</strong>: <%= user.profile.ethnicity %><br>
-						<strong>HCN Account</strong>: <%= user.profile.hcn_account %><br>
-						<strong>HCN Address</strong>: <%= user.profile.hcn_address %><br>
+						<strong>UID</strong>: <span data-bind="text: User()._id"> </span><br>
+						<strong>Role</strong>: <span data-bind="text: User().profile.role"> </span><br>
+						<strong>Name</strong>: <span data-bind="text: User().profile.name"> </span><br>
+						<strong>Email</strong>: <span data-bind="text: User().profile.email"> </span><br>
+						<strong>Description</strong>: <span data-bind="text: User().profile.description"> </span><br>
+						<strong>Age</strong>: <span data-bind="text: User().profile.age"> </span><br>
+						<strong>Weight</strong>: <span data-bind="text: User().profile.weight"> </span><br>
+						<strong>Gender</strong>: <span data-bind="text: User().profile.gender"> </span><br>
+						<strong>Ethnicity</strong>: <span data-bind="text: User().profile.ethnicity"> </span><br>
 					</p>
+					<!-- /ko -->
+					<!-- ko if: User().wallet -->
+					<p>
+						<strong>HCN Node_ID</strong>: <span data-bind="text: User().wallet.hcn_node_id"> </span><br>
+						<strong>HCN Account</strong>: <span data-bind="text: User().wallet.hcn_account"> </span><br>
+						<strong>HCN Address</strong>: <span data-bind="text: User().wallet.hcn_address"> </span><br>
+					</p>
+					<!-- /ko -->
 			</div>
 		</div>
+
 		<!-- LOCAL INFORMATION -->
+		<!-- ko if: User().local -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3><span class="fa fa-file"></span> Local</h3>
 					<p>
-						<strong>id</strong>: <%= user._id %><br>
-						<strong>email</strong>: <%= user.local.username %><br>
-						<strong>password</strong>: <%= user.local.password %>
+						<strong>id</strong>: <span data-bind="text: User()._id"> </span><br>
+						<strong>email</strong>: <span data-bind="text: User().local.username"> </span><br>
+						<strong>password</strong>: <span data-bind="text: User().local.password"> </span><br>
 					</p>
 			</div>
 		</div>
-		 <!-- FACEBOOK INFORMATION -->
+		<!-- /ko -->
+
+		<!-- FACEBOOK INFORMATION -->
+		<!-- ko if: User().facebook -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
 				<p>
-					<strong>id</strong>: <%= user.facebook.id %><br>
-					<strong>token</strong>: <%= user.facebook.token %><br>
+					<strong>id</strong>: <span data-bind="text: User().facebook.id"> </span><br>
+					<strong>token</strong>: <span data-bind="text: User().facebook.token"> </span><br>
 				</p>
 			</div>
 		</div>
-		 <!-- GOOGLE INFORMATION -->
+		<!-- /ko -->
+
+		<!-- GOOGLE INFORMATION -->
+		<!-- ko if: User().google -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-google-plus"></span> Google</h3>
 				<p>
-					<strong>id</strong>: <%= user.google.id %><br>
-					<strong>token</strong>: <%= user.google.token %><br>
+					<strong>id</strong>: <span data-bind="text: User().google.id"> </span><br>
+					<strong>token</strong>: <span data-bind="text: User().google.token"> </span><br>
 				</p>
 			</div>
 		</div>
-		 <!-- TWITTER INFORMATION -->
+		<!-- /ko -->
+
+		<!-- TWITTER INFORMATION -->
+		<!-- ko if: User().twitter -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-twitter"></span> Twitter</h3>
 				<p>
-					<strong>id</strong>: <%= user.twitter.id %><br>
-					<strong>token</strong>: <%= user.twitter.token %><br>
+					<strong>id</strong>: <span data-bind="text: User().twitter.id"> </span><br>
+					<strong>token</strong>: <span data-bind="text: User().twitter.token"> </span><br>
 				</p>
 			</div>
 		</div>
+		<!-- /ko -->
 	</div>
 </div>

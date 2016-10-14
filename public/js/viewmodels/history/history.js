@@ -6,8 +6,7 @@ define(['knockout',
             var self = this, opts = options || {};
             self.wallet = opts.parent;
 
-            //self.account = typeof opts.account !== 'undefined' ? ko.observable(opts.account) : ko.observable('*');
-            this.account = self.wallet.walletStatus.hcn_account; // hcn_account is ko.observable
+            this.account = ko.observable("");
             this.page = ko.observable(1);
             this.pageFirst = ko.observable(-1);
             this.pagePrev = ko.observable(0);
@@ -22,7 +21,10 @@ define(['knockout',
             });
         };
 
-        historyType.prototype.load = function(){
+        historyType.prototype.load = function(User){
+            if (this.account() === "")
+                this.account(User.wallet.hcn_account); // First time load
+
             this.getTransactions(this.account(), this.page());
         };
 

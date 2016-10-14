@@ -29,11 +29,40 @@ var flash = require('connect-flash');
 
 var healthcoinApi = require("./healthcoin/healthcoinapi");
 var healthcoin = healthcoinApi.healthcoin; // healthcoin opts
-var rpcHost = healthcoinApi.rpcHost;
-var rpcPort = healthcoinApi.rpcPort;
-var mdbHost = healthcoinApi.mdbHost;
-var mdbPort = healthcoinApi.mdbPort;
-var isLocal = healthcoinApi.isLocal;
+
+// Object for client init
+var healthcoinObj         = {}; // healthcoinObj exported for other modules.
+healthcoinObj.rpcHost = healthcoinApi.rpcHost;
+healthcoinObj.rpcPort = healthcoinApi.rpcPort;
+healthcoinObj.mdbHost = healthcoinApi.mdbHost;
+healthcoinObj.mdbPort = healthcoinApi.mdbPort;
+healthcoinObj.isLocal = healthcoinApi.isLocal;
+healthcoinObj.response = "";
+
+function callHealthcoin(command, res, handler){
+    var args = Array.prototype.slice.call(arguments, 3); // Args a after the 3rd function parameter
+    var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
+    //console.log("DEBUG: command:"+command+" args:"+args);
+    return healthcoin[command].apply(healthcoin, callargs);
+}
+function healthcoinHandler(err, result){
+    //console.log("DEBUG: err:"+err+" result:"+result);
+    var response = {
+        error: JSON.parse(err ? err.message : null),
+        result: result
+    };
+    // res will be empty if it came from another module via healthcoinObj (i.e. passport.js).
+    if (typeof this.res.send !== 'undefined' && this.res.send){
+        this.res.send(JSON.stringify(response));
+    } else {
+        healthcoinObj.response = response.result;
+    }
+}
+
+healthcoinObj.callHealthcoin    = callHealthcoin;
+healthcoinObj.healthcoinHandler = healthcoinHandler;
+healthcoinObj.User        = {};
+module.exports = healthcoinObj;
 
 // Auth modules
 app.use(morgan('dev'));
@@ -61,43 +90,12 @@ app.use(bodyParser.json());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Functions for calling healthcoind from client
-var healthcoinObj         = {}; // healthcoinObj exported for other modules.
-healthcoinObj.response    = "";
-healthcoinObj.hcn_account = "";
-healthcoinObj.hcn_address = "";
-
-function callHealthcoin(command, res, handler){
-    var args = Array.prototype.slice.call(arguments, 3); // Args a after the 3rd function parameter
-    var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
-    //console.log("DEBUG: command:"+command+" args:"+args);
-    return healthcoin[command].apply(healthcoin, callargs);
-}
-
-function healthcoinHandler(err, result){
-    //console.log("DEBUG: err:"+err+" result:"+result);
-    var response = {
-        error: JSON.parse(err ? err.message : null),
-        result: result
-    };
-    // res will be empty if it came from another module via healthcoinObj (i.e. passport.js).
-    if (typeof this.res.send !== 'undefined' && this.res.send){
-        this.res.send(JSON.stringify(response));
-    } else {
-        healthcoinObj.response = response.result;
-    }
-}
-
-healthcoinObj.callHealthcoin    = callHealthcoin;
-healthcoinObj.healthcoinHandler = healthcoinHandler;
-module.exports = healthcoinObj;
-
 // DB/Auth
 //var configDB = require('./healthcoin/database.js');
 //mongoose.connect(configDB.url);
-mongoose.connect('mongodb://' + mdbHost + ':' + mdbPort + '/healthcoin');
+mongoose.connect('mongodb://' + healthcoinObj.mdbHost + ':' + healthcoinObj.mdbPort + '/healthcoin');
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
-require('./healthcoin/passport')(passport); // Requires healthcoinObj to be exported first.
+require('./healthcoin/passport')(healthcoinObj, passport); // Requires healthcoinObj
 
 // CORS headers
 app.all('*', function(req, res, next) {
@@ -141,7 +139,7 @@ app.use(function(err, req, res, next) {
 app.get('/islocal', function(req,res){
     var response = {
         error: null,
-        result: isLocal
+        result: healthcoinObj.isLocal
     };
     res.send(JSON.stringify(response));
 });
@@ -150,7 +148,7 @@ app.get('/islocal', function(req,res){
 app.get('/getuseraccount', function(req,res){
     var response = {
         error: null,
-        result: { account: healthcoinObj.hcn_account, address: healthcoinObj.hcn_address }
+        result: { User: healthcoinObj.User }
     };
     res.send(JSON.stringify(response));
 });
@@ -184,6 +182,17 @@ app.get('/getbalance/:account', function(req, res){
         callHealthcoin('getbalance', res, healthcoinHandler, account);
     else
         res.send(JSON.stringify("Error: Invalid Account."));
+});
+
+app.get('/move/:fromaccount/:toaccount/:amount/:txcomment?', function(req, res){
+    var fromaccount = req.params.fromaccount || '*';
+    var toaccount = req.params.toaccount || '*';
+    var amount = parseFloat(req.params.amount) || 0;
+    var txcomment = req.params.txcomment || '';
+    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < healthcoinObj.hcn_balance)
+        callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, 1, txcomment);
+    else
+        res.send(JSON.stringify("Error: Invalid movement."));
 });
 
 // Force new addresses to have an account

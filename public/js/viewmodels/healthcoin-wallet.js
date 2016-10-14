@@ -1,15 +1,26 @@
-define(['knockout','common/dialog','viewmodels/wallet-status','viewmodels/biomarkers/biomarkers','viewmodels/send/send','viewmodels/receive/receive','viewmodels/history/history','viewmodels/console/console','viewmodels/profile/profile', 'bindinghandlers/modal','viewmodels/common/wallet-passphrase', 'viewmodels/common/command'], 
-function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, Profile, Modal, WalletPassphrase, Command){
+define(['knockout',
+    'common/dialog',
+    'viewmodels/wallet-status',
+    'viewmodels/biomarkers/biomarkers',
+    'viewmodels/send/send',
+    'viewmodels/receive/receive',
+    'viewmodels/history/history',
+    'viewmodels/console/console',
+    'viewmodels/profile/profile',
+    'bindinghandlers/modal',
+    'viewmodels/common/wallet-passphrase',
+    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
         var self = this;
-        self.healthcoinTotal = ko.observable(0);
-        self.healthcoinAvailable = ko.observable(0);
-        self.healthcoinStaking = ko.observable(0);
+
         self.currentView = ko.observable('biomarkers');
         self.sidebarToggled = ko.observable(false);
-        self.isEncrypted = ko.observable(-1);
-        self.walletStatus = new WalletStatus({parent: self});
+        self.encryptionStatus = ko.observable(-1);
+
+        self.User = ko.observable({});
+
+        self.walletStatus = new WalletStatus();
 
         self.biomarkers = new Biomarkers({parent: self});
         self.send = new Send({parent: self});
@@ -18,29 +29,43 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
         self.console = new Console({parent: self});
         self.profile = new Profile({parent: self});
 
-        self.timeout = 1000; // First timeout is 1 sec.
+        self.timeout = 1000;
 
-        // Init data required for wallet.
-        self.walletStatus.isLocal();
-        self.walletStatus.getUserAccount();
-
+        self.getUserAccount();
         self.pollWalletStatus();
     };
 
-    walletType.prototype.toggleSidebar = function(){
-        this.sidebarToggled(!this.sidebarToggled());
+    // Called once at startup.
+    walletType.prototype.getUserAccount = function(){
+        var self = this,
+            getUserAccountCommand = new Command('getuseraccount',[]);
+        var statusPromise = $.when(getUserAccountCommand.execute())
+            .done(function(getUserAccountData){
+                if (typeof getUserAccountData.User !== 'undefined')
+                    self.User(getUserAccountData.User);
+                console.log('DEBUG: User: ' + JSON.stringify(self.User()));
+            });
     };
 
-    walletType.prototype.refresh = function(refreshTargets){
-        return $.when(this.walletStatus.load(), this.history.load(), this.receive.load());
+    walletType.prototype.refresh = function(){
+        var self = this;
+        if (self.timeout < 60000) {
+            self.walletStatus.isLocal();
+        }
+        return $.when(self.walletStatus.load(self.User()),
+                      self.biomarkers.load(self.User()),
+                      self.history.load(self.User()),
+                      self.receive.load(self.User()),
+                      self.profile.load(self.User()));
     };
 
     walletType.prototype.pollWalletStatus = function(){
         var self = this;
         setTimeout(function(){
             self.refresh().then(function(){
-                if (self.timeout < 60000){ // First time
+                if (self.timeout < 60000){ // First timeout
                     self.timeout = 60000;
+
                     self.checkEncryptionStatus();
                 }
                 self.pollWalletStatus();
@@ -54,13 +79,13 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
             new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'This action will unlock the wallet for sending or staking','OK')
             .done(function(result){
                 //console.log(result);
-                self.walletStatus.load();
-                result.passphrase = "xxxxxxxx"; // Clear password in memory
+                self.walletStatus.load(self.User());
+                result.passphrase = "XXXXXXXX"; // Clear password in memory
             })
             .fail(function(error){
                 console.log(error);
                 dialog.notification(error.message);
-                self.walletStatus.load();
+                self.walletStatus.load(self.User());
             });
         }
     };
@@ -71,11 +96,11 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
             var walletLockCommand = new Command('walletlock',[]).execute()
             .done(function(){
                 dialog.notification("Wallet is now locked. To send transactions or stake you must unlock the wallet.");
-                self.walletStatus.load();
+                self.walletStatus.load(self.User());
             })
             .fail(function(){
                 dialog.notification("Wallet is already locked.");
-                self.walletStatus.load();
+                self.walletStatus.load(self.User());
             });
         }
     };
@@ -86,8 +111,8 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
             var getInfoCommand = new Command('getinfo',[]);
             var statusPromise = $.when(getInfoCommand.execute())
             .done(function(getInfoData){
-                self.isEncrypted(typeof getInfoData.unlocked_until !== 'undefined' ? getInfoData.unlocked_until : -1);
-                switch(self.isEncrypted()){
+                self.encryptionStatus(typeof getInfoData.unlocked_until !== 'undefined' ? getInfoData.unlocked_until : -1);
+                switch(self.encryptionStatus()){
                 case -1: // wallet is unencrypted
                     self.promptToEncrypt();
                     break;
@@ -122,6 +147,10 @@ function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, 
                 console.log(error);
                 dialog.notification(error.message);
             });
+    };
+
+    walletType.prototype.toggleSidebar = function(){
+        this.sidebarToggled(!this.sidebarToggled());
     };
 
     return walletType; 

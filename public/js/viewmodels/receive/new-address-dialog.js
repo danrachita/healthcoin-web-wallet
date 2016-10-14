@@ -1,12 +1,12 @@
 define(['knockout'],function(ko){
     var newAddressDialogType = function(options){
         this.parent = options.parent;
-        this.addressLabel = ko.observable('');
+        this.account = this.parent.account; // account is ko.observable
         this.address = ko.observable('');
     };
 
     newAddressDialogType.prototype.newAddressConfirm = function(){
-       this.parent.newAddressConfirm(this.address(), this.addressLabel()); 
+       this.parent.newAddressConfirm(this.address(), this.account()); 
        this.reset();
     };
 
@@ -16,7 +16,7 @@ define(['knockout'],function(ko){
     };
 
     newAddressDialogType.prototype.reset = function(){
-        this.addressLabel('');
+        this.account('');
         this.address('');
     };
 

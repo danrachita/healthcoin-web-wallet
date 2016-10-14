@@ -9,11 +9,11 @@ Number.prototype.formatMoney = function(c, d, t){
        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 
-define(['knockout','viewmodels/common/command'],function(ko,Command){
+define(['knockout',
+    'viewmodels/common/command'], function(ko,Command){
     var walletStatusType = function(){
         var self = this;
-        self.hcn_account = ko.observable("");
-        self.hcn_address = ko.observable("");
+
         self.total = ko.observable(0);
         self.stake = ko.observable(0);
         self.isLoadingStatus = ko.observable(false);
@@ -33,7 +33,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
         }).extend({ rateLimit: 500 });
     };
 
-    // Called once from client app.js at startup.
+    // Called once at startup.
     walletStatusType.prototype.isLocal = function(){
         var self = this,
             isLocalCommand = new Command('islocal',[]);
@@ -44,23 +44,12 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
             });
     };
 
-    // Called once from client app.js at startup.
-    walletStatusType.prototype.getUserAccount = function(){
+    // Called repeatedly.
+    walletStatusType.prototype.load = function(User){
         var self = this,
-            getUserAccountCommand = new Command('getuseraccount',[]);
-        var statusPromise = $.when(getUserAccountCommand.execute())
-            .done(function(getUserAccountData){
-                var accountData = getUserAccountData;
-                self.hcn_account(accountData.account);
-                self.hcn_address(accountData.address);
-                //console.log('DEBUG: hcn_account: ' + self.hcn_account() + ' hcn_address: ' + self.hcn_address());
-            });
-    };
-
-    walletStatusType.prototype.load = function(){
-        var self = this,
+            hcn_account = (typeof User.wallet !== 'undefined' ? User.wallet.hcn_account : "*"),
             getInfoCommand = new Command('getinfo',[]),
-            getBalanceCommand = new Command('getbalance',[self.hcn_account()]),
+            getBalanceCommand = new Command('getbalance',[hcn_account]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute(), getStakingInfoCommand.execute())
@@ -74,7 +63,7 @@ define(['knockout','viewmodels/common/command'],function(ko,Command){
                 } else {
                     // Only show details related to account
                     self.stake(0);
-                    self.total(getBalanceData);
+                    self.total((!isNaN(getBalanceData) ? getBalanceData : 0));
                 }
                 self.blocks(getInfoData.blocks);
                 self.isEnabled(getStakingInfoData.Enabled ? "Yes" : "No");
