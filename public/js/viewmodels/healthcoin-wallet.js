@@ -19,6 +19,7 @@ define(['knockout',
         self.encryptionStatus = ko.observable(-1);
 
         self.User = ko.observable({});
+        self.getUserAccount();
 
         self.walletStatus = new WalletStatus();
 
@@ -29,9 +30,8 @@ define(['knockout',
         self.console = new Console({parent: self});
         self.profile = new Profile({parent: self});
 
-        self.timeout = 1000;
+        self.timeout = 1;
 
-        self.getUserAccount();
         self.pollWalletStatus();
     };
 
@@ -43,7 +43,7 @@ define(['knockout',
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined')
                     self.User(getUserAccountData.User);
-                console.log('DEBUG: User: ' + JSON.stringify(self.User()));
+                //console.log('DEBUG: User: ' + JSON.stringify(self.User()));
             });
     };
 

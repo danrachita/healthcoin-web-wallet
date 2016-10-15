@@ -77,8 +77,6 @@ define(['knockout',
                     self.page(page);
                     self.isLoadingTransactions(false);
                 });
-            console.log('historyPromise: ');
-            console.log(historyPromise);
             return historyPromise;
         };
         return historyType;

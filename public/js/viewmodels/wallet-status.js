@@ -54,9 +54,9 @@ define(['knockout',
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute(), getStakingInfoCommand.execute())
             .done(function(getInfoData, getBalanceData, getStakingInfoData){
-                console.log(getInfoData);
-                console.log(getBalanceData);
-                console.log(getStakingInfoData);
+                //console.log(getInfoData);
+                //console.log(getBalanceData);
+                //console.log(getStakingInfoData);
                 if (self.isLocalWallet()){
                     self.stake(getInfoData.stake);
                     self.total(getInfoData.balance + self.stake());

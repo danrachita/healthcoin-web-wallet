@@ -5,7 +5,7 @@ define(['knockout','common/utility'], function(ko,utils){
         this.address = txn.address || '';
         this.category = txn.category || '';
         this.amount = txn.amount || 0.0;
-        this.txcomment = txn.txcomment.replace(/^text:/, '').replace(/^hcbm:[\w]+/, '[bio-marker]') || '';
+        this.txcomment = (txn.txcomment ? txn.txcomment.replace(/^text:/, '').replace(/^hcbm:[\w]+/, '[bio-marker]') : '');
         this.confirmations = txn.confirmations || 0;
         this.blockHash = txn.blockhash || '';
         this.fee = txn.fee || null;

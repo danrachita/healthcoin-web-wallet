@@ -1,12 +1,12 @@
 define(['knockout'], function(){
     var receiveAddressType = function(options){
-        var addr = options.address || {};
-        this.account = addr.account || '';
-        this.address = addr.address || '';
-        this.amount = addr.amount || 0.0;
-        this.confirmations = addr.confirmations || 0;
-        this.wallet = options.parent;
-    }; 
+        var addressObj = options.addressObj || {};
+        this.address = addressObj.address || '';
+        this.account = addressObj.account || '';
+        this.amount = addressObj.amount || 0.0;
+        this.confirmations = addressObj.confirmations || 0;
+        //this.wallet = options.parent;
+    };
 
-    return receiveAddressType; 
+    return receiveAddressType;
 });

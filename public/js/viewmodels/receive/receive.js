@@ -33,7 +33,7 @@ define(['knockout',
         var self = this, getNewAddressCommand = new Command('getnewaddress',[self.account()]); // Use self.account() to be safe.
         getNewAddressCommand.execute()
             .done(function(address){
-                self.addresses.push(new ReceiveAddress({address:{ address: address, account: account }}));
+                self.addresses.push(new ReceiveAddress({addressObj:{address: address, account: self.account()}}));
             })
             .fail(function(){
             })
@@ -52,9 +52,14 @@ define(['knockout',
         self.isLoadingReceiveAddresses(true);
         var receivePromise = getReceivedByAddressesCommand.execute()
             .done(function(data){
-                self.addresses(ko.utils.arrayMap(data,function(address, account){
-                    if (account === self.account())
-                        return new ReceiveAddress({address:{ address: address, account: account }});
+                for (var k in data){
+                    //console.log("data[k]:" + JSON.stringify(data[k]));
+                    if (data[k].account !== self.account()){
+                        delete data[k];
+                    }
+                }
+                self.addresses(ko.utils.arrayMap(data,function(addressObj){
+                        return new ReceiveAddress({addressObj: addressObj});
                 }));
                 self.isLoadingReceiveAddresses(false); 
             });

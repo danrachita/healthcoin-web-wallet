@@ -5,14 +5,20 @@
             <tr>
                 <th>Account</th>
                 <th>Address</th>
+                <th>Amount</th>
             </tr>
         </thead>
+    	<!-- ko if: $data.addresses -->
         <tbody data-bind="foreach: addresses">
+			<!-- ko if: $data.address -->
             <tr>
                 <td data-bind="text: account"></td>
                 <td data-bind="text: address"></td>
+                <td data-bind="text: amount"></td>
             </tr>
+			<!-- /ko -->
         </tbody>
+		<!-- /ko -->
     </table>
     
     <div>

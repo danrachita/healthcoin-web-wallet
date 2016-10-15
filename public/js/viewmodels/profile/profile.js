@@ -4,13 +4,13 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent;
 
-        this.User = ko.observable("");
+        self.User = ko.observable("");
     };
 
     profileType.prototype.load = function(User){
-        if (this.User() === "")
-            this.User(User); // First time load
-        console.log('DEBUG: this.User: ' + JSON.stringify(this.User));
+        var self = this;
+        if (self.User() === "")
+            self.User(User); // First time load
     };
 
     return profileType;
