@@ -27,23 +27,38 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-var healthcoinApi = require("./healthcoin/healthcoinapi");
-var healthcoin = healthcoinApi.healthcoin; // healthcoin opts
+var healthcoinApi = require('./healthcoin/healthcoinapi');
 
-// Object for client init
-var healthcoinObj         = {}; // healthcoinObj exported for other modules.
-healthcoinObj.rpcHost = healthcoinApi.rpcHost;
-healthcoinObj.rpcPort = healthcoinApi.rpcPort;
-healthcoinObj.mdbHost = healthcoinApi.mdbHost;
-healthcoinObj.mdbPort = healthcoinApi.mdbPort;
-healthcoinObj.isLocal = healthcoinApi.isLocal;
-healthcoinObj.response = "";
+// All environments
+app.use(cors());
+app.set('port', process.env.PORT || 8181);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+// HCN Object exported for client access
+var HCN     = {};
+HCN.Api     = healthcoinApi.healthcoin; // healthcoin opts and calls
+HCN.isLocal = healthcoinApi.isLocal; // TODO: Move all these to opts.
+HCN.mdbHost = healthcoinApi.mdbHost; // "
+HCN.mdbPort = healthcoinApi.mdbPort; // "
+
+HCN.appHost = '127.0.0.1';
+HCN.appPort = app.get('port');
+
+HCN.MasterAccount  = "MASTER_ACCOUNT";                     // Master UI login account, and Label to assign to "" account(s).
+HCN.MasterEmail    = "healthcoin@nequals1.io";             // Master email account.
+HCN.MasterAddress  = "HMmvTTDpVq72SPm44P47Xg29N2R93MjCiy"; // Master Wallet Address to move coin from (assigned in init-wallet)
+HCN.MasterPassword = "password";                           // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
+HCN.User           = {};
+
+module.exports = HCN;
+// End HCN
 
 function callHealthcoin(command, res, handler){
-    var args = Array.prototype.slice.call(arguments, 3); // Args a after the 3rd function parameter
+    var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
     var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
     //console.log("DEBUG: command:"+command+" args:"+args);
-    return healthcoin[command].apply(healthcoin, callargs);
+    return HCN.Api[command].apply(HCN.Api, callargs);
 }
 function healthcoinHandler(err, result){
     //console.log("DEBUG: err:"+err+" result:"+result);
@@ -51,18 +66,10 @@ function healthcoinHandler(err, result){
         error: JSON.parse(err ? err.message : null),
         result: result
     };
-    // res will be empty if it came from another module via healthcoinObj (i.e. passport.js).
     if (typeof this.res.send !== 'undefined' && this.res.send){
         this.res.send(JSON.stringify(response));
-    } else {
-        healthcoinObj.response = response.result;
     }
 }
-
-healthcoinObj.callHealthcoin    = callHealthcoin;
-healthcoinObj.healthcoinHandler = healthcoinHandler;
-healthcoinObj.User        = {};
-module.exports = healthcoinObj;
 
 // Auth modules
 app.use(morgan('dev'));
@@ -75,12 +82,6 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 
-// All environments
-app.use(cors());
-app.set('port', process.env.PORT || 8181);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -90,12 +91,11 @@ app.use(bodyParser.json());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// DB/Auth
-//var configDB = require('./healthcoin/database.js');
-//mongoose.connect(configDB.url);
-mongoose.connect('mongodb://' + healthcoinObj.mdbHost + ':' + healthcoinObj.mdbPort + '/healthcoin');
-require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', + oauth routes).
-require('./healthcoin/passport')(healthcoinObj, passport); // Requires healthcoinObj
+// DB / Auth
+mongoose.connect('mongodb://' + HCN.mdbHost + ':' + HCN.mdbPort + '/healthcoin');
+require('./healthcoin/init-wallet')(passport); // Requires HCN
+require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
+require('./healthcoin/passport')(passport); // Requires HCN
 
 // CORS headers
 app.all('*', function(req, res, next) {
@@ -139,7 +139,7 @@ app.use(function(err, req, res, next) {
 app.get('/islocal', function(req,res){
     var response = {
         error: null,
-        result: healthcoinObj.isLocal
+        result: HCN.isLocal
     };
     res.send(JSON.stringify(response));
 });
@@ -148,7 +148,7 @@ app.get('/islocal', function(req,res){
 app.get('/getuseraccount', function(req,res){
     var response = {
         error: null,
-        result: { User: healthcoinObj.User }
+        result: { User: HCN.User }
     };
     res.send(JSON.stringify(response));
 });
@@ -189,19 +189,24 @@ app.get('/move/:fromaccount/:toaccount/:amount/:txcomment?', function(req, res){
     var toaccount = req.params.toaccount || '*';
     var amount = parseFloat(req.params.amount) || 0;
     var txcomment = req.params.txcomment || '';
-    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < healthcoinObj.hcn_balance)
+    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < HCN.hcn_balance)
         callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, 1, txcomment);
     else
         res.send(JSON.stringify("Error: Invalid movement."));
 });
 
-// Force new addresses to have an account
+// New addresses must have an account
 app.get('/getnewaddress/:account', function(req, res){
     var account = req.params.account || '*';
     if(account.length > 1)
         callHealthcoin('getnewaddress', res, healthcoinHandler, account);
     else
         res.send(JSON.stringify("Error: Invalid Account."));
+});
+
+app.get('/validateaddress/:address', function(req, res){
+    var address = req.params.address || 'blah';
+    callHealthcoin('validateaddress', res, healthcoinHandler, address);
 });
 
 app.get('/sendtoaddress/:toaddress/:amount', function(req, res){
@@ -238,7 +243,7 @@ app.get('/listreceivedbyaddress/:minconf?/:includeempty?', function(req, res){
 });
 
 app.get('/getaccount/:address', function(req, res){
-    healthcoin.getaccount(req.params.address, function(err, result){
+    HCN.Api.getaccount(req.params.address, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -248,7 +253,7 @@ app.get('/getaccount/:address', function(req, res){
 });
 
 app.get('/listaddressgroupings', function(req, res){
-    healthcoin.listaddressgroupings(function(err, result){
+    HCN.Api.listaddressgroupings(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -258,7 +263,7 @@ app.get('/listaddressgroupings', function(req, res){
 });
 
 app.get('/sendfrom/:fromaccount/:toaddress/:amount', function(req, res){
-    healthcoin.sendfrom(req.params.fromaccount, req.params.toaddress, parseInt(req.params.amount), function(err, result){
+    HCN.Api.sendfrom(req.params.fromaccount, req.params.toaddress, parseInt(req.params.amount), function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -268,7 +273,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount', function(req, res){
 });
 
 app.get('/setaccount/:address/:account', function(req, res){
-    healthcoin.setaccount(req.params.address, req.params.account, function(err, result){
+    HCN.Api.setaccount(req.params.address, req.params.account, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -278,7 +283,7 @@ app.get('/setaccount/:address/:account', function(req, res){
 });
 
 app.get('/setadressbookname/:address/:label', function(req, res){
-    healthcoin.setadressbookname(req.params.address, req.params.label, function(err, result){
+    HCN.Api.setadressbookname(req.params.address, req.params.label, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -290,7 +295,7 @@ app.get('/setadressbookname/:address/:label', function(req, res){
 // Custom routes //
 
 app.get('/totalhealthcoin', function(req, res){
-    healthcoin.getinfo(function(err, result){
+    HCN.Api.getinfo(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -302,7 +307,7 @@ app.get('/totalhealthcoin', function(req, res){
 });
 
 app.get('/blockcount', function(req,res){
-    healthcoin.getinfo(function(err, result){
+    HCN.Api.getinfo(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -314,7 +319,7 @@ app.get('/blockcount', function(req,res){
 });
 
 app.get('/difficulty', function(req,res){
-    healthcoin.getDifficulty(function(err, result){
+    HCN.Api.getDifficulty(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -324,7 +329,7 @@ app.get('/difficulty', function(req,res){
 });	
 
 app.get('/getblockhash/:index', function(req, res){
-    healthcoin.getblockhash(parseInt(req.params.index), function(err, hash){
+    HCN.Api.getblockhash(parseInt(req.params.index), function(err, hash){
         if(err)
             res.send(err);
         else
@@ -333,7 +338,7 @@ app.get('/getblockhash/:index', function(req, res){
 });
 
 app.get('/getblock/:hash', function(req, res){
-    healthcoin.getblock(req.params.hash, function(err, data){
+    HCN.Api.getblock(req.params.hash, function(err, data){
         if(err)
             res.send(err);
         else
@@ -342,7 +347,7 @@ app.get('/getblock/:hash', function(req, res){
 });
 
 app.get('/gettx/:txid', function(req, res){
-    healthcoin.gettransaction(req.params.txid, function(err, data){
+    HCN.Api.gettransaction(req.params.txid, function(err, data){
         if(err)
             res.send("Error parsing transaction id");
         else
@@ -351,7 +356,7 @@ app.get('/gettx/:txid', function(req, res){
 });
 
 app.get('/getpeers', function(req, res){
-    healthcoin.getpeers(function(err, result){
+    HCN.Api.getpeers(function(err, result){
         if(err)
             res.send(err);
         else

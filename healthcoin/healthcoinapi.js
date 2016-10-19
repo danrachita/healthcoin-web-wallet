@@ -53,7 +53,7 @@ for (var k in arrayFromConf){
             case ("rpcpassword"):
                 rpcPass = v;
                 break;
-            case ("rpchost"):
+            case ("rpcconnect"):
                 rpcHost = v.toLowerCase();
                 break;
             case ("rpcport"):
@@ -77,20 +77,16 @@ if (mdbHost === "") mdbHost = "localhost";
 if (mdbPort === "") mdbPort = "27017";
 
 var healthcoin = require('node-healthcoin')();
-healthcoin.auth(rpcUser, rpcPass, rpcHost);
+healthcoin.set('host', rpcHost);
+healthcoin.set('port', rpcPort);
+healthcoin.auth(rpcUser, rpcPass);
 
 var isLocal = false;
 if (rpcHost === "localhost" || rpcHost === "127.0.0.1" || rpcHost.indexOf(".") === -1){
     isLocal = true;
 }
 
-//console.log("DEBUG: rpcUser:" + rpcUser + " rpcPass:" + rpcPass);
-//console.log("DEBUG: rpcHost:" + rpcHost + " rpcPort:" + rpcPort);
-//console.log("DEBUG: mdbHost:" + mdbHost + " mdbPort:" + mdbPort);
-
 module.exports.healthcoin = healthcoin;
-module.exports.rpcHost = rpcHost;
-module.exports.rpcPort = rpcPort;
 module.exports.mdbHost = mdbHost;
 module.exports.mdbPort = mdbPort;
 module.exports.isLocal = isLocal;

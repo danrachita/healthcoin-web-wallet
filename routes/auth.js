@@ -2,6 +2,9 @@ var User = require('../healthcoin/user');
 module.exports = function(app, passport){
 
 	app.get('/', isLoggedIn, function(req, res){
+		if (req.user.local.changeme){
+			res.redirect('/password');
+		}
 		res.render('healthcoin.ejs'); // If logged in, allow access to Healthcoin App
 	});
 
@@ -11,6 +14,7 @@ module.exports = function(app, passport){
 	});
 
 	app.get('/login', function(req, res){
+		req.logout();
 		res.render('login.ejs', { message: req.flash('loginMessage') });
 	});
 	app.post('/login', passport.authenticate('local-login', {
@@ -20,12 +24,25 @@ module.exports = function(app, passport){
 	}));
 
 	app.get('/signup', function(req, res){
+		if(req.isAuthenticated()){
+			res.redirect('/');
+		}
 		res.render('signup.ejs', { message: req.flash('signupMessage') });
 	});
 
 	app.post('/signup', passport.authenticate('local-signup', {
 		successRedirect: '/',
 		failureRedirect: '/signup',
+		failureFlash: true
+	}));
+
+	app.get('/password', isLoggedIn, function(req, res){
+		res.render('password.ejs', { message: req.flash('passwordMessage'), user: req.user }); // If logged in, allow password change
+	});
+
+	app.post('/password', passport.authenticate('local-password', {
+		successRedirect: '/login',
+		failureRedirect: '/password',
 		failureFlash: true
 	}));
 
