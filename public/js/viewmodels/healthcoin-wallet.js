@@ -30,7 +30,7 @@ define(['knockout',
         self.console = new Console({parent: self});
         self.profile = new Profile({parent: self});
 
-        self.timeout = 1;
+        self.timeout = 2345;
 
         self.pollWalletStatus();
     };
