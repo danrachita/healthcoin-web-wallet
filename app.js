@@ -184,13 +184,14 @@ app.get('/getbalance/:account', function(req, res){
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
-app.get('/move/:fromaccount/:toaccount/:amount/:txcomment?', function(req, res){
+app.get('/move/:fromaccount/:toaccount/:amount/:minconf/:txcomment?', function(req, res){
     var fromaccount = req.params.fromaccount || '*';
     var toaccount = req.params.toaccount || '*';
     var amount = parseFloat(req.params.amount) || 0;
+    var minconf = parseFloat(req.params.minconf) || 1;
     var txcomment = req.params.txcomment || '';
-    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < HCN.hcn_balance)
-        callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, 1, txcomment);
+    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < HCN.hcn_balance && minconf)
+        callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, minconf, txcomment);
     else
         res.send(JSON.stringify("Error: Invalid movement."));
 });

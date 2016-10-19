@@ -1,5 +1,4 @@
 var User       = require('./user');
-
 var validator = require('validator');
 
 function Init(passport) {
@@ -14,10 +13,8 @@ function Init(passport) {
 //		passReqToCallback: true
 //	},
 //	function(req, email, password, done){
-		var res = {}, // Set res to empty object so healthcoinHandler knows it's not from express http.
-			response = "",
-			hcn_address = HCN.MasterAddress,
-			hcn_account = HCN.MasterAccount;
+		var	hcn_address = HCN.MasterAddress;
+		var	hcn_account = HCN.MasterAccount;
 //		process.nextTick(function(){
 			User.findOne({'local.username': hcn_account}, function(err, user){
 				if(err)
@@ -28,8 +25,11 @@ function Init(passport) {
 					HCN.MasterPassword = "XXXXXXXX";
 					return;
 				} else {
-					response = callHealthcoin('getaddressesbyaccount', res, healthcoinHandler, hcn_account);
-					if (response === ""){
+					HCN.Api.exec('getaddressesbyaccount', hcn_account, function(err, res){
+						console.log("DEBUG: err:" + err + " res:" + res);
+						hcn_address = res;
+						});
+					if (!hcn_address || hcn_address === ""){
 						// MasterAccount has not been setup.
 						// TODO: Assign Account to main address.
 						// getaddressesbyaccount ""
@@ -76,6 +76,6 @@ function Init(passport) {
 //	}));
 }
 
-module.exports = function(HCN, passport) {
-    Init(HCN, passport);
+module.exports = function(passport) {
+    Init(passport);
 };

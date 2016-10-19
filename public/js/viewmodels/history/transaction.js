@@ -13,7 +13,7 @@ define(['knockout','common/utility'], function(ko,utils){
         this.blockTime = txn.blocktime ? utils.time.unixToDate(txn.blocktime) : new Date();
         this.transactionId = txn.txid || '';
         this.time = txn.time ? utils.time.unixToDate(txn.time) : new Date();
-        this.timeReceived = txn.time ? utils.time.unixToString(txn.timereceived) : new Date();
+        this.timeReceived = txn.timereceived ? utils.time.unixToString(txn.timereceived) : utils.time.unixToString(txn.time);
     }; 
 
     return transactionType; 

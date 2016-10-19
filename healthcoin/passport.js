@@ -8,9 +8,9 @@ var configAuth = require('./auth');
 var bcrypt = require("bcryptjs");
 var validator = require('validator');
 
-var HCN = require('../app.js');
-
 module.exports = function(passport) {
+
+	var HCN = require('../app.js');
 
 	passport.serializeUser(function(user, done){
 		done(null, user.id);
@@ -53,12 +53,12 @@ module.exports = function(passport) {
 
 		HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
 			//console.log("DEBUG: err:" + err + " res:" + res);
-			hcn_address = res || err;
+			hcn_address = res;
 			});
 
         setTimeout(function(){
 		process.nextTick(function(){
-			if (hcn_address === ""){
+			if (!hcn_address || hcn_address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
 			User.findOne({'local.username': email}, function(err, user){
@@ -88,6 +88,9 @@ module.exports = function(passport) {
 							throw err;
 						// Set globally
 						HCN.User = newUser;
+						HCN.Api.exec('move', HCN.MasterAccount, hcn_account, 1.0, 1, function(err, res){
+							console.log("DEBUG: err:" + err + " res:" + res);
+							});
 						return done(null, newUser);
 					});
 				}
@@ -205,11 +208,14 @@ module.exports = function(passport) {
 
 			HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
 				//console.log("DEBUG: err:" + err + " res:" + res);
-				hcn_address = res || err;
+				hcn_address = res;
 				});
 
 			setTimeout(function(){
 	    	process.nextTick(function(){
+				if (!hcn_address || hcn_address === ""){
+					return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+				}
 	    		User.findOne({'facebook.id': profile.id}, function(err, user){
 	    			if(err)
 	    				return done(err); // Connection error
@@ -239,6 +245,9 @@ module.exports = function(passport) {
 	    						throw err;
 							// Set globally
 							HCN.User = newUser;
+							HCN.Api.exec('move', HCN.MasterAccount, hcn_account, 1.0, 1, function(err, res){
+								console.log("DEBUG: err:" + err + " res:" + res);
+								});
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);
@@ -265,11 +274,14 @@ module.exports = function(passport) {
 
 			HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
 				//console.log("DEBUG: err:" + err + " res:" + res);
-				hcn_address = res || err;
+				hcn_address = res;
 				});
 
 			setTimeout(function(){
 	    	process.nextTick(function(){
+				if (!hcn_address || hcn_address === ""){
+					return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+				}
 	    		User.findOne({'google.id': profile.id}, function(err, user){
 	    			if(err)
 	    				return done(err); // Connection error
@@ -299,6 +311,9 @@ module.exports = function(passport) {
 	    						throw err;
 							// Set globally
 							HCN.User = newUser;
+							HCN.Api.exec('move', HCN.MasterAccount, hcn_account, 1.0, 1, function(err, res){
+								console.log("DEBUG: err:" + err + " res:" + res);
+								});
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);
@@ -325,11 +340,14 @@ module.exports = function(passport) {
 
 			HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
 				//console.log("DEBUG: err:" + err + " res:" + res);
-				hcn_address = res || err;
+				hcn_address = res;
 				});
 
 			setTimeout(function(){
 	    	process.nextTick(function(){
+				if (!hcn_address || hcn_address === ""){
+					return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
+				}
 	    		User.findOne({'twitter.id': profile.id}, function(err, user){
 	    			if(err)
 	    				return done(err); // Connection error
@@ -359,6 +377,9 @@ module.exports = function(passport) {
 								throw err;
 							// Set globally
 							HCN.User = newUser;
+							HCN.Api.exec('move', HCN.MasterAccount, hcn_account, 1.0, 1, function(err, res){
+								console.log("DEBUG: err:" + err + " res:" + res);
+								});
 	    					return done(null, newUser);
 	    				});
 	    				console.log(profile);
