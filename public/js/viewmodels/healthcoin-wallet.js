@@ -52,9 +52,9 @@ define(['knockout',
     walletType.prototype.refresh = function(){
         var self = this, refreshPromise = "";
         refreshPromise = $.when(self.walletStatus.load(self.User()),
-                      self.biomarkers.load(self.User()),
-                      self.history.load(self.User()),
-                      self.receive.load(self.User()),
+                      self.biomarkers.load(self.User(), self.walletStatus.node_id()),
+                      self.history.load(self.User(), self.walletStatus.node_id()),
+                      self.receive.load(self.User(), self.walletStatus.node_id()),
                       self.profile.load(self.User(), self.walletStatus.node_id()));
         return refreshPromise;
     };

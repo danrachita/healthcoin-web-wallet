@@ -45,9 +45,21 @@ define(['knockout',
         });
     };
 
-    biomarkersType.prototype.load = function(User){
-        if (this.recipientAddress() === "")
-            this.recipientAddress(User.wallet[0].address); // First time load
+    biomarkersType.prototype.load = function(User, node_id){
+        var self = this;
+        if (self.recipientAddress() === ""){
+            var found = false;
+			// Get the address for the node_id
+			var wallet = User.wallet.filter(function(wal){
+				if(!found && wal.node_id === node_id){
+                    found = true;
+                    self.recipientAddress(wal.address); // First time load
+					return wal;
+				}
+			});
+			if (!found)
+                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
+        }
     };
 
     function lockWallet(){

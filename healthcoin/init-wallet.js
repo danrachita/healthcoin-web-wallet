@@ -9,21 +9,19 @@ function Init() {
 		if(err)
 			return err;
 		if(user){
+            var found = false;
 			// Get the address for the node_id
 			var wallet = user.wallet.filter(function(wal){
-				if(wal.node_id === HCN.MasterNode_ID)
+				if(!found && wal.node_id === HCN.MasterNode_ID){
+                    found = true;
+                    HCN.MasterAddress = wal.address;
 					return wal;
+				}
 			});
-			if (wallet.length){
-				//console.log("DEBUG: wallet:" + JSON.stringify(wallet));
-				HCN.MasterAddress  = wallet[0].address;
-				HCN.MasterPassword = "XXXXXXXX";
-				//console.log("DEBUG: Found address:" + HCN.MasterAddress + " for account:" + HCN.MasterAccount + " node_id:" + HCN.MasterNode_ID);
-				return;
-			} else {
-				console.log("Error: Could not find node_id for user:" + HCN.MasterAccount + " node_id:" + HCN.MasterNode_ID);
-				return;
-			}
+			if (!found)
+                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + HCN.MasterNode_ID);
+
+			HCN.MasterPassword = "XXXXXXXX";
 		} else {
 			// Lots of synchronous stuff needs to be done at first setup. TODO: Convert to async functions.
 			var done1 = 10, done2 = 20, done3 = 30;

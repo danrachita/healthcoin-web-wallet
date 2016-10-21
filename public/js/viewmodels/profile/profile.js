@@ -12,7 +12,7 @@ define(['knockout',
         var self = this;
         if (self.User() === "")
             self.User(User); // First time load
-			// Get the first address for the node_id
+			// Get the wallet for the node_id
             var found = false;
 			var wallet = User.wallet.filter(function(wal){
 				if(!found && wal.node_id === node_id){
@@ -22,7 +22,7 @@ define(['knockout',
 				}
             });
 			if (!found)
-                console.log("Error: wallet note found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
+                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
     };
 
     return profileType;

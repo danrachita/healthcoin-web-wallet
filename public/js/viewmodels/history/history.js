@@ -21,11 +21,25 @@ define(['knockout',
             });
         };
 
-        historyType.prototype.load = function(User){
-            if (this.account() === "")
-                this.account(User.wallet[0].account); // First time load
-
-            this.getTransactions(this.account(), this.page());
+        historyType.prototype.load = function(User, node_id){
+            var self = this;
+            if (self.account() === ""){
+                var found = false;
+                // Get the account for the node_id
+                var wallet = User.wallet.filter(function(wal){
+                    if(!found && wal.node_id === node_id){
+                        found = true;
+                        self.account(wal.account); // First time load
+                        return wal;
+                    }
+                });
+                if (!found)
+                    console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
+                else
+                    this.getTransactions(this.account(), this.page());
+            } else {
+                this.getTransactions(this.account(), this.page());
+            }
         };
 
         historyType.prototype.firstPage = function(){
