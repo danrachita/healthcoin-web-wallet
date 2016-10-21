@@ -49,6 +49,8 @@ function Init() {
 								// Foreach address: setaccount <address> <acccount>
 								for (var k in hcn_addresses){
 									// Make sure we have a Healthcoin address.
+									// NOTE: The rpc command setaccount has a "bug" that creates an unlabeled address after executing.
+									//       You have to go into the Qt wallet to label it. TODO: Fix rpc command.
 									if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
 										HCN.Api.exec('setaccount', hcn_addresses[k], HCN.MasterAccount, function(err, res){
 											//console.log("DEBUG: err:" + err + " res:" + res);
