@@ -78,6 +78,10 @@ module.exports = function(passport) {
 							if(err)
 								throw err;
 						});
+						// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
+						HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+							console.log("DEBUG: err:" + err + " res:" + res);
+							});
 					}
 					// Set globally
 					HCN.User = user;
@@ -161,6 +165,10 @@ module.exports = function(passport) {
 								if(err)
 									throw err;
 							});
+							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+								console.log("DEBUG: err:" + err + " res:" + res);
+								});
 						}
 						// Set globally
 						HCN.User = user;
@@ -270,6 +278,10 @@ module.exports = function(passport) {
 								if(err)
 									throw err;
 							});
+							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+								console.log("DEBUG: err:" + err + " res:" + res);
+								});
 						}
 						// Set globally
 						HCN.User = user;
@@ -349,6 +361,10 @@ module.exports = function(passport) {
 								if(err)
 									throw err;
 							});
+							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+								console.log("DEBUG: err:" + err + " res:" + res);
+								});
 						}
 						// Set globally
 						HCN.User = user;
@@ -427,6 +443,10 @@ module.exports = function(passport) {
 							user.save(function(err){
 								if(err)
 									throw err;
+							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+								console.log("DEBUG: err:" + err + " res:" + res);
+								});
 							});
 						}
 						// Set globally
