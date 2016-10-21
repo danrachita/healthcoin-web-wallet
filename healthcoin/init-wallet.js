@@ -9,19 +9,19 @@ function Init() {
 		if(err)
 			return err;
 		if(user){
-			// Get the hcn_address for the hcn_node_id
+			// Get the address for the node_id
 			var wallet = user.wallet.filter(function(wal){
-				if(wal.hcn_node_id === HCN.MasterNode_ID)
+				if(wal.node_id === HCN.MasterNode_ID)
 					return wal;
 			});
 			if (wallet.length){
 				//console.log("DEBUG: wallet:" + JSON.stringify(wallet));
-				HCN.MasterAddress  = wallet[0].hcn_address;
+				HCN.MasterAddress  = wallet[0].address;
 				HCN.MasterPassword = "XXXXXXXX";
-				//console.log("DEBUG: Found hcn_address:" + HCN.MasterAddress + " for hcn_account:" + HCN.MasterAccount + " hcn_node_id:" + HCN.MasterNode_ID);
+				//console.log("DEBUG: Found address:" + HCN.MasterAddress + " for account:" + HCN.MasterAccount + " node_id:" + HCN.MasterNode_ID);
 				return;
 			} else {
-				console.log("Error: Could not find hcn_node_id for user:" + HCN.MasterAccount + " hcn_node_id:" + HCN.MasterNode_ID);
+				console.log("Error: Could not find node_id for user:" + HCN.MasterAccount + " node_id:" + HCN.MasterNode_ID);
 				return;
 			}
 		} else {
@@ -88,7 +88,7 @@ function Init() {
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
-					newUser.wallet.push( { hcn_node_id: HCN.MasterNode_ID, hcn_account: HCN.MasterAccount, hcn_address: HCN.MasterAddress });
+					newUser.wallet.push( { node_id: HCN.MasterNode_ID, account: HCN.MasterAccount, address: HCN.MasterAddress });
 	
 					newUser.save(function(err){
 						if(err)

@@ -22,6 +22,7 @@ define(['knockout',
         self.getUserAccount();
 
         self.walletStatus = new WalletStatus();
+        self.walletStatus.getNodeInfo();
 
         self.biomarkers = new Biomarkers({parent: self});
         self.send = new Send({parent: self});
@@ -49,15 +50,13 @@ define(['knockout',
     };
 
     walletType.prototype.refresh = function(){
-        var self = this;
-        if (self.timeout < 60000) {
-            self.walletStatus.getNodeInfo();
-        }
-        return $.when(self.walletStatus.load(self.User()),
+        var self = this, refreshPromise = "";
+        refreshPromise = $.when(self.walletStatus.load(self.User()),
                       self.biomarkers.load(self.User()),
                       self.history.load(self.User()),
                       self.receive.load(self.User()),
-                      self.profile.load(self.User(), self.walletStatus.walletNode()));
+                      self.profile.load(self.User(), self.walletStatus.node_id()));
+        return refreshPromise;
     };
 
     walletType.prototype.pollWalletStatus = function(){
@@ -66,7 +65,7 @@ define(['knockout',
             self.refresh().then(function(){
                 if (self.timeout < 60000){ // First timeout
                     self.timeout = 60000;
-
+                    // One-time call after getinfo
                     self.checkEncryptionStatus();
                 }
                 self.pollWalletStatus();

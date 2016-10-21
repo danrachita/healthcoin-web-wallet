@@ -48,29 +48,36 @@ module.exports = function(passport) {
 		}
 		email = validator.normalizeEmail(email);
 
-		var hcn_account = email;
-		var hcn_address = "";
-
-		HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
+		var account = email, address = "", new_address = false;
+		HCN.Api.exec('getaccountaddress', account, function(err, res){
 			//console.log("DEBUG: err:" + err + " res:" + res);
-			hcn_address = res;
-			});
+			address = res;
+			if (address === ""){
+				HCN.Api.exec('getnewaddress', account, function(err, res){
+					//console.log("DEBUG: err:" + err + " res:" + res);
+					address = res;
+					new_address = true;
+					});
+			}
+		});
 
         setTimeout(function(){
 		process.nextTick(function(){
-			if (!hcn_address || hcn_address === ""){
+			if (!address || address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
 			User.findOne({'local.username': email}, function(err, user){
 				if(err)
 					return done(err);
 				if(user){
-					// We just created a new address. Capture it. TODO: Don't create unneccessary addresses!
-					user.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
-					user.save(function(err){
-						if(err)
-							throw err;
-					});
+					// If we created a new address. Capture it.
+					if (new_address){
+						user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
+						user.save(function(err){
+							if(err)
+								throw err;
+						});
+					}
 					// Set globally
 					HCN.User = user;
 					return done(null, false, req.flash('signupMessage', 'You already have an account. Please login, instead.'));
@@ -87,7 +94,7 @@ module.exports = function(passport) {
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
-					newUser.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
+					newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 					newUser.save(function(err){
 						if(err)
@@ -97,14 +104,14 @@ module.exports = function(passport) {
 					// Set globally
 					HCN.User = newUser;
 					// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-					HCN.Api.exec('sendfrom', HCN.MasterAccount, hcn_address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+					HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
 						console.log("DEBUG: err:" + err + " res:" + res);
 						});
 					return done(null, newUser);
 				}
 			});
 		});
-        },1234); // end timeout
+        },1000); // end timeout
 	}));
 
 	passport.use('local-login', new LocalStrategy({
@@ -126,43 +133,37 @@ module.exports = function(passport) {
 						return done(null, false, req.flash('loginMessage', 'Invalid password.'));
 					}
 
-					var saveMe = false;
-					// If user.wallet does not have this node, create new wallet hcn_node_id/hcn_account/hcn_address.
-					var wallet = user.wallet.filter(function(wal){
-						if(wal.hcn_node_id === HCN.Api.get('host'))
-							return wal;
+					var account = user.profile.email, address = "", new_address = true;
+					// If user.wallet does not have this node, create new wallet node_id/account/address.
+					user.wallet.filter(function(wal){
+						if(wal.node_id === HCN.Api.get('host')){
+							new_address = false; // Found one
+						}
 					});
-					if (!wallet.length){
-						var hcn_account = user.profile.email;
-						var hcn_address = "";
-						HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
-							hcn_address = res;
+					if (new_address){
+						HCN.Api.exec('getnewaddress', account, function(err, res){
+							address = res;
 							// push new wallet node/account/address
-							user.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
+							user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 							});
-						saveMe = true;
 					}
 
+					// This only ocurrs w/ MasterAccount
 					if(password === 'password'){
 						user.local.changeme = true;
-						saveMe = true;
 					}
 
-					if (saveMe){
-				        setTimeout(function(){
+					setTimeout(function(){
+						if (new_address || user.local.changeme){
 							user.save(function(err){
 								if(err)
 									throw err;
-							// Set globally
-							HCN.User = user;
-							return done(null, user);
 							});
-						},1234);
-					} else {
+						}
 						// Set globally
 						HCN.User = user;
 						return done(null, user);
-					}
+					},1000);
 				});
 			});
 		}
@@ -237,28 +238,36 @@ module.exports = function(passport) {
 				email = validator.normalizeEmail(profile.emails[0].value);
 			}
 
-			var hcn_account = profile.id;
-			var hcn_address = "";
-			HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
+			var account = profile.id, address = "", new_address = false;
+			HCN.Api.exec('getaccountaddress', account, function(err, res){
 				//console.log("DEBUG: err:" + err + " res:" + res);
-				hcn_address = res;
-				});
+				address = res;
+				if (address === ""){
+					HCN.Api.exec('getnewaddress', account, function(err, res){
+						//console.log("DEBUG: err:" + err + " res:" + res);
+						address = res;
+						new_address = true;
+						});
+				}
+			});
 
 			setTimeout(function(){
 	    	process.nextTick(function(){
-				if (!hcn_address || hcn_address === ""){
+				if (!address || address === ""){
 					return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 				}
 	    		User.findOne({'facebook.id': profile.id}, function(err, user){
 	    			if(err)
 	    				return done(err); // Connection error
 	    			if(user){
-						// We just created a new address. Capture it. TODO: Don't create unneccessary addresses!
-						user.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
-						user.save(function(err){
-							if(err)
-								throw err;
-						});
+						// If we created a new address. Capture it.
+						if (new_address){
+							user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
+							user.save(function(err){
+								if(err)
+									throw err;
+							});
+						}
 						// Set globally
 						HCN.User = user;
 	    				return done(null, user); // User found
@@ -275,7 +284,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
+						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -283,7 +292,7 @@ module.exports = function(passport) {
 							// Set globally
 							HCN.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, hcn_address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
 								console.log("DEBUG: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
@@ -292,7 +301,7 @@ module.exports = function(passport) {
 	    			}
 	    		});
 	    	});
-	        },1234); // end timeout
+	        },1000); // end timeout
 	    }
 	));
 
@@ -307,28 +316,36 @@ module.exports = function(passport) {
 				email = validator.normalizeEmail(profile.emails[0].value);
 			}
 
-			var hcn_account = profile.id;
-			var hcn_address = "";
-			HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
+			var account = profile.id, address = "", new_address = false;
+			HCN.Api.exec('getaccountaddress', account, function(err, res){
 				//console.log("DEBUG: err:" + err + " res:" + res);
-				hcn_address = res;
-				});
+				address = res;
+				if (address === ""){
+					HCN.Api.exec('getnewaddress', account, function(err, res){
+						//console.log("DEBUG: err:" + err + " res:" + res);
+						address = res;
+						new_address = true;
+						});
+				}
+			});
 
 			setTimeout(function(){
 	    	process.nextTick(function(){
-				if (!hcn_address || hcn_address === ""){
+				if (!address || address === ""){
 					return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 				}
 	    		User.findOne({'google.id': profile.id}, function(err, user){
 	    			if(err)
 	    				return done(err); // Connection error
 	    			if(user){
-						// We just created a new address. Capture it. TODO: Don't create unneccessary addresses!
-						user.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
-						user.save(function(err){
-							if(err)
-								throw err;
-						});
+						// If we created a new address. Capture it.
+						if (new_address){
+							user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
+							user.save(function(err){
+								if(err)
+									throw err;
+							});
+						}
 						// Set globally
 						HCN.User = user;
 	    				return done(null, user); // User found
@@ -345,7 +362,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
+						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -353,7 +370,7 @@ module.exports = function(passport) {
 							// Set globally
 							HCN.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, hcn_address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
 								console.log("DEBUG: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
@@ -362,7 +379,7 @@ module.exports = function(passport) {
 	    			}
 	    		});
 	    	});
-	        },1234); // end timeout
+	        },1000); // end timeout
 	    }
 	));
 
@@ -377,28 +394,36 @@ module.exports = function(passport) {
 				email = validator.normalizeEmail(profile.emails[0].value);
 			}
 
-			var hcn_account = profile.id;
-			var hcn_address = "";
-			HCN.Api.exec('getnewaddress', hcn_account, function(err, res){
+			var account = profile.id, address = "", new_address = false;
+			HCN.Api.exec('getaccountaddress', account, function(err, res){
 				//console.log("DEBUG: err:" + err + " res:" + res);
-				hcn_address = res;
-				});
+				address = res;
+				if (address === ""){
+					HCN.Api.exec('getnewaddress', account, function(err, res){
+						//console.log("DEBUG: err:" + err + " res:" + res);
+						address = res;
+						new_address = true;
+						});
+				}
+			});
 
 			setTimeout(function(){
 	    	process.nextTick(function(){
-				if (!hcn_address || hcn_address === ""){
+				if (!address || address === ""){
 					return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 				}
 	    		User.findOne({'twitter.id': profile.id}, function(err, user){
 	    			if(err)
 	    				return done(err); // Connection error
 	    			if(user){
-						// We just created a new address. Capture it. TODO: Don't create unneccessary addresses!
-						user.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
-						user.save(function(err){
-							if(err)
-								throw err;
-						});
+						// If we created a new address. Capture it.
+						if (new_address){
+							user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
+							user.save(function(err){
+								if(err)
+									throw err;
+							});
+						}
 						// Set globally
 						HCN.User = user;
 	    				return done(null, user); // User found
@@ -415,7 +440,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
-						newUser.wallet.push( { hcn_node_id: HCN.Api.get('host'), hcn_account: hcn_account, hcn_address: hcn_address });
+						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 	    				newUser.save(function(err){
 							if(err)
@@ -423,7 +448,7 @@ module.exports = function(passport) {
 							// Set globally
 							HCN.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, hcn_address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
 								console.log("DEBUG: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
@@ -432,7 +457,7 @@ module.exports = function(passport) {
 	    			}
 	    		});
 	    	});
-	        },1234); // end timeout
+	        },1000); // end timeout
 	    }
 	));
 };

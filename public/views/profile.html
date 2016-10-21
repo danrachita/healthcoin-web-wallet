@@ -17,12 +17,12 @@
 					<strong>Ethnicity</strong>: <span style="float:right" data-bind="text: User().profile.ethnicity"> </span><br>
 				</p>
 				<!-- /ko -->
-				<!-- ko if: User().wallet -->
-				<h3><span class="fa fa-money"></span> Wallet</h3>
+				<!-- ko if: active_wallet -->
+				<h3><span class="fa fa-money"></span> HCN Wallet</h3>
 				<p>
-					<strong>HCN Node_ID</strong>: <span style="float:right" data-bind="text: User().wallet[0].hcn_node_id"> </span><br>
-					<strong>HCN Account</strong>: <span style="float:right" data-bind="text: User().wallet[0].hcn_account"> </span><br>
-					<strong>HCN Address</strong>: <span style="float:right" data-bind="text: User().wallet[0].hcn_address"> </span><br>
+					<strong>Node_ID</strong>: <span style="float:right" data-bind="text: active_wallet().node_id"> </span><br>
+					<strong>Account</strong>: <span style="float:right" data-bind="text: active_wallet().account"> </span><br>
+					<strong>Address</strong>: <span style="float:right" data-bind="text: active_wallet().address"> </span><br>
 				</p>
 				<!-- /ko -->
 			</div>

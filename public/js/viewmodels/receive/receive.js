@@ -20,7 +20,7 @@ define(['knockout',
 
     receiveType.prototype.load = function(User){
         if (this.account() === "")
-            this.account(User.wallet[0].hcn_account); // First time load
+            this.account(User.wallet[0].account); // First time load
 
         this.getReceiveAddresses();
     };
@@ -48,9 +48,9 @@ define(['knockout',
     };
 
     receiveType.prototype.getReceiveAddresses = function(){
-        var self = this, getReceivedByAddressesCommand = new Command('listreceivedbyaddress',['1','true']);
+        var self = this, listReceivedByAddressesCommand = new Command('listreceivedbyaddress',['1','true']);
         self.isLoadingReceiveAddresses(true);
-        var receivePromise = getReceivedByAddressesCommand.execute()
+        var receivePromise = listReceivedByAddressesCommand.execute()
             .done(function(data){
                 for (var k in data){
                     //console.log("data[k]:" + JSON.stringify(data[k]));

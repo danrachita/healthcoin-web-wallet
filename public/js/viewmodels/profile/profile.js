@@ -5,20 +5,24 @@ define(['knockout',
         self.wallet = options.parent;
 
         self.User = ko.observable("");
-        self.wallet = ko.observable([]);
+        self.active_wallet = ko.observable("");
     };
 
-    profileType.prototype.load = function(User, walletNode){
+    profileType.prototype.load = function(User, node_id){
         var self = this;
         if (self.User() === "")
             self.User(User); // First time load
-			// Get the hcn_address for the hcn_node_id
+			// Get the first address for the node_id
+            var found = false;
 			var wallet = User.wallet.filter(function(wal){
-				if(wal.hcn_node_id === walletNode)
+				if(!found && wal.node_id === node_id){
+                    found = true;
+                    self.active_wallet(wal);
 					return wal;
+				}
             });
-			if (wallet.length)
-                self.wallet(wallet);
+			if (!found)
+                console.log("Error: wallet note found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
     };
 
     return profileType;

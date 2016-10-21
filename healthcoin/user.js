@@ -29,7 +29,7 @@ var userSchema = mongoose.Schema({
 		ethnicity: String
 	},
 	wallet: [
-			{ hcn_node_id: String, hcn_account: String, hcn_address: String }
+			{ node_id: String, account: String, address: String }
 			]
 });
 

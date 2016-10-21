@@ -25,8 +25,8 @@ define(['knockout',
         self.totalFmt = ko.pureComputed(function(){return (self.total()).formatMoney(2, '.', ',');});
         self.stakeFmt = ko.pureComputed(function(){return (self.stake()).formatMoney(2, '.', ',');});
         self.availableFmt = ko.pureComputed(function(){return (self.total() - self.stake()).formatMoney(2, '.', ',');});
-        self.isLocalWallet = ko.observable(false);  // Is the node local?
-        self.walletNode = ko.observable("");        // hcn_node_id
+        self.isLocalWallet = ko.observable(false); // Is the node local?
+        self.node_id = ko.observable("");          // wallet node host/IP
 
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();
@@ -40,9 +40,9 @@ define(['knockout',
             isLocalCommand = new Command('islocal',[]),
             getWalletNodeIDCommand = new Command('getWalletNodeID',[]);
         var statusPromise = $.when(isLocalCommand.execute(), getWalletNodeIDCommand.execute())
-            .done(function(isLocalData, walletNodeData){
+            .done(function(isLocalData, getWalletNodeIDData){
                 self.isLocalWallet(isLocalData);
-                self.walletNode(walletNodeData);
+                self.node_id(getWalletNodeIDData);
                 //console.log('DEBUG: isLocalWallet: ' + self.isLocalWallet());
             });
         return statusPromise;
@@ -51,9 +51,9 @@ define(['knockout',
     // Called repeatedly.
     walletStatusType.prototype.load = function(User){
         var self = this,
-            hcn_account = (typeof User.wallet !== 'undefined' ? User.wallet[0].hcn_account : "*"),
+            account = (typeof User.wallet !== 'undefined' ? User.wallet[0].account : "*"),
             getInfoCommand = new Command('getinfo',[]),
-            getBalanceCommand = new Command('getbalance',[hcn_account]),
+            getBalanceCommand = new Command('getbalance',[account]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute(), getStakingInfoCommand.execute())
