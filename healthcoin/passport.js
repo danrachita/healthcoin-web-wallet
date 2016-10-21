@@ -53,6 +53,7 @@ module.exports = function(passport) {
 			//console.log("DEBUG: err:" + err + " res:" + res);
 			address = res;
 			if (address === ""){
+				// TODO: Future, use makekeypair and assign address to account
 				HCN.Api.exec('getnewaddress', account, function(err, res){
 					//console.log("DEBUG: err:" + err + " res:" + res);
 					address = res;
@@ -141,6 +142,7 @@ module.exports = function(passport) {
 						}
 					});
 					if (new_address){
+						// TODO: Future, use makekeypair and assign address to account
 						HCN.Api.exec('getnewaddress', account, function(err, res){
 							address = res;
 							// push new wallet node/account/address
@@ -243,6 +245,7 @@ module.exports = function(passport) {
 				//console.log("DEBUG: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
+					// TODO: Future, use makekeypair and assign address to account
 					HCN.Api.exec('getnewaddress', account, function(err, res){
 						//console.log("DEBUG: err:" + err + " res:" + res);
 						address = res;
@@ -321,6 +324,7 @@ module.exports = function(passport) {
 				//console.log("DEBUG: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
+					// TODO: Future, use makekeypair and assign address to account
 					HCN.Api.exec('getnewaddress', account, function(err, res){
 						//console.log("DEBUG: err:" + err + " res:" + res);
 						address = res;
@@ -399,6 +403,7 @@ module.exports = function(passport) {
 				//console.log("DEBUG: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
+					// TODO: Future, use makekeypair and assign address to account
 					HCN.Api.exec('getnewaddress', account, function(err, res){
 						//console.log("DEBUG: err:" + err + " res:" + res);
 						address = res;

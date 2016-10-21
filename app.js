@@ -186,6 +186,10 @@ app.get('/listtransactions/:account/:page', function(req, res){
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
+app.get('/makekeypair', function(req, res){
+    callHealthcoin('makekeypair', res, healthcoinHandler);
+});
+
 app.get('/getbalance/:account', function(req, res){
     var account = req.params.account || '*';
     if(account.length > 1)
