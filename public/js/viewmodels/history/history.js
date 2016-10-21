@@ -23,7 +23,7 @@ define(['knockout',
 
         historyType.prototype.load = function(User){
             if (this.account() === "")
-                this.account(User.wallet.hcn_account); // First time load
+                this.account(User.wallet[0].hcn_account); // First time load
 
             this.getTransactions(this.account(), this.page());
         };

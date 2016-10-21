@@ -1,54 +1,85 @@
 var User       = require('./user');
 var validator = require('validator');
 
-function Init(passport) {
+function Init() {
 
 	var HCN = require('../app.js');
 
-	return; // DEBUG:
+	User.findOne({'local.username': HCN.MasterAccount}, function(err, user){
+		if(err)
+			return err;
+		if(user){
+			// Get the hcn_address for the hcn_node_id
+			var wallet = user.wallet.filter(function(wal){
+				if(wal.hcn_node_id === HCN.MasterNode_ID)
+					return wal;
+			});
+			if (wallet.length){
+				//console.log("DEBUG: wallet:" + JSON.stringify(wallet));
+				HCN.MasterAddress  = wallet[0].hcn_address;
+				HCN.MasterPassword = "XXXXXXXX";
+				//console.log("DEBUG: Found hcn_address:" + HCN.MasterAddress + " for hcn_account:" + HCN.MasterAccount + " hcn_node_id:" + HCN.MasterNode_ID);
+				return;
+			} else {
+				console.log("Error: Could not find hcn_node_id for user:" + HCN.MasterAccount + " hcn_node_id:" + HCN.MasterNode_ID);
+				return;
+			}
+		} else {
+			// Lots of synchronous stuff needs to be done at first setup. TODO: Convert to async functions.
+			var done1 = 10, done2 = 20, done3 = 30;
+			var hcn_addresses = [];
+			HCN.Api.exec('getaddressesbyaccount', HCN.MasterAccount, function(err, res){
+				//console.log("DEBUG: err:" + err + " res:" + res);
+				hcn_addresses = res;
+				done1 = 0;
+				});
+			var interval1 = setInterval(function(){
+				if (!done1){
+					clearInterval(interval1);
 
-//	passport.use('local-signup', new LocalStrategy({
-//		usernameField: 'email',
-//		passwordField: 'password',
-//		passReqToCallback: true
-//	},
-//	function(req, email, password, done){
-		var	hcn_address = HCN.MasterAddress;
-		var	hcn_account = HCN.MasterAccount;
-//		process.nextTick(function(){
-			User.findOne({'local.username': hcn_account}, function(err, user){
-				if(err)
-					return err;
-				if(user){
-					// Get the address
-					HCN.MasterAddress = user.wallet.hcn_address;
-					HCN.MasterPassword = "XXXXXXXX";
-					return;
-				} else {
-					HCN.Api.exec('getaddressesbyaccount', hcn_account, function(err, res){
-						console.log("DEBUG: err:" + err + " res:" + res);
-						hcn_address = res;
-						});
-					if (!hcn_address || hcn_address === ""){
-						// MasterAccount has not been setup.
-						// TODO: Assign Account to main address.
-						// getaddressesbyaccount ""
-						// Foreach address: setaccount <address> <acccount>  (SEE: app.js setaccount)
+					if (!hcn_addresses.length){
+						// MasterAccount has not been labeled in wallet. Get all un-labeled addresses.
+						HCN.Api.exec('getaddressesbyaccount', "", function(err, res){
+							//console.log("DEBUG: err:" + err + " res:" + res);
+							hcn_addresses = res;
+							done2 = 0;
+							});
+						var interval2 = setInterval(function(){
+							if (!done2){
+								clearInterval(interval2);
 
-						hcn_address = HCN.MasterAddress;
+								// Foreach address: setaccount <address> <acccount>
+								for (var k in hcn_addresses){
+									// Make sure we have a Healthcoin address.
+									if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
+										HCN.Api.exec('setaccount', hcn_addresses[k], HCN.MasterAccount, function(err, res){
+											//console.log("DEBUG: err:" + err + " res:" + res);
+											if (done3){
+												HCN.MasterAddress = hcn_addresses[0]; // Use first address
+												done3 = 0;
+											}
+											});
+									}
+								}
+							} else { done2--; }
+						},1000); // end timeout
 					} else {
-						hcn_address = response[response.length -1];
+						// Make sure we have a Healthcoin address.
+						HCN.MasterAddress = hcn_addresses[0].substring(0,1) === 'H' ? hcn_addresses[0] : ""; // Use first address
+						done3 = 0;
 					}
-					response = callHealthcoin('validateaddress', res, healthcoinHandler, hcn_address);
-					if (response === "" || response.isvalid === false || response.ismine === false){
-						console.log("ERROR: Invalid MasterAddress! " + JSON.stringify(response));
-						process.exit(1);
-					}
+				} else { done1--; }
+			},1000); // end timeout
 
+			var interval3 = setInterval(function(){
+				console.log("DEBUG: done1,2,3:" + done1 + "," + done2 + "," + done3 + " MasterAddress:" + HCN.MasterAddress);
+				if (!done3){
+					clearInterval(interval3);
 					// Create the MasterAccount
 					var newUser = new User();
-					newUser.local.username = hcn_account;
+					newUser.local.username = HCN.MasterAccount;
 					newUser.local.password = newUser.local.generateHash(HCN.MasterPassword);
+					newUser.local.changeme = HCN.MasterPassword === "password" ? true : false;
 					newUser.profile.role = "Admin";
 					newUser.profile.name = "Healthcoin Admin";
 					newUser.profile.email = HCN.MasterEmail;
@@ -57,25 +88,21 @@ function Init(passport) {
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
-					newUser.wallet.hcn_node_id = HCN.Api.get(host);
-					newUser.wallet.hcn_account = hcn_account;
-					newUser.wallet.hcn_address = hcn_address;
-
+					newUser.wallet.push( { hcn_node_id: HCN.MasterNode_ID, hcn_account: HCN.MasterAccount, hcn_address: HCN.MasterAddress });
+	
 					newUser.save(function(err){
 						if(err)
 							throw err;
 						// Set globally
-						HCN.MasterAddress = user.wallet.hcn_address;
 						HCN.MasterPassword = "XXXXXXXX";
 						return;
 					});
-				}
-			});
-//		});
-
-//	}));
+				} else { done3--; }
+			},1000); // end timeout
+		}
+	});
 }
 
-module.exports = function(passport) {
-    Init(passport);
+module.exports = function() {
+    Init();
 };

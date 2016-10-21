@@ -30,7 +30,7 @@ define(['knockout',
         self.console = new Console({parent: self});
         self.profile = new Profile({parent: self});
 
-        self.timeout = 2345;
+        self.timeout = 1000;
 
         self.pollWalletStatus();
     };
@@ -39,24 +39,25 @@ define(['knockout',
     walletType.prototype.getUserAccount = function(){
         var self = this,
             getUserAccountCommand = new Command('getuseraccount',[]);
-        var statusPromise = $.when(getUserAccountCommand.execute())
+        var userPromise = $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined')
                     self.User(getUserAccountData.User);
                 //console.log('DEBUG: User: ' + JSON.stringify(self.User()));
             });
+        return userPromise;
     };
 
     walletType.prototype.refresh = function(){
         var self = this;
         if (self.timeout < 60000) {
-            self.walletStatus.isLocal();
+            self.walletStatus.getNodeInfo();
         }
         return $.when(self.walletStatus.load(self.User()),
                       self.biomarkers.load(self.User()),
                       self.history.load(self.User()),
                       self.receive.load(self.User()),
-                      self.profile.load(self.User()));
+                      self.profile.load(self.User(), self.walletStatus.walletNode()));
     };
 
     walletType.prototype.pollWalletStatus = function(){

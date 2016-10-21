@@ -5,25 +5,26 @@
 		<div class="col-sm-6">
 			<div class="well">
 				<h3><span class="fa fa-user"></span> Profile</h3>
-					<!-- ko if: User().profile -->
-					<p>
-						<strong>Role</strong>: <span style="float:right" data-bind="text: User().profile.role"> </span><br>
-						<strong>Name</strong>: <span style="float:right" data-bind="text: User().profile.name"> </span><br>
-						<strong>Email</strong>: <span style="float:right" data-bind="text: User().profile.email"> </span><br>
-						<strong>Description</strong>: <span style="float:right" data-bind="text: User().profile.description"> </span><br>
-						<strong>Age</strong>: <span style="float:right" data-bind="text: User().profile.age"> </span><br>
-						<strong>Weight</strong>: <span style="float:right" data-bind="text: User().profile.weight"> </span><br>
-						<strong>Gender</strong>: <span style="float:right" data-bind="text: User().profile.gender"> </span><br>
-						<strong>Ethnicity</strong>: <span style="float:right" data-bind="text: User().profile.ethnicity"> </span><br>
-					</p>
-					<!-- /ko -->
-					<!-- ko if: User().wallet -->
-					<p>
-						<strong>HCN Node_ID</strong>: <span style="float:right" data-bind="text: User().wallet.hcn_node_id"> </span><br>
-						<strong>HCN Account</strong>: <span style="float:right" data-bind="text: User().wallet.hcn_account"> </span><br>
-						<strong>HCN Address</strong>: <span style="float:right" data-bind="text: User().wallet.hcn_address"> </span><br>
-					</p>
-					<!-- /ko -->
+				<!-- ko if: User().profile -->
+				<p>
+					<strong>Role</strong>: <span style="float:right" data-bind="text: User().profile.role"> </span><br>
+					<strong>Name</strong>: <span style="float:right" data-bind="text: User().profile.name"> </span><br>
+					<strong>Email</strong>: <span style="float:right" data-bind="text: User().profile.email"> </span><br>
+					<strong>Description</strong>: <span style="float:right" data-bind="text: User().profile.description"> </span><br>
+					<strong>Age</strong>: <span style="float:right" data-bind="text: User().profile.age"> </span><br>
+					<strong>Weight</strong>: <span style="float:right" data-bind="text: User().profile.weight"> </span><br>
+					<strong>Gender</strong>: <span style="float:right" data-bind="text: User().profile.gender"> </span><br>
+					<strong>Ethnicity</strong>: <span style="float:right" data-bind="text: User().profile.ethnicity"> </span><br>
+				</p>
+				<!-- /ko -->
+				<!-- ko if: User().wallet -->
+				<h3><span class="fa fa-money"></span> Wallet</h3>
+				<p>
+					<strong>HCN Node_ID</strong>: <span style="float:right" data-bind="text: User().wallet[0].hcn_node_id"> </span><br>
+					<strong>HCN Account</strong>: <span style="float:right" data-bind="text: User().wallet[0].hcn_account"> </span><br>
+					<strong>HCN Address</strong>: <span style="float:right" data-bind="text: User().wallet[0].hcn_address"> </span><br>
+				</p>
+				<!-- /ko -->
 			</div>
 		</div>
 

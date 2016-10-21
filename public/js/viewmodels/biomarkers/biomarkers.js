@@ -47,7 +47,7 @@ define(['knockout',
 
     biomarkersType.prototype.load = function(User){
         if (this.recipientAddress() === "")
-            this.recipientAddress(User.wallet.hcn_address); // First time load
+            this.recipientAddress(User.wallet[0].hcn_address); // First time load
     };
 
     function lockWallet(){

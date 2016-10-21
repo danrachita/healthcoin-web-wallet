@@ -45,31 +45,15 @@ HCN.mdbPort = healthcoinApi.mdbPort; // "
 HCN.appHost = '127.0.0.1';
 HCN.appPort = app.get('port');
 
-HCN.MasterAccount  = "MASTER_ACCOUNT";                     // Master UI login account, and Label to assign to "" account(s).
-HCN.MasterEmail    = "healthcoin@nequals1.io";             // Master email account.
-HCN.MasterAddress  = "HMmvTTDpVq72SPm44P47Xg29N2R93MjCiy"; // Master Wallet Address to move coin from (assigned in init-wallet)
-HCN.MasterPassword = "password";                           // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
+HCN.MasterNode_ID  = HCN.Api.get('host');       // Master UI login account, and Label to assign to "" account(s).
+HCN.MasterAccount  = "MASTER_ACCOUNT";          // Master UI login account, and Label to assign to "" account(s).
+HCN.MasterAddress  = "";                        // Master Wallet Address to move coin from (assigned in init-wallet)
+HCN.MasterEmail    = "healthcoin@nequals1.io";  // Master email account.
+HCN.MasterPassword = "password";                // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
 HCN.User           = {};
 
 module.exports = HCN;
 // End HCN
-
-function callHealthcoin(command, res, handler){
-    var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
-    var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
-    //console.log("DEBUG: command:"+command+" args:"+args);
-    return HCN.Api[command].apply(HCN.Api, callargs);
-}
-function healthcoinHandler(err, result){
-    //console.log("DEBUG: err:"+err+" result:"+result);
-    var response = {
-        error: JSON.parse(err ? err.message : null),
-        result: result
-    };
-    if (typeof this.res.send !== 'undefined' && this.res.send){
-        this.res.send(JSON.stringify(response));
-    }
-}
 
 // Auth modules
 app.use(morgan('dev'));
@@ -93,7 +77,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // DB / Auth
 mongoose.connect('mongodb://' + HCN.mdbHost + ':' + HCN.mdbPort + '/healthcoin');
-require('./healthcoin/init-wallet')(passport); // Requires HCN
+require('./healthcoin/init-wallet')();      // Requires HCN
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./healthcoin/passport')(passport); // Requires HCN
 
@@ -133,6 +117,23 @@ app.use(function(err, req, res, next) {
 });
 
 
+function callHealthcoin(command, res, handler){
+    var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
+    var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
+    //console.log("DEBUG: command:"+command+" args:"+args);
+    return HCN.Api[command].apply(HCN.Api, callargs);
+}
+function healthcoinHandler(err, result){
+    //console.log("DEBUG: err:"+err+" result:"+result);
+    var response = {
+        error: JSON.parse(err ? err.message : null),
+        result: result
+    };
+    if (typeof this.res.send !== 'undefined' && this.res.send){
+        this.res.send(JSON.stringify(response));
+    }
+}
+
 // Non-RPC routes //
 
 // Returns true if the RPC node is localhost.
@@ -140,6 +141,15 @@ app.get('/islocal', function(req,res){
     var response = {
         error: null,
         result: HCN.isLocal
+    };
+    res.send(JSON.stringify(response));
+});
+
+// Returns this rpc wallet node.
+app.get('/getwalletnodeid', function(req,res){
+    var response = {
+        error: null,
+        result: HCN.Api.get('host')
     };
     res.send(JSON.stringify(response));
 });

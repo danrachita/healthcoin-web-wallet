@@ -25,7 +25,8 @@ define(['knockout',
         self.totalFmt = ko.pureComputed(function(){return (self.total()).formatMoney(2, '.', ',');});
         self.stakeFmt = ko.pureComputed(function(){return (self.stake()).formatMoney(2, '.', ',');});
         self.availableFmt = ko.pureComputed(function(){return (self.total() - self.stake()).formatMoney(2, '.', ',');});
-        self.isLocalWallet = ko.observable(false); // Is the node local?
+        self.isLocalWallet = ko.observable(false);  // Is the node local?
+        self.walletNode = ko.observable("");        // hcn_node_id
 
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();
@@ -34,20 +35,23 @@ define(['knockout',
     };
 
     // Called once at startup.
-    walletStatusType.prototype.isLocal = function(){
+    walletStatusType.prototype.getNodeInfo = function(){
         var self = this,
-            isLocalCommand = new Command('islocal',[]);
-        var statusPromise = $.when(isLocalCommand.execute())
-            .done(function(isLocalData){
+            isLocalCommand = new Command('islocal',[]),
+            getWalletNodeIDCommand = new Command('getWalletNodeID',[]);
+        var statusPromise = $.when(isLocalCommand.execute(), getWalletNodeIDCommand.execute())
+            .done(function(isLocalData, walletNodeData){
                 self.isLocalWallet(isLocalData);
+                self.walletNode(walletNodeData);
                 //console.log('DEBUG: isLocalWallet: ' + self.isLocalWallet());
             });
+        return statusPromise;
     };
 
     // Called repeatedly.
     walletStatusType.prototype.load = function(User){
         var self = this,
-            hcn_account = (typeof User.wallet !== 'undefined' ? User.wallet.hcn_account : "*"),
+            hcn_account = (typeof User.wallet !== 'undefined' ? User.wallet[0].hcn_account : "*"),
             getInfoCommand = new Command('getinfo',[]),
             getBalanceCommand = new Command('getbalance',[hcn_account]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);

@@ -28,11 +28,9 @@ var userSchema = mongoose.Schema({
 		gender: String,
 		ethnicity: String
 	},
-	wallet: {
-		hcn_node_id: String,
-		hcn_account: String,
-		hcn_address: String
-	}
+	wallet: [
+			{ hcn_node_id: String, hcn_account: String, hcn_address: String }
+			]
 });
 
 userSchema.methods.generateHash = function(password){
