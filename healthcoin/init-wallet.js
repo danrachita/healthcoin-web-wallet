@@ -4,11 +4,18 @@ var validator = require('validator');
 function Init() {
 
 	var HCN = require('../app.js');
+	var foundNode_ID = false;
+
+	User.findOne({'local.username': HCN.MasterAccount, 'wallet.node_id': HCN.MasterNode_ID}, function(err, user){
+		if (user)
+			foundNode_ID = true;
+	});
+
 
 	User.findOne({'local.username': HCN.MasterAccount}, function(err, user){
 		if(err)
 			return err;
-		if(user){
+		if(user && !foundNode_ID){
             var found = false;
 			// Get the address for the node_id
 			var wallet = user.wallet.filter(function(wal){
@@ -73,7 +80,7 @@ function Init() {
 
 			var interval3 = setInterval(function(){
 				console.log("DEBUG: done1,2,3:" + done1 + "," + done2 + "," + done3 + " MasterAddress:" + HCN.MasterAddress);
-				if (!done3){
+				if (!done3 && !user){
 					clearInterval(interval3);
 					// Create the MasterAccount
 					var newUser = new User();
@@ -97,7 +104,12 @@ function Init() {
 						HCN.MasterPassword = "XXXXXXXX";
 						return;
 					});
-				} else { done3--; }
+				} else {
+					if (user){
+						clearInterval(interval3);
+					}
+					done3--;
+				}
 			},1000); // end timeout
 		}
 	});

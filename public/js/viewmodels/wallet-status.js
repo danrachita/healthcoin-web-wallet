@@ -29,6 +29,7 @@ define(['knockout',
         self.node_id = ko.observable("");          // wallet node host/IP
         self.account = ko.observable("");
         self.address = ko.observable("");
+        self.role = ko.observable("");
 
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();
@@ -55,6 +56,7 @@ define(['knockout',
         var self = this,
             account = (typeof User.wallet !== 'undefined' ? User.wallet[0].account : "*"),
             address = (typeof User.wallet !== 'undefined' ? User.wallet[0].address : ""),
+            role = (typeof User.profile !== 'undefined' ? User.profile.role : "User"),
             getInfoCommand = new Command('getinfo',[]),
             getBalanceCommand = new Command('getbalance',[account]),
             getStakingInfoCommand = new Command('getstakinginfo',[]);
@@ -66,6 +68,7 @@ define(['knockout',
                 //console.log(getStakingInfoData);
                 self.account(account);
                 self.address(address);
+                self.role(role);
                 if (account === "MASTER_ACCOUNT"){
                     self.stake(getInfoData.stake);
                     self.total(getInfoData.balance + self.stake());
