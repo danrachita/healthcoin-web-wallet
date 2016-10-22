@@ -138,7 +138,7 @@ module.exports = function(passport) {
 						return done(null, false, req.flash('loginMessage', 'Invalid password.'));
 					}
 
-					var account = user.profile.email, address = "", new_address = true;
+					var account = email, address = "", new_address = true;
 					// If user.wallet does not have this node, create new wallet node_id/account/address.
 					user.wallet.filter(function(wal){
 						if(wal.node_id === HCN.Api.get('host')){
