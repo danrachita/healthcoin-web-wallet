@@ -18,8 +18,10 @@
   },
   "dependencies": {
     "async": "0.2.10",
+    "atob": "latest",
     "bcryptjs": "~2.3.0",
     "body-parser": "latest",
+    "btoa": "latest",
     "connect-flash": "~0.1.1",
     "cookie": "0.3.1",
     "cookie-parser": "latest",

@@ -11,7 +11,7 @@ define(['knockout',
     profileType.prototype.load = function(User, node_id){
         var self = this;
         if (self.User() === "")
-            self.User(User); // First time load
+            self.User(User);
 			// Get the wallet for the node_id
             var found = false;
 			var wallet = User.wallet.filter(function(wal){

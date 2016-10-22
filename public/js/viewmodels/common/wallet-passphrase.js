@@ -50,7 +50,11 @@ define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','view
     walletPassphraseType.prototype.openWallet = function(encrypt){
         var self = this,
             openWalletDeferred = $.Deferred(),
-            walletPassphraseCommand = encrypt ? new Command('encryptwallet', [self.walletPassphrase()]) : new Command('walletpassphrase', [encodeURIComponent(self.walletPassphrase()), defaultWalletStakingUnlockTime,  self.stakingOnly()]);
+            // TODO: Use encryption instead of base64
+            walletPassphraseCommand = encrypt ?
+                new Command('encryptwallet', [encodeURIComponent(btoa(self.walletPassphrase()))]) :
+                new Command('walletpassphrase', [encodeURIComponent(btoa(self.walletPassphrase())), defaultWalletStakingUnlockTime,  self.stakingOnly()]);
+
         walletPassphraseCommand.execute()
             .done(function(result){
                 openWalletDeferred.resolve(result);

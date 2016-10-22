@@ -236,7 +236,7 @@ body {
 }
 
 .history-timereceived {
-  width: 15%;
+  width: 20%;
 }
 
 .history-category {
@@ -244,15 +244,15 @@ body {
 }
 
 .history-address {
-  width: 20%;
+  width: 30%;
 }
 
 .history-txcomment {
-  width: 40%;
+  width: 30%;
 }
 
 .history-ammount {
-  width: 15%;
+  width: 10%;
 }
 
 #receive-container .glyph-icon-plus{

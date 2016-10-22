@@ -8,6 +8,7 @@ define(['knockout',
         self.wallet = options.parent;
 
         self.account = ko.observable("");
+        self.address = ko.observable("");
         self.addresses = ko.observableArray([]);
         self.isLoadingReceiveAddresses = ko.observable(false);
         self.isLoading = ko.computed(function(){
@@ -22,11 +23,12 @@ define(['knockout',
         var self = this;
         if (self.account() === ""){
             var found = false;
-            // Get the account for the node_id
+            // Get the account/address for the node_id
             var wallet = User.wallet.filter(function(wal){
                 if(!found && wal.node_id === node_id){
                     found = true;
-                    self.account(wal.account); // First time load
+                    self.account(wal.account);
+                    self.address(wal.address);
                     return wal;
                 }
             });

@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Type</th>
+                <th>Category</th>
                 <th>Account</th>
                 <th>Comment</th>
                 <th>Amount</th>
@@ -13,10 +13,10 @@
         <tbody data-bind="foreach: transactions">
             <tr>
                 <td class="history-timereceived" data-bind="text: timeReceived"></td>
-                <td class="history-category" data-bind="text: category"></td>
+                <td class="history-type" data-bind="text: category"></td>
                 <td class="history-address" data-bind="text: (account !== '' ? account : address)"></td>
                 <td class="history-txcomment" data-bind="text: txcomment"></td>
-                <td class="history-ammount" data-bind="numericText: $data.amount + $data.fee, precision: 4"></td>
+                <td class="history-ammount" data-bind="numericText: $data.amount + $data.fee, precision: 5"></td>
             </tr>
         </tbody>
     </table>

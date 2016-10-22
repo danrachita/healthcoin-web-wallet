@@ -7,6 +7,7 @@ define(['knockout',
             self.wallet = opts.parent;
 
             this.account = ko.observable("");
+            this.address = ko.observable("");
             this.page = ko.observable(1);
             this.pageFirst = ko.observable(-1);
             this.pagePrev = ko.observable(0);
@@ -29,7 +30,8 @@ define(['knockout',
                 var wallet = User.wallet.filter(function(wal){
                     if(!found && wal.node_id === node_id){
                         found = true;
-                        self.account(wal.account); // First time load
+                        self.account(wal.account);
+                        self.address(wal.address);
                         return wal;
                     }
                 });

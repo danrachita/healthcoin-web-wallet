@@ -51,11 +51,16 @@ define(['knockout',
 
     walletType.prototype.refresh = function(){
         var self = this, refreshPromise = "";
-        refreshPromise = $.when(self.walletStatus.load(self.User()),
+        if (self.timeout < 60000){ // First timeout
+            refreshPromise = $.when(self.walletStatus.load(self.User()),
                       self.biomarkers.load(self.User(), self.walletStatus.node_id()),
-                      self.history.load(self.User(), self.walletStatus.node_id()),
+                      self.send.load(self.User(), self.walletStatus.node_id()),
                       self.receive.load(self.User(), self.walletStatus.node_id()),
+                      self.history.load(self.User(), self.walletStatus.node_id()),
                       self.profile.load(self.User(), self.walletStatus.node_id()));
+        } else {
+            refreshPromise = $.when(self.walletStatus.refresh());
+        }
         return refreshPromise;
     };
 
@@ -141,6 +146,7 @@ define(['knockout',
     walletType.prototype.promptToUnlockForStaking = function(){
         new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'Unlock the wallet','OK')
             .done(function(result){
+                result.passphrase = "XXXXXXXX";
                 console.log(result);
             })
             .fail(function(error){

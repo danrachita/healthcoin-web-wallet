@@ -5,10 +5,10 @@ define(['knockout'],function(ko){
         this.args = ko.observableArray(args);
     };
 
-    function parseCommand(commandText, args){
+    function parseCommand(commandName, args){
         //var url = 'http://127.0.0.1:8181/';
         var url = 'http://' + window.location.hostname + ':8181/'; // Allow CORS
-        url = url.concat(commandText.concat('/'));
+        url = url.concat(commandName.concat('/'));
         if(args && args.length > 0){
             url = url.concat(args.join('/'));
         }
@@ -17,7 +17,6 @@ define(['knockout'],function(ko){
 
     commandType.prototype.execute = function(){
         var self = this, deferred = $.Deferred();
-        //console.log('DEBUG: commandName' + self.commandName() + ' args:' + self.args());
         $.ajax({
             async: true,
             method: 'GET',

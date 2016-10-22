@@ -27,13 +27,16 @@ define(['knockout',
         self.availableFmt = ko.pureComputed(function(){return (self.total() - self.stake()).formatMoney(2, '.', ',');});
         self.isLocalWallet = ko.observable(false); // Is the node local?
         self.node_id = ko.observable("");          // wallet node host/IP
-        self.account = ko.observable("");
-        self.address = ko.observable("");
+        self.account = ko.observable("");          // Current User account
         self.role = ko.observable("");
 
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();
             return (total - stake);
+        }).extend({ rateLimit: 500 });
+ 
+        this.encryptionStatus = ko.pureComputed(function(){
+            return (self.isEncrypted === "Yes");
         }).extend({ rateLimit: 500 });
     };
 
@@ -51,11 +54,9 @@ define(['knockout',
         return statusPromise;
     };
 
-    // Called repeatedly.
     walletStatusType.prototype.load = function(User){
         var self = this,
             account = (typeof User.wallet !== 'undefined' ? User.wallet[0].account : "*"),
-            address = (typeof User.wallet !== 'undefined' ? User.wallet[0].address : ""),
             role = (typeof User.profile !== 'undefined' ? User.profile.role : "User"),
             getInfoCommand = new Command('getinfo',[]),
             getBalanceCommand = new Command('getbalance',[account]),
@@ -67,9 +68,38 @@ define(['knockout',
                 //console.log(getBalanceData);
                 //console.log(getStakingInfoData);
                 self.account(account);
-                self.address(address);
                 self.role(role);
-                if (account === "MASTER_ACCOUNT"){
+                if (self.account() === "MASTER_ACCOUNT"){
+                    self.stake(getInfoData.stake);
+                    self.total(getInfoData.balance + self.stake());
+                } else {
+                    // Only show details related to user account
+                    self.stake(0);
+                    self.total((!isNaN(getBalanceData) ? getBalanceData : 0));
+                }
+                self.blocks(getInfoData.blocks);
+                self.isEnabled(getStakingInfoData.Enabled ? "Yes" : "No");
+                self.isStaking(getStakingInfoData.Staking ? "Yes" : "No");
+                self.isEncrypted(typeof getInfoData.unlocked_until !== 'undefined' ? "Yes" : "No");
+                if (typeof getInfoData.unlocked_until !== 'undefined' && getInfoData.unlocked_until > 0){
+                    self.isUnlocked("Yes");
+                }else{
+                    self.isUnlocked("No");
+                }
+                self.isLoadingStatus(false); 
+            });
+        return statusPromise;
+    };
+
+    walletStatusType.prototype.refresh = function(){
+        var self = this,
+            getInfoCommand = new Command('getinfo',[]),
+            getBalanceCommand = new Command('getbalance',[self.account()]),
+            getStakingInfoCommand = new Command('getstakinginfo',[]);
+        self.isLoadingStatus(true);
+        var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute(), getStakingInfoCommand.execute())
+            .done(function(getInfoData, getBalanceData, getStakingInfoData){
+                if (self.account() === "MASTER_ACCOUNT"){
                     self.stake(getInfoData.stake);
                     self.total(getInfoData.balance + self.stake());
                 } else {

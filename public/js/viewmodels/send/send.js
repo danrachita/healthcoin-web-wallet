@@ -7,6 +7,9 @@ define(['knockout',
     var sendType = function(options){
         var self = this, sendOptions = options || {};
         this.wallet = sendOptions.parent;
+
+        this.account = ko.observable("");
+
         this.recipientAddress = ko.observable("").extend( 
             { 
                 pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
@@ -35,6 +38,23 @@ define(['knockout',
             canSend = isNumber && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
             return canSend;
         });
+    };
+
+    sendType.prototype.load = function(User, node_id){
+        var self = this;
+        if (self.account() === ""){
+            var found = false;
+			// Get the address/account for the node_id
+			var wallet = User.wallet.filter(function(wal){
+				if(!found && wal.node_id === node_id){
+                    found = true;
+                    self.account(wal.account);
+					return wal;
+				}
+			});
+			if (!found)
+                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
+        }
     };
 
     function lockWallet(){
@@ -109,7 +129,7 @@ define(['knockout',
     
     sendType.prototype.sendToAddress = function(auth) { 
         var self = this;
-        sendCommand = new Command('sendtoaddress', [self.recipientAddress(), self.amount()]).execute()
+        sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount()]).execute()
             .done(function(){
                 console.log("Send Success");
                 self.recipientAddress('');

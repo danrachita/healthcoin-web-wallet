@@ -50,12 +50,10 @@ module.exports = function(passport) {
 
 		var account = email, address = "", new_address = false;
 		HCN.Api.exec('getaccountaddress', account, function(err, res){
-			//console.log("DEBUG: err:" + err + " res:" + res);
 			address = res;
 			if (address === ""){
 				// TODO: Future, use makekeypair and assign address to account
 				HCN.Api.exec('getnewaddress', account, function(err, res){
-					//console.log("DEBUG: err:" + err + " res:" + res);
 					address = res;
 					new_address = true;
 					});
@@ -79,8 +77,8 @@ module.exports = function(passport) {
 								throw err;
 						});
 						// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-						HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-							console.log("DEBUG: err:" + err + " res:" + res);
+						HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							if (err) console.log("Error: err:" + err + " res:" + res);
 							});
 					}
 					// Set globally
@@ -109,8 +107,8 @@ module.exports = function(passport) {
 					// Set globally
 					HCN.User = newUser;
 					// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-					HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-						console.log("DEBUG: err:" + err + " res:" + res);
+					HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+						if (err) console.log("Error: err:" + err + " res:" + res);
 						});
 					return done(null, newUser);
 				}
@@ -166,8 +164,8 @@ module.exports = function(passport) {
 									throw err;
 							});
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-								console.log("DEBUG: err:" + err + " res:" + res);
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
 						// Set globally
@@ -250,12 +248,12 @@ module.exports = function(passport) {
 
 			var account = profile.id, address = "", new_address = false;
 			HCN.Api.exec('getaccountaddress', account, function(err, res){
-				//console.log("DEBUG: err:" + err + " res:" + res);
+				if (err) console.log("Error: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
 					// TODO: Future, use makekeypair and assign address to account
 					HCN.Api.exec('getnewaddress', account, function(err, res){
-						//console.log("DEBUG: err:" + err + " res:" + res);
+						if (err) console.log("Error: err:" + err + " res:" + res);
 						address = res;
 						new_address = true;
 						});
@@ -279,8 +277,8 @@ module.exports = function(passport) {
 									throw err;
 							});
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-								console.log("DEBUG: err:" + err + " res:" + res);
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
 						// Set globally
@@ -307,8 +305,8 @@ module.exports = function(passport) {
 							// Set globally
 							HCN.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-								console.log("DEBUG: err:" + err + " res:" + res);
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
 	    				});
@@ -333,12 +331,12 @@ module.exports = function(passport) {
 
 			var account = profile.id, address = "", new_address = false;
 			HCN.Api.exec('getaccountaddress', account, function(err, res){
-				//console.log("DEBUG: err:" + err + " res:" + res);
+				if (err) console.log("Error: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
 					// TODO: Future, use makekeypair and assign address to account
 					HCN.Api.exec('getnewaddress', account, function(err, res){
-						//console.log("DEBUG: err:" + err + " res:" + res);
+						if (err) console.log("Error: err:" + err + " res:" + res);
 						address = res;
 						new_address = true;
 						});
@@ -362,8 +360,8 @@ module.exports = function(passport) {
 									throw err;
 							});
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-								console.log("DEBUG: err:" + err + " res:" + res);
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
 						// Set globally
@@ -390,8 +388,8 @@ module.exports = function(passport) {
 							// Set globally
 							HCN.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-								console.log("DEBUG: err:" + err + " res:" + res);
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
 	    				});
@@ -416,12 +414,12 @@ module.exports = function(passport) {
 
 			var account = profile.id, address = "", new_address = false;
 			HCN.Api.exec('getaccountaddress', account, function(err, res){
-				//console.log("DEBUG: err:" + err + " res:" + res);
+				if (err) console.log("Error: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
 					// TODO: Future, use makekeypair and assign address to account
 					HCN.Api.exec('getnewaddress', account, function(err, res){
-						//console.log("DEBUG: err:" + err + " res:" + res);
+						if (err) console.log("Error: err:" + err + " res:" + res);
 						address = res;
 						new_address = true;
 						});
@@ -444,8 +442,8 @@ module.exports = function(passport) {
 								if(err)
 									throw err;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-								console.log("DEBUG: err:" + err + " res:" + res);
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 							});
 						}
@@ -473,8 +471,8 @@ module.exports = function(passport) {
 							// Set globally
 							HCN.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, 1.0, 1, "", "", "Welcome to Healthcoin!", function(err, res){
-								console.log("DEBUG: err:" + err + " res:" + res);
+							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
 	    				});

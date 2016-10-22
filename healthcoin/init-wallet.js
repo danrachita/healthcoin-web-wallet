@@ -60,7 +60,7 @@ function Init() {
 									//       You have to go into the Qt wallet to label it. TODO: Fix rpc command.
 									if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
 										HCN.Api.exec('setaccount', hcn_addresses[k], HCN.MasterAccount, function(err, res){
-											//console.log("DEBUG: err:" + err + " res:" + res);
+											if (err) console.log("Error: err:" + err + " res:" + res);
 											if (done3){
 												HCN.MasterAddress = hcn_addresses[0]; // Use first address
 												done3 = 0;

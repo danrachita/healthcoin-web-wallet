@@ -18,6 +18,7 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
+var atob = require('atob');
 var app = express();
 
 var cookieParser = require('cookie-parser');
@@ -50,6 +51,8 @@ HCN.MasterAccount  = "MASTER_ACCOUNT";          // Master UI login account, and 
 HCN.MasterAddress  = "";                        // Master Wallet Address to move coin from (assigned in init-wallet)
 HCN.MasterEmail    = "healthcoin@nequals1.io";  // Master email account.
 HCN.MasterPassword = "password";                // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
+HCN.NewUserAmount  = 1.0;                       // Aount to send new users at sign-up.
+HCN.MaxSendAmount  = 100.0;                     // Normal send amounts from MasterAccount should be small.
 HCN.User           = {};
 
 module.exports = HCN;
@@ -200,16 +203,37 @@ app.get('/getbalance/:account', function(req, res){
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
-app.get('/move/:fromaccount/:toaccount/:amount/:minconf/:txcomment?', function(req, res){
+// Note: The wallet is account based. Always use accounts!
+app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentto?/:txcomment?', function(req, res){
+    var fromaccount = req.params.fromaccount || '*';
+    var toaddress = req.params.toaddress || '';
+    var amount = parseFloat(req.params.amount) || 0.0;
+    var minconf = parseInt(req.params.minconf || 1);
+    var comment = req.params.comment || '';
+    var commentto = req.params.commentto || '';
+    var txcomment = decodeURIComponent(req.params.txcomment || '');
+    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount < HCN.MaxSendAmount)
+        callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
+    else
+        res.send(JSON.stringify("Error: Invalid sendfrom."));
+});
+
+// Note: Use sendfrom instead as the wallet is account based
+app.get('/sendtoaddress/:toaddress/:amount/:comment?/commentto?/:txcomment?', function(req, res){
+    var amount = parseFloat(req.params.amount);
+    callHealthcoin('sendtoaddress', res, healthcoinHandler, req.params.toaddress, amount);
+});
+
+app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(req, res){
     var fromaccount = req.params.fromaccount || '*';
     var toaccount = req.params.toaccount || '*';
-    var amount = parseFloat(req.params.amount) || 0;
-    var minconf = parseFloat(req.params.minconf) || 1;
-    var txcomment = req.params.txcomment || '';
-    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < HCN.hcn_balance && minconf)
-        callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, minconf, txcomment);
+    var amount = parseFloat(req.params.amount) || 0.0;
+    var minconf = parseInt(req.params.minconf || 1);
+    var comment = req.params.comment || ''; // Not txcomment
+    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < HCN.MaxSendAmount)
+        callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, minconf, comment);
     else
-        res.send(JSON.stringify("Error: Invalid movement."));
+        res.send(JSON.stringify("Error: Invalid move."));
 });
 
 // New addresses must have an account
@@ -221,26 +245,34 @@ app.get('/getnewaddress/:account', function(req, res){
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
+app.get('/setaccount/:address/:account', function(req, res){
+    HCN.Api.setaccount(req.params.address, req.params.account, function(err, result){
+        console.log("err:"+err+" result:"+result);
+        if(err)
+            res.send(err);
+        else
+            res.send(JSON.stringify(result));
+    });
+});
+
 app.get('/validateaddress/:address', function(req, res){
     var address = req.params.address || 'blah';
     callHealthcoin('validateaddress', res, healthcoinHandler, address);
 });
 
-app.get('/sendtoaddress/:toaddress/:amount', function(req, res){
-    var amount = parseFloat(req.params.amount);
-    callHealthcoin('sendtoaddress', res, healthcoinHandler, req.params.toaddress, amount);
-});
-
 app.get('/encryptwallet/:passphrase', function(req,res){
-    callHealthcoin('encryptwallet', res, healthcoinHandler, req.params.passphrase);
+    var passphrase = atob(req.params.passphrase); // TODO: Use encryption instead of base64
+    if (passphrase){
+        callHealthcoin('encryptwallet', res, healthcoinHandler, passphrase);
+    }
 });
 
-app.get('/walletpassphrase/:passphrase?/:timeout?/:stakingonly?', function(req,res){
+app.get('/walletpassphrase/:passphrase/:timeout/:stakingonly', function(req,res){
     var stakingOnly = req.params.stakingonly === 'true',
         timeout = parseInt(req.params.timeout),
-        passphrase = decodeURIComponent(req.params.passphrase);
+        passphrase = atob(req.params.passphrase); // TODO: Use encryption instead of base64
     if (passphrase){
-        callHealthcoin('walletpassphrase', res, healthcoinHandler, req.params.passphrase, timeout, stakingOnly);
+        callHealthcoin('walletpassphrase', res, healthcoinHandler, passphrase, timeout, stakingOnly);
     }
 });
 
@@ -271,26 +303,6 @@ app.get('/getaccount/:address', function(req, res){
 
 app.get('/listaddressgroupings', function(req, res){
     HCN.Api.listaddressgroupings(function(err, result){
-        console.log("err:"+err+" result:"+result);
-        if(err)
-            res.send(err);
-        else
-            res.send(JSON.stringify(result));
-    });
-});
-
-app.get('/sendfrom/:fromaccount/:toaddress/:amount', function(req, res){
-    HCN.Api.sendfrom(req.params.fromaccount, req.params.toaddress, parseInt(req.params.amount), function(err, result){
-        console.log("err:"+err+" result:"+result);
-        if(err)
-            res.send(err);
-        else
-            res.send(JSON.stringify(result));
-    });
-});
-
-app.get('/setaccount/:address/:account', function(req, res){
-    HCN.Api.setaccount(req.params.address, req.params.account, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
