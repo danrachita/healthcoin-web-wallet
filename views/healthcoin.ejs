@@ -37,7 +37,7 @@
     <!-- ko if: walletStatus.role() === 'Admin' -->
                 <li> <a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-console" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a> </li>
     <!-- /ko -->
-    <!-- ko if: walletStatus.isLocalWallet() -->
+    <!-- ko if: walletStatus.isLocalWallet() || walletStatus.role() === 'Admin' -->
         <!-- ko if: walletStatus.isUnlocked() === 'Yes' -->
                 <li> <a href="#"><div data-bind="click:lockWallet" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-eye-open" aria-hidden="true"><span class="sidebar-nav-button-content">Lock Wallet</span></div></div></a> </li>
         <!-- /ko -->
@@ -49,7 +49,7 @@
                 <!-- off wallet links -->
                 <li> <a href="/logout"><div class="sidebar-nav-button-content"><div class="glyphicon glyphicon-lock" aria-hidden="true"><span class="sidebar-nav-button-content">Logout</span></div></div></a> </li>
 
-    <!-- ko if: walletStatus.role() === 'Admin' -->
+    <!-- ko if: walletStatus.isLocalWallet() || walletStatus.role() === 'Admin' -->
                 <li> <span class="sidebar-nav-button-content"></span> </li>
                 <li> Blocks: <span data-bind="text: walletStatus.blocks"></span></li>
                 <li> Wallet Encrypted: <span data-bind="text: walletStatus.isEncrypted"></span></li>

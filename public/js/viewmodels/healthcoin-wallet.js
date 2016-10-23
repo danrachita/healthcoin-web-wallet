@@ -70,7 +70,7 @@ define(['knockout',
             self.refresh().then(function(){
                 if (self.timeout < 60000){ // First timeout
                     self.timeout = 60000;
-                    // One-time call after getinfo
+                    // One-time call after first refresh
                     self.checkEncryptionStatus();
                 }
                 self.pollWalletStatus();
@@ -112,7 +112,15 @@ define(['knockout',
 
     walletType.prototype.checkEncryptionStatus = function(){
         var self = this;
-        if (self.walletStatus.isLocalWallet()){
+        // DO NOT allow non-local wallets to be encrypted!
+        // A wallet is local if the healthcoin.conf file has the parameter:
+        // rpcconnect=localhost
+        // - or -
+        // rpcconnect=127.0.0.1
+        // - or -
+        // rpcconnect=some_hostname_with_no_tld
+        //
+        if (self.walletStatus.isLocalWallet() && !self.walletStatus.encryptionStatus()){
             var getInfoCommand = new Command('getinfo',[]);
             var statusPromise = $.when(getInfoCommand.execute())
             .done(function(getInfoData){
