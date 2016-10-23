@@ -38,6 +38,10 @@ define(['knockout',
             canSend = isNumber && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
             return canSend;
         });
+
+        this.isEncrypted = ko.computed(function(){
+            return self.wallet.walletStatus.encryptionStatus();
+        });
     };
 
     sendType.prototype.load = function(User, node_id){
@@ -67,7 +71,7 @@ define(['knockout',
             });
         return sendCommand;
     }
-   
+
     sendType.prototype.unlockWallet= function(){
         var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
             passphraseDialogPromise = $.Deferred();
@@ -84,29 +88,34 @@ define(['knockout',
 
     sendType.prototype.sendSubmit = function(){
         var self = this;
-        console.log("Send request submitted, unlocking wallet for sending...");
+        console.log("Send request submitted.");
         if(self.canSend()){
-            lockWallet().done(function(){
-                console.log('Wallet locked. Prompting for confirmation...');
-                self.sendConfirm(self.amount())
-                    .done(function(){
-                        self.unlockWallet()
-                            .done(function(result){
-                                console.log("Wallet successfully unlocked, sending...");
-                                self.sendToAddress(result);
-                            })
-                            .fail(function(error){
-                                dialog.notification(error.message);
-                            });
-                    })
-                    .fail(function(error){
-                        dialog.notification(error.message);
-                    });
-
-            }); 
+            if (self.isEncrypted()){
+                console.log("Unlocking wallet for sending.");
+                lockWallet().done(function(){
+                    console.log('Wallet locked. Prompting for confirmation...');
+                    self.sendConfirm(self.amount())
+                        .done(function(){
+                            self.unlockWallet()
+                                .done(function(result){
+                                    console.log("Wallet successfully unlocked, sending...");
+                                    self.sendToAddress(result);
+                                })
+                                .fail(function(error){
+                                    dialog.notification(error.message);
+                                });
+                        })
+                        .fail(function(error){
+                            dialog.notification(error.message);
+                        });
+                });
+            } else {
+                console.log("Sending...");
+                self.sendToAddress(null);
+            }
         }
         else{
-            console.log("Can't send. Form in invalid state");
+            console.log("Can't send. Form in invalid state.");
         }
     };
 
@@ -117,7 +126,7 @@ define(['knockout',
                 title: 'Send Confirm',
                 context: self,
                 allowClose: false,
-                message: 'You are about to send ' + amount + ' HCN, in addition to any minor fees the transaction may incur (e.g. 0.0001 HCN). Do you wish to continue?',
+                message: 'You are about to send ' + amount + ' HCN, in addition to any fees the transaction may incur (e.g. 0.00001 HCN). Do you wish to continue?',
                 affirmativeButtonText: 'Yes',
                 negativeButtonText: 'No',
                 affirmativeHandler: function(){ sendConfirmDeferred.resolve(); },
@@ -130,26 +139,28 @@ define(['knockout',
     sendType.prototype.sendToAddress = function(auth) { 
         var self = this;
         sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount()]).execute()
-            .done(function(){
-                console.log("Send Success");
+            .done(function(txid){
+                console.log("Success! TxId:" + txid);
                 self.recipientAddress('');
                 self.amount(0);
 
-                lockWallet()
-                    .done(function(){
-                        var walletPassphrase = new WalletPassphrase({
-                            walletPassphrase: auth,
-                            forEncryption: false,
-                            stakingOnly: true
-                        });
-                        console.log("Wallet successfully relocked. Opening for staking...");
-                        walletPassphrase.openWallet(false)
-                            .done(function() {
-                                auth = "";
-                                console.log("Wallet successfully re-opened for staking");
-                                self.wallet.refresh();
+                if (self.isEncrypted()){
+                    lockWallet()
+                        .done(function(){
+                            var walletPassphrase = new WalletPassphrase({
+                                walletPassphrase: auth,
+                                forEncryption: false,
+                                stakingOnly: true
                             });
-                    });
+                            console.log("Wallet successfully relocked. Opening for staking...");
+                            walletPassphrase.openWallet(false)
+                                .done(function() {
+                                    auth = "";
+                                    console.log("Wallet successfully re-opened for staking");
+                                    self.wallet.refresh();
+                                });
+                        });
+                }
             })
             .fail(function(error){
                 console.log("Send error:");

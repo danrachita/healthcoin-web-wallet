@@ -36,7 +36,7 @@ define(['knockout',
         }).extend({ rateLimit: 500 });
  
         this.encryptionStatus = ko.pureComputed(function(){
-            return (self.isEncrypted === "Yes");
+            return (self.isEncrypted() === "Yes");
         }).extend({ rateLimit: 500 });
     };
 

@@ -69,20 +69,18 @@ define(['knockout',
         }
     };
 
-    function lockWallet(isEncrypted){
+    function lockWallet(){
         var walletlockCommand = new Command('walletlock').execute()
             .done(function(){
                 console.log('Wallet relocked');
             })
             .fail(function(error){
-                if (isEncrypted){
-                    dialog.notification(error.message, "Failed to re-lock wallet");
-                }
+                dialog.notification(error.message, "Failed to re-lock wallet");
             });
         return walletlockCommand;
     }
 
-    biomarkersType.prototype.unlockWallet= function(isEncrypted){
+    biomarkersType.prototype.unlockWallet= function(){
         var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
             passphraseDialogPromise = $.Deferred();
 
@@ -91,34 +89,38 @@ define(['knockout',
                 passphraseDialogPromise.resolve(walletPassphrase.walletPassphrase());                            
             })
             .fail(function(error){
-                if (isEncrypted){
-                    passphraseDialogPromise.reject(error);
-                }
+                passphraseDialogPromise.reject(error);
             });
         return passphraseDialogPromise;
     };
 
     biomarkersType.prototype.sendSubmit = function(){
         var self = this;
-        console.log("Send request submitted, unlocking wallet for sending...");
+        console.log("Send request submitted.");
         if(self.canSend()){
-            lockWallet(self.isEncrypted()).done(function(){
-                console.log('Wallet locked. Prompting for confirmation...');
-                self.sendConfirm(self.amount())
-                    .done(function(){
-                        self.unlockWallet(self.isEncrypted())
-                            .done(function(result){
-                                console.log("Wallet successfully unlocked, sending...");
-                                self.sendToAddress(result);
-                            })
-                            .fail(function(error){
-                                dialog.notification(error.message);
-                            });
-                    })
-                    .fail(function(error){
-                        dialog.notification(error.message);
-                    });
-            });
+            if (self.isEncrypted()){
+                console.log("Unlocking wallet for sending.");
+                lockWallet().done(function(){
+                    console.log('Wallet locked. Prompting for confirmation...');
+                    self.sendConfirm(self.amount())
+                        .done(function(){
+                            self.unlockWallet()
+                                .done(function(result){
+                                    console.log("Wallet successfully unlocked, sending...");
+                                    self.sendToAddress(result);
+                                })
+                                .fail(function(error){
+                                    dialog.notification(error.message);
+                                });
+                        })
+                        .fail(function(error){
+                            dialog.notification(error.message);
+                        });
+                });
+            } else {
+                console.log("Sending...");
+                self.sendToAddress(null);
+            }
         }
         else{
             console.log("Can't send. Form in invalid state.");
@@ -151,21 +153,19 @@ define(['knockout',
 
     biomarkersType.prototype.sendToAddress = function(auth){
         var self = this;
-
         // hash the text in base64 and append to 'hcbm:'
         var hcbm = encodeURIComponent("hcbm:" + this.encodeBase64(self.txcommentBiomarker()));
-
         sendCommand = new Command('sendfrom',
             [self.account(), self.recipientAddress(), self.amount(), 1, "Biomarker", self.recipientAddress(), hcbm]).execute()
             .done(function(txid){
-                console.log("DEBUG: Txid:" + txid);
+                console.log("Success! TxId:" + txid);
                 self.txcommentBiomarker('');
                 //self.recipientAddress('');
                 //self.amount(0);
 
-                lockWallet(self.isEncrypted())
-                    .done(function(){
-                        if (self.isEncrypted()){
+                if (self.isEncrypted()){
+                    lockWallet()
+                        .done(function(){
                             var walletPassphrase = new WalletPassphrase({
                                 walletPassphrase: auth,
                                 forEncryption: false,
@@ -178,8 +178,8 @@ define(['knockout',
                                     console.log("Wallet successfully re-opened for staking");
                                     self.wallet.refresh();
                                 });
-                        }
-                    });
+                        });
+                }
             })
             .fail(function(error){
                 console.log("Send error:");
