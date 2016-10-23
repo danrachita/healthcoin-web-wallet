@@ -8,13 +8,15 @@ define(['knockout',
         var self = this, opts = options || {};
         this.wallet = opts.parent;
 
+        this.statusMessage = ko.observable("Enter Your Biomarker Data");
+
+        this.account = ko.observable("");
+
         this.txcommentBiomarker = ko.observable("").extend(
             {
                 pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
                 required: true
             });
-
-        this.account = ko.observable("");
 
         // Recipient address for biomarker submission it the User's account address. (Send to self.)
         this.recipientAddress = ko.observable("").extend(
@@ -23,13 +25,13 @@ define(['knockout',
                 required: true
             });
 
-        this.amount = ko.observable(0.00001).extend(
+        this.amount = ko.observable(0.0001).extend(
             {
                 number: true,
                 required: true
             });
 
-        this.minerFee = ko.observable(0.00001);
+        this.minerFee = ko.observable(0.0001);
 
         this.canSend = ko.computed(function(){
             var amount = self.amount(),
@@ -159,6 +161,7 @@ define(['knockout',
             [self.account(), self.recipientAddress(), self.amount(), 1, "Biomarker", self.recipientAddress(), hcbm]).execute()
             .done(function(txid){
                 console.log("Success! TxId:" + txid);
+                self.statusMessage("Success!");
                 self.txcommentBiomarker('');
                 //self.recipientAddress('');
                 //self.amount(0);
@@ -182,6 +185,7 @@ define(['knockout',
                 }
             })
             .fail(function(error){
+                self.statusMessage("Sorry, there was a problem sending.");
                 console.log("Send error:");
                 console.log(error);
                 dialog.notification(error.message);

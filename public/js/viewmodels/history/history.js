@@ -44,6 +44,10 @@ define(['knockout',
             }
         };
 
+        historyType.prototype.refresh = function(){
+            this.getTransactions(this.account(), this.page());
+        };
+
         historyType.prototype.firstPage = function(){
             this.getTransactions(this.account(), this.pageFirst());
         };

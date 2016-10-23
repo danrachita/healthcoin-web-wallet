@@ -8,6 +8,8 @@ define(['knockout',
         var self = this, sendOptions = options || {};
         this.wallet = sendOptions.parent;
 
+        this.statusMessage = ko.observable("Enter Recipient Address and Amount");
+
         this.account = ko.observable("");
 
         this.recipientAddress = ko.observable("").extend( 
@@ -126,7 +128,7 @@ define(['knockout',
                 title: 'Send Confirm',
                 context: self,
                 allowClose: false,
-                message: 'You are about to send ' + amount + ' HCN, in addition to any fees the transaction may incur (e.g. 0.00001 HCN). Do you wish to continue?',
+                message: 'You are about to send ' + amount + ' HCN, in addition to any fees the transaction may incur (e.g. 0.0001 HCN). Do you wish to continue?',
                 affirmativeButtonText: 'Yes',
                 negativeButtonText: 'No',
                 affirmativeHandler: function(){ sendConfirmDeferred.resolve(); },
@@ -141,6 +143,7 @@ define(['knockout',
         sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount()]).execute()
             .done(function(txid){
                 console.log("Success! TxId:" + txid);
+                self.statusMessage("Success!");
                 self.recipientAddress('');
                 self.amount(0);
 
@@ -163,6 +166,7 @@ define(['knockout',
                 }
             })
             .fail(function(error){
+                self.statusMessage("Sorry, there was a problem sending.");
                 console.log("Send error:");
                 console.log(error);
                 dialog.notification(error.message);

@@ -41,11 +41,15 @@ define(['knockout',
         }
     };
 
+    receiveType.prototype.refresh = function(){
+        this.getReceiveAddresses();
+    };
+
     receiveType.prototype.newAddress = function(){
         dialog.openDialog(this.newAddressDialog, 'modals/new-address');
     };
 
-    receiveType.prototype.newAddressConfirm = function(address, account){
+    receiveType.prototype.newAddressConfirm = function(account, address){
         var self = this, getNewAddressCommand = new Command('getnewaddress',[self.account()]); // Use self.account() to be safe.
         getNewAddressCommand.execute()
             .done(function(address){
