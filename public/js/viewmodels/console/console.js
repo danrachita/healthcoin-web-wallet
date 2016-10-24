@@ -7,6 +7,8 @@ define(['knockout'], function(ko){
         this.isLoading = ko.observable(false);
         this.commandText = ko.observable('help');
         this.commandOutput = ko.observable('');
+        this.decodeText = ko.observable('');
+        this.decodeOutput = ko.observable('');
     };
 
     function parseCommand(commandText){
@@ -56,5 +58,17 @@ define(['knockout'], function(ko){
             self.commandOutput("Error: You are not authorized to run Console commands.");
         }
     };
+
+    consoleType.prototype.runDecode = function(){
+        var self = this;
+        if (self.role() === "Admin"){
+            self.isLoading(true);
+            self.decodeOutput(atob(self.decodeText()));
+            self.isLoading(false);
+        } else {
+            self.decodeOutput("Error: You are not authorized to run Console commands.");
+        }
+    };
+
     return consoleType; 
 });
