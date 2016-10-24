@@ -31,10 +31,11 @@
                 <li> <a href="#biomarkers"><div data-bind="css: { selected: $data.currentView() === 'biomarkers' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-home" aria-hidden="true"><span class="sidebar-nav-button-content">Healthcoin</span></div></div></a> </li>
                 <li> <a href="#send"><div data-bind="css: { selected: $data.currentView() === 'send' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-send" aria-hidden="true"><span class="sidebar-nav-button-content">Send</span></div></div></a> </li>
                 <li> <a href="#receive"><div data-bind="css: { selected: $data.currentView() === 'receive' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-inbox" aria-hidden="true"><span class="sidebar-nav-button-content">Receive</span></div></div></a> </li>
-                <li> <a href="#history"><div data-bind="css: { selected: $data.currentView() === 'history' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-time" aria-hidden="true"><span class="sidebar-nav-button-content">History</span></div></div></a> </li>
+                <li> <a href="#history"><div data-bind="css: { selected: $data.currentView() === 'history' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-time" aria-hidden="true"><span class="sidebar-nav-button-content">Coinstream</span></div></div></a> </li>
                 <li> <a href="#profile"><div data-bind="css: { selected: $data.currentView() === 'profile' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-user" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a> </li>
 
     <!-- ko if: walletStatus.role() === 'Admin' -->
+                <li> <a href="#explore"><div data-bind="css: { selected: $data.currentView() === 'explore' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-search" aria-hidden="true"><span class="sidebar-nav-button-content">Explore EHR</span></div></div></a> </li>
                 <li> <a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-console" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a> </li>
     <!-- /ko -->
     <!-- ko if: walletStatus.encryptionStatus() && (walletStatus.isLocalWallet() || walletStatus.role() === 'Admin') -->

@@ -26,7 +26,8 @@ var userSchema = mongoose.Schema({
 		age: Number,
 		weight: Number,
 		gender: String,
-		ethnicity: String
+		ethnicity: String,
+		credit: Number
 	},
 	wallet: [
 			{ node_id: String, account: String, address: String }

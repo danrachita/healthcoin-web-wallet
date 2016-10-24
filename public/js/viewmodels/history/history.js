@@ -1,5 +1,5 @@
 define(['knockout',
-        'viewmodels/history/transaction',
+        'viewmodels/common/transaction',
         'viewmodels/wallet-status',
         'viewmodels/common/command'], function(ko,Transaction,WalletStatus,Command){
         var historyType = function(options){

@@ -37,6 +37,10 @@ define( [
                 wallet.currentView('history');
             });
 
+            this.get('#explore', function() {
+                wallet.currentView('explore');
+            });
+
             this.get('#console', function() {
                 wallet.currentView('console');
             });

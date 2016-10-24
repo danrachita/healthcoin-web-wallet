@@ -5,11 +5,12 @@ define(['knockout',
     'viewmodels/send/send',
     'viewmodels/receive/receive',
     'viewmodels/history/history',
+    'viewmodels/explore/explore',
     'viewmodels/console/console',
     'viewmodels/profile/profile',
     'bindinghandlers/modal',
     'viewmodels/common/wallet-passphrase',
-    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Console, Profile, Modal, WalletPassphrase, Command){
+    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
         var self = this;
@@ -28,6 +29,7 @@ define(['knockout',
         self.send = new Send({parent: self});
         self.receive = new Receive({parent: self});
         self.history = new History({parent: self});
+        self.explore = new Explore({parent: self});
         self.console = new Console({parent: self});
         self.profile = new Profile({parent: self});
 
@@ -57,6 +59,7 @@ define(['knockout',
                                     self.send.load(self.User(), self.walletStatus.node_id()),
                                     self.receive.load(self.User(), self.walletStatus.node_id()),
                                     self.history.load(self.User(), self.walletStatus.node_id()),
+                                    self.explore.load(self.User(), self.walletStatus.node_id()),
                                     self.console.load(self.User(), self.walletStatus.node_id()),
                                     self.profile.load(self.User(), self.walletStatus.node_id()));
         } else {

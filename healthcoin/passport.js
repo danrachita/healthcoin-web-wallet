@@ -97,6 +97,7 @@ module.exports = function(passport) {
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
+                    newUser.profile.credit = 0;
 					newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 					newUser.save(function(err){
@@ -297,6 +298,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
+	                    newUser.profile.credit = 0;
 						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 	    				newUser.save(function(err){
@@ -380,6 +382,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
+	                    newUser.profile.credit = 0;
 						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 	    				newUser.save(function(err){
@@ -463,6 +466,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
+	                    newUser.profile.credit = 0;
 						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
 	    				newUser.save(function(err){

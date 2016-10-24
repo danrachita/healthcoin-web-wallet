@@ -31,6 +31,8 @@ define(['knockout',
                 required: true
             });
 
+        this.biomarkerCredit = ko.observable(0.0001);
+
         this.minerFee = ko.observable(0.0001);
 
         this.canSend = ko.computed(function(){
@@ -70,6 +72,15 @@ define(['knockout',
                 console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
     };
+
+    function isJSON(json){
+        try {
+            JSON.parse(json);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
 
     function lockWallet(){
         var walletlockCommand = new Command('walletlock').execute()
@@ -155,16 +166,37 @@ define(['knockout',
 
     biomarkersType.prototype.sendToAddress = function(auth){
         var self = this;
+        if (!isJSON(self.txcommentBiomarker())){
+            dialog.notification("Error: JSON format error.");
+            return;
+        }
         // hash the text in base64 and append to 'hcbm:'
         var hcbm = encodeURIComponent("hcbm:" + this.encodeBase64(self.txcommentBiomarker()));
         sendCommand = new Command('sendfrom',
             [self.account(), self.recipientAddress(), self.amount(), 1, "Biomarker", self.recipientAddress(), hcbm]).execute()
             .done(function(txid){
                 console.log("Success! TxId:" + txid);
-                self.statusMessage("Success!");
+                self.statusMessage("Success! You've earned " + self.biomarkerCredit() + " credits.");
                 self.txcommentBiomarker('');
                 //self.recipientAddress('');
                 //self.amount(0);
+
+                /* TODO: Need to dubmit updates to User profile.
+                User.findOne({'_id': self.User()._id}, function(err, user){
+                    if(err)
+                        return done(err);
+                    if(user){
+                        var credit = user.profile.credit + self.biomarkerCredit();
+                        user.profile.credit = credit;
+                        user.save(function(err){
+                            if(err)
+                                throw err;
+                        });
+                    } else {
+                        console.log("Error: User not found!");
+                    }
+                });
+                */
 
                 if (self.isEncrypted()){
                     lockWallet()
