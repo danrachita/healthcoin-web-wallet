@@ -1,5 +1,9 @@
 define(['knockout'], function(ko){
     var consoleType = function(options){
+        var self = this, sendOptions = options || {};
+        this.wallet = sendOptions.parent;
+
+        this.role = ko.observable("");
         this.isLoading = ko.observable(false);
         this.commandText = ko.observable('help');
         this.commandOutput = ko.observable('');
@@ -13,33 +17,44 @@ define(['knockout'], function(ko){
         return url;
     }
 
+    consoleType.prototype.load = function(User, node_id){
+        var self = this;
+        if (self.role() === ""){
+            self.role(User.profile.role);
+        }
+    };
+
     consoleType.prototype.runCommand = function(){
         var self = this;
-        self.isLoading(true);
-        $.ajax({
-            async: true,
-            method: 'GET',
-            url: parseCommand(self.commandText()),
-            dataType: 'json'
-        }).done(function(data){
-            var result = data.error ? data.error.error.message : data.result;
-            if( toString.call(result) === "[object String]"){
-                self.commandOutput(result);
-            } else {
-                if( result !== undefined){
-                    self.commandOutput(JSON.stringify(result, null, 4));
+        if (self.role() === "Admin"){
+            self.isLoading(true);
+            $.ajax({
+                async: true,
+                method: 'GET',
+                url: parseCommand(self.commandText()),
+                dataType: 'json'
+            }).done(function(data){
+                var result = data.error ? data.error.error.message : data.result;
+                if( toString.call(result) === "[object String]"){
+                    self.commandOutput(result);
                 } else {
-                    self.commandOutput(JSON.stringify(data, null, 4));
+                    if( result !== undefined){
+                        self.commandOutput(JSON.stringify(result, null, 4));
+                    } else {
+                        self.commandOutput(JSON.stringify(data, null, 4));
+                    }
                 }
-            }
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
-            self.commandOutput(errorThrown);
-        }).always(function(){
-            self.isLoading(false);
-        });
+            }).fail(function(jqXHR, textStatus, errorThrown){
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                self.commandOutput(errorThrown);
+            }).always(function(){
+                self.isLoading(false);
+            });
+        } else {
+            self.commandOutput("Error: You are not authorized to run Console commands.");
+        }
     };
     return consoleType; 
 });
