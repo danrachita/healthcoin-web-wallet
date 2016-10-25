@@ -17,7 +17,6 @@
     "min_height": 600
   },
   "dependencies": {
-    "async": "0.2.10",
     "atob": "latest",
     "bcryptjs": "~2.3.0",
     "body-parser": "latest",
@@ -29,7 +28,6 @@
     "ejs": "0.8.5",
     "express": "3.4.8",
     "express-session": "latest",
-    "jquery": "3.1.1",
     "mongode": "0.1.6",
     "mongoose": "latest",
     "morgan": "~1.5.3",
