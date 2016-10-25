@@ -8,7 +8,7 @@ define(['knockout',
         var self = this, opts = options || {};
         this.wallet = opts.parent;
 
-        this.statusMessage = ko.observable("Enter Your Biomarker Data");
+        this.statusMessage = ko.observable("");
 
         this.account = ko.observable("");
 

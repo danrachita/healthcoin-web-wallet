@@ -8,7 +8,7 @@ define(['knockout',
         var self = this, sendOptions = options || {};
         this.wallet = sendOptions.parent;
 
-        this.statusMessage = ko.observable("Enter Recipient Address and Amount");
+        this.statusMessage = ko.observable("");
 
         this.account = ko.observable("");
 
