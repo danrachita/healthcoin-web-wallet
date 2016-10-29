@@ -7,8 +7,9 @@
 				<h3><span class="fa fa-user"></span> Profile</h3>
 				<!-- ko if: User().profile -->
 				<p>
-					<strong>Role</strong>: <span style="float:right" data-bind="text: User().profile.role"> </span><br>
-					<strong>Name</strong>: <span style="float:right" data-bind="text: User().profile.name"> </span><br>
+					<!--strong>Role</strong>: <span style="float:right"><a href="#profile" id="role" data-pk="role" data-url="#profile" data-title="User Role" data-type="text" data-bind="editable: User().profile.role"></a></span><br-->
+					<strong>Role</strong>: <span style="float:right" class="editable" id="role" data-bind="editable: User().profile.role, editableOptions: {name: 'role', pk: role, url: '/profile'}" data-title="User Role" data-type="text"></span><br>
+					<strong>Name</strong>: <span style="float:right" class="editable" id="name" data-bind="editable: User().profile.name, editableOptions: {name: 'name', pk: name, url: '/profile'}" data-title="User Name" data-type="text"></span><br>
 					<strong>Email</strong>: <span style="float:right" data-bind="text: User().profile.email"> </span><br>
 					<strong>Description</strong>: <span style="float:right" data-bind="text: User().profile.description"> </span><br>
 					<strong>Age</strong>: <span style="float:right" data-bind="text: User().profile.age"> </span><br>
@@ -37,7 +38,7 @@
 					<p>
 						<strong>UID</strong>: <span style="float:right" data-bind="text: User()._id"> </span><br>
 						<strong>Account</strong>: <span style="float:right" data-bind="text: User().local.username"> </span><br>
-						<strong>Password</strong>: <span style="float:right">[<a href="/password">Change</a>]</span><br>
+						<strong>Password</strong>: <span style="float:right">[<a href="/password">change</a>]</span><br>
 					</p>
 			</div>
 		</div>
@@ -83,3 +84,8 @@
 		<!-- /ko -->
 	</div>
 </div>
+<script>
+$(document).ready(function() {
+    $('.editable').editable();
+});
+</script>

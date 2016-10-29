@@ -19,6 +19,7 @@ var userSchema = mongoose.Schema({
 		token: String
 	},
 	profile: {
+		last_login: Date,
 		role: String,
 		name: String,
 		email: String,

@@ -1,0 +1,62 @@
+<html lang="en">
+    <head>
+	<title>Healthcoin App</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="pragma" content="no-cache"/> 
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/> 
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Healthcoin App">
+    <meta name="author" content="OnsightIT">
+    <link rel="apple-touch-icon" href="images/Icon.png" />
+    <link rel="shortcut icon" href="images/Icon.png">
+    <link rel="icon" href="/favicon.ico">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-editable.css">
+    <!-- Bootstrap Font Awesome -->
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <!-- Bootstrap theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/css/theme.css">
+    </head>
+
+    <body role="document">
+<div class="container" <span data-bind="with:profile">
+    <h1>Your Healthcoin<sup>&reg;</sup> Profile</h1>
+	<div class="row">
+		<!-- GENERAL INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3><span class="fa fa-user"></span> Profile</h3>
+				<!-- ko if: User().profile -->
+				<p>
+					<strong>Name</strong>: <span style="float:right"><a href="#profile" class="editable" id="username" data-type="text" data-pk="1" data-url="/post" data-title="Enter username">superuser</a></span><br>
+					<strong>Role</strong>: <span style="float:right" class="editable" data-bind="editable: User().profile.role, editableOptions: {name: 'role', pk: role, url: '#profile'}"></span><br>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+    <!-- Modal -->
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="../js/lib/jquery.min.js"></script>
+        <script src="../js/lib/bootstrap.min.js"></script>
+		<script src="../js/lib/bootstrap-editable.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="../js/lib/ie10-viewport-bug-workaround.js"></script>
+<script>
+$.fn.editable.defaults.mode = 'inline';
+$(document).ready(function() {
+    $('.editable').editable();
+});
+</script>
+    </body>
+</html>

@@ -137,6 +137,7 @@ function healthcoinHandler(err, result){
     }
 }
 
+
 // Non-RPC routes //
 
 // Returns true if the RPC node is localhost.

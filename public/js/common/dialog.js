@@ -1,10 +1,10 @@
 define(['knockout'],function(ko){
     var vm = { 
         modalView: ko.observable('modals/placeholder'),
-        modalViewModel: ko.observable({text: ko.observable('Test')}),
+        modalViewModel: ko.observable({text: ko.observable('')}),
         showDialog: ko.observable(false)
     };
-    
+
     function openDialog(viewmodel,view){
         vm.showDialog(false);
         vm.modalView('modals/placeholder');
@@ -15,7 +15,7 @@ define(['knockout'],function(ko){
 
     function closeDialog(){
         vm.showDialog(false);
-    };
+    }
 
     return {
         init: function(element){
@@ -27,10 +27,8 @@ define(['knockout'],function(ko){
         closeDialog: function(){
             closeDialog();
         },
-        notification: function(message,title){
+        notification: function(message, title){
             openDialog( { title: "Notification", message: message, closeDialog: closeDialog }, 'modals/notification');
         }
     };
-
-    return dialogType;
 });

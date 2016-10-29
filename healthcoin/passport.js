@@ -72,15 +72,18 @@ module.exports = function(passport) {
 					// If we created a new address. Capture it.
 					if (new_address){
 						user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
-						user.save(function(err){
-							if(err)
-								throw err;
-						});
 						// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
 						HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 							if (err) console.log("Error: err:" + err + " res:" + res);
 							});
 					}
+
+					// Record last login
+					user.profile.last_login = Date.now();
+					user.save(function(err){
+						if(err)
+							throw err;
+					});
 					// Set globally
 					HCN.User = user;
 					return done(null, false, req.flash('signupMessage', 'You already have an account. Please login, instead.'));
@@ -89,6 +92,7 @@ module.exports = function(passport) {
 					newUser.local.username = email;
 					newUser.local.password = newUser.local.generateHash(password);
 					newUser.local.changeme = false;
+					newUser.profile.last_login = Date.now();
 					newUser.profile.role = "User";
 					newUser.profile.name = name;
 					newUser.profile.email = email;
@@ -159,16 +163,19 @@ module.exports = function(passport) {
 					}
 
 					setTimeout(function(){
-						if (new_address || user.local.changeme){
-							user.save(function(err){
-								if(err)
-									throw err;
-							});
+						if (new_address){
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
 							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
+
+						// Record last login
+						user.profile.last_login = Date.now();
+						user.save(function(err){
+							if(err)
+								throw err;
+						});
 						// Set globally
 						HCN.User = user;
 						return done(null, user);
@@ -273,15 +280,18 @@ module.exports = function(passport) {
 						// If we created a new address. Capture it.
 						if (new_address){
 							user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
-							user.save(function(err){
-								if(err)
-									throw err;
-							});
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
 							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
+
+						// Record last login
+						user.profile.last_login = Date.now();
+						user.save(function(err){
+							if(err)
+								throw err;
+						});
 						// Set globally
 						HCN.User = user;
 	    				return done(null, user); // User found
@@ -290,6 +300,7 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.facebook.id = profile.id;
 	    				newUser.facebook.token = accessToken;
+						newUser.profile.last_login = Date.now();
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
 	    				newUser.profile.email = email;
@@ -357,15 +368,18 @@ module.exports = function(passport) {
 						// If we created a new address. Capture it.
 						if (new_address){
 							user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
-							user.save(function(err){
-								if(err)
-									throw err;
-							});
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
 							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
+
+						// Record last login
+						user.profile.last_login = Date.now();
+						user.save(function(err){
+							if(err)
+								throw err;
+						});
 						// Set globally
 						HCN.User = user;
 	    				return done(null, user); // User found
@@ -374,6 +388,7 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.google.id = profile.id;
 	    				newUser.google.token = accessToken;
+						newUser.profile.last_login = Date.now();
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
 	    				newUser.profile.email = email;
@@ -441,15 +456,18 @@ module.exports = function(passport) {
 						// If we created a new address. Capture it.
 						if (new_address){
 							user.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
-							user.save(function(err){
-								if(err)
-									throw err;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
 							HCN.Api.exec('sendfrom', HCN.MasterAccount, address, HCN.NewUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
-							});
 						}
+
+						// Record last login
+						user.profile.last_login = Date.now();
+						user.save(function(err){
+							if(err)
+								throw err;
+						});
 						// Set globally
 						HCN.User = user;
 	    				return done(null, user); // User found
@@ -458,6 +476,7 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.twitter.id = profile.id;
 	    				newUser.twitter.token = token;
+						newUser.profile.last_login = Date.now();
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
 	    				newUser.profile.email = email;
