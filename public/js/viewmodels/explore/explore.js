@@ -6,7 +6,7 @@ define(['knockout',
             var self = this, opts = options || {};
             self.wallet = opts.parent;
 
-            this.role = ko.observable("");
+            self.role = ko.observable("");
         };
 
         exploreType.prototype.load = function(User, node_id){

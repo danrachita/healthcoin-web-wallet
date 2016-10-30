@@ -8,21 +8,11 @@ define(['knockout',
         var self = this, opts = options || {};
         this.wallet = opts.parent;
 
-/*  Form fields mapped to biomarkers schema.
-		"Date": Date,
-		"EHR_Source": String,
-		"EHR_Type": String,
-		"A1c": Number,
-		"Triglycerides": Number,
-		"HDL": Number,
-		"BPS": Number,
-		"BPD": Number,
-		"Waist": Number,
-		"Weight": Number,
-		"Device_Source": String,
-		"Device_Steps": Number,
-		"Other": Buffer
-*/
+        this.role = ko.observable("");
+
+        this.account = ko.observable("");
+        this.statusMessage = ko.observable("");
+
         this.hcbmDate = ko.observable("");
         this.hcbmEHR_Source = ko.observable("");
         this.hcbmEHR_Type = ko.observable("");
@@ -37,27 +27,24 @@ define(['knockout',
         this.hcbmDevice_Steps = ko.observable(0);
         this.hcbmOther = ko.observable("");
 
-        // For debug/display only.
-        this.statusMessage = ko.observable("");
-        this.account = ko.observable("");
+        // For Admin view only.
         this.txcommentBiomarker = ko.observable("").extend(
             {
                 pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
                 required: true
             });
-        // Recipient address for biomarker submission it the User's account address. (Send to self.)
+        // Recipient address for biomarker submission is the User's HCN address. (Send to self.)
         this.recipientAddress = ko.observable("").extend(
             {
                 pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                 required: true
             });
-        this.amount = ko.observable(0.0001).extend( // This is passed as a credit in the biomarker header for future granting.
+        // This is passed as a credit in the biomarker header for future granting.
+        this.amount = ko.observable(0.0001).extend(
             {
                 number: true,
                 required: true
             });
-
-        this.minerFee = ko.observable(0.0001);
 
         this.canSend = ko.computed(function(){
             var amount = self.amount(),
@@ -82,6 +69,7 @@ define(['knockout',
     biomarkersType.prototype.load = function(User, node_id){
         var self = this;
         if (self.account() === ""){
+            self.role(User.profile.role);
             var found = false;
 			// Get the address/account for the node_id
 			var wallet = User.wallet.filter(function(wal){
@@ -96,15 +84,6 @@ define(['knockout',
                 console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
     };
-
-    function isJSON(json){
-        try {
-            JSON.parse(json);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
 
     function lockWallet(){
         var walletlockCommand = new Command('walletlock').execute()
@@ -186,7 +165,6 @@ define(['knockout',
 
         // Build and validate the biomarker.
         self.txcommentBiomarker(JSON.stringify(self.buildBiomarker()));
-        console.log("DEBUG: txcommentBiomarker:" + self.txcommentBiomarker());
 
         // Add biomarker to schema server-side then encode base64 before sending.
         var hcbm = encodeURIComponent(self.txcommentBiomarker());
@@ -195,7 +173,6 @@ define(['knockout',
             .done(function(txid){
                 console.log("Success! TxId:" + txid);
                 self.statusMessage("Success! You've earned " + self.amount() + " credits.");
-                self.txcommentBiomarker("");
 
                 if (self.isEncrypted()){
                     lockWallet()

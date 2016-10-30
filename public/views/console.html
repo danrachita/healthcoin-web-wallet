@@ -1,6 +1,7 @@
 <div class="container" data-bind="with: console">
     <h1>Healthcoin<sup>&reg;</sup> Advanced Command Console</h1>
-    <!-- ko if: isLoading --><p>Loading...</p><!--/ko -->
+    <!-- ko if: isLoading --><p>Loading...</p><!-- /ko -->
+    <!-- ko if: role() === 'Admin' -->
     <h3>Console</h3>
     <div class="row">
         <div class="col-sm-12">
@@ -41,4 +42,5 @@
         <pre class="pre-scrollable " data-bind="text: decodeOutput" />
         </div>
     </div>
+    <!-- /ko -->
 </div>

@@ -4,6 +4,7 @@ define(['knockout'], function(ko){
         this.wallet = sendOptions.parent;
 
         this.role = ko.observable("");
+
         this.isLoading = ko.observable(false);
         this.commandText = ko.observable('help');
         this.commandOutput = ko.observable('');

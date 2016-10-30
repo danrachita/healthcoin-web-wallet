@@ -25,6 +25,8 @@ define(['knockout',
         self.walletStatus = new WalletStatus();
         self.walletStatus.getNodeInfo();
 
+        self.role = ko.observable("");
+
         self.biomarkers = new Biomarkers({parent: self});
         self.send = new Send({parent: self});
         self.receive = new Receive({parent: self});
@@ -44,8 +46,10 @@ define(['knockout',
             getUserAccountCommand = new Command('getuseraccount',[]);
         var userPromise = $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
-                if (typeof getUserAccountData.User !== 'undefined')
+                if (typeof getUserAccountData.User !== 'undefined'){
                     self.User(getUserAccountData.User);
+                    self.role(self.User().profile.role);
+                }
                 //console.log('DEBUG: User: ' + JSON.stringify(self.User()));
             });
         return userPromise;
