@@ -21,6 +21,7 @@ var userSchema = mongoose.Schema({
 	profile: {
 		last_login: Date,
 		role: String,
+		credit: Number,
 		name: String,
 		email: String,
 		description: String,
@@ -28,7 +29,7 @@ var userSchema = mongoose.Schema({
 		weight: Number,
 		gender: String,
 		ethnicity: String,
-		credit: Number
+		country: String
 	},
 	wallet: [
 			{ node_id: String, account: String, address: String }

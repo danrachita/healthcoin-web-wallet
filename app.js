@@ -19,6 +19,7 @@ var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
 var atob = require('atob');
+var btoa = require('btoa');
 var app = express();
 
 var cookieParser = require('cookie-parser');
@@ -83,6 +84,8 @@ mongoose.connect('mongodb://' + HCN.mdbHost + ':' + HCN.mdbPort + '/healthcoin')
 require('./healthcoin/init-wallet')();      // Requires HCN
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./healthcoin/passport')(passport); // Requires HCN
+
+var Biomarkers = require('./healthcoin/biomarkers');
 
 // CORS headers
 app.all('*', function(req, res, next) {
@@ -212,11 +215,18 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
-    var txcomment = decodeURIComponent(req.params.txcomment || '');
-    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount < HCN.MaxSendAmount)
+    var txcomment = decodeURIComponent(req.params.txcomment) || '';
+    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount < HCN.MaxSendAmount){
+        if (comment === "HCBM" && txcomment !== ''){
+            // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
+            var txcommentObj = JSON.parse(txcomment) || {};
+            var Biomarker = new Biomarkers().buildBiomarker(amount, HCN.User._id, txcommentObj);
+            txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
+        }
         callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
-    else
+    } else {
         res.send(JSON.stringify("Error: Invalid sendfrom."));
+    }
 });
 
 // Note: Use sendfrom instead as the wallet is account based

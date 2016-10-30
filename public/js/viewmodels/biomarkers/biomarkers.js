@@ -8,30 +8,54 @@ define(['knockout',
         var self = this, opts = options || {};
         this.wallet = opts.parent;
 
+/*  Form fields mapped to biomarkers schema.
+		"Date": Date,
+		"EHR_Source": String,
+		"EHR_Type": String,
+		"A1c": Number,
+		"Triglycerides": Number,
+		"HDL": Number,
+		"BPS": Number,
+		"BPD": Number,
+		"Waist": Number,
+		"Weight": Number,
+		"Device_Source": String,
+		"Device_Steps": Number,
+		"Other": Buffer
+*/
+        this.hcbmDate = ko.observable("");
+        this.hcbmEHR_Source = ko.observable("");
+        this.hcbmEHR_Type = ko.observable("");
+        this.hcbmA1c = ko.observable(0);
+        this.hcbmTriglycerides = ko.observable(0);
+        this.hcbmHDL = ko.observable(0);
+        this.hcbmBPS = ko.observable(0);
+        this.hcbmBPD = ko.observable(0);
+        this.hcbmWaist = ko.observable(0);
+        this.hcbmWeight = ko.observable(0);
+        this.hcbmDevice_Source = ko.observable("");
+        this.hcbmDevice_Steps = ko.observable(0);
+        this.hcbmOther = ko.observable("");
+
+        // For debug/display only.
         this.statusMessage = ko.observable("");
-
         this.account = ko.observable("");
-
         this.txcommentBiomarker = ko.observable("").extend(
             {
                 pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
                 required: true
             });
-
         // Recipient address for biomarker submission it the User's account address. (Send to self.)
         this.recipientAddress = ko.observable("").extend(
             {
                 pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                 required: true
             });
-
-        this.amount = ko.observable(0.0001).extend(
+        this.amount = ko.observable(0.0001).extend( // This is passed as a credit in the biomarker header for future granting.
             {
                 number: true,
                 required: true
             });
-
-        this.biomarkerCredit = ko.observable(0.0001);
 
         this.minerFee = ko.observable(0.0001);
 
@@ -157,46 +181,21 @@ define(['knockout',
         return sendConfirmDeferred.promise();
     };
 
-    biomarkersType.prototype.encodeBase64 = function(str){
-        if (str) {
-            return window.btoa(str);
-        }
-        return "";
-    };
-
     biomarkersType.prototype.sendToAddress = function(auth){
         var self = this;
-        if (!isJSON(self.txcommentBiomarker())){
-            dialog.notification("Error: JSON format error.");
-            return;
-        }
-        // hash the text in base64 and append to 'hcbm:'
-        var hcbm = encodeURIComponent("hcbm:" + this.encodeBase64(self.txcommentBiomarker()));
+
+        // Build and validate the biomarker.
+        self.txcommentBiomarker(JSON.stringify(self.buildBiomarker()));
+        console.log("DEBUG: txcommentBiomarker:" + self.txcommentBiomarker());
+
+        // Add biomarker to schema server-side then encode base64 before sending.
+        var hcbm = encodeURIComponent(self.txcommentBiomarker());
         sendCommand = new Command('sendfrom',
-            [self.account(), self.recipientAddress(), self.amount(), 1, "Biomarker", self.recipientAddress(), hcbm]).execute()
+            [self.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm]).execute()
             .done(function(txid){
                 console.log("Success! TxId:" + txid);
-                self.statusMessage("Success! You've earned " + self.biomarkerCredit() + " credits.");
-                self.txcommentBiomarker('');
-                //self.recipientAddress('');
-                //self.amount(0);
-
-                /* TODO: Need to dubmit updates to User profile.
-                User.findOne({'_id': self.User()._id}, function(err, user){
-                    if(err)
-                        return done(err);
-                    if(user){
-                        var credit = user.profile.credit + self.biomarkerCredit();
-                        user.profile.credit = credit;
-                        user.save(function(err){
-                            if(err)
-                                throw err;
-                        });
-                    } else {
-                        console.log("Error: User not found!");
-                    }
-                });
-                */
+                self.statusMessage("Success! You've earned " + self.amount() + " credits.");
+                self.txcommentBiomarker("");
 
                 if (self.isEncrypted()){
                     lockWallet()
@@ -224,5 +223,26 @@ define(['knockout',
             });
    
     };
+
+    biomarkersType.prototype.buildBiomarker = function(){
+        var hcbm = {
+        "Date": this.hcbmDate(), // Date of activity
+		"EHR_Source": this.hcbmEHR_Source(),
+		"EHR_Type": this.hcbmEHR_Type(),
+        "A1c": this.hcbmA1c(),
+        "Triglycerides": this.hcbmTriglycerides(),
+        "HDL": this.hcbmHDL(),
+        "BPS": this.hcbmBPS(),
+        "BPD": this.hcbmBPD(),
+        "Waist": this.hcbmWaist(),
+        "Weight": this.hcbmWeight(),
+        "Device_Source": this.hcbmDevice_Source(),
+        "Device_Steps": this.hcbmDevice_Steps(),
+        "Other": this.hcbmOther()
+        };
+
+        return hcbm;
+    };
+
     return biomarkersType;
 });
