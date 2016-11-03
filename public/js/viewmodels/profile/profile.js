@@ -6,9 +6,14 @@ define(['knockout',
         self.wallet = options.parent;
 
         self.User = ko.observable({});
+        self.node_id = ko.observable("");
+
         self.login_type = ko.observable("");
         self.login_id = ko.observable("");
         self.role = ko.observable("");
+        self.credit = ko.observable("");
+        self.wallets = ko.observableArray([]);
+        self.active_wallet = ko.observable("");
 
         // User changeables
         self.name = ko.observable("");
@@ -20,11 +25,6 @@ define(['knockout',
         self.gender = ko.observable("");
         self.ethnicity = ko.observable("");
         self.country = ko.observable("");
-
-        self.credit = ko.observable("");
-        self.wallets = ko.observableArray([]);
-        self.active_wallet = ko.observable("");
-        self.node_id = ko.observable("");
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
@@ -48,6 +48,7 @@ define(['knockout',
         var self = this;
         if (User && node_id){
             self.User(User);
+            self.node_id(node_id);
             self.login_type(User.profile.login_type);
             switch(self.login_type()){
                 case ("local"):
@@ -83,7 +84,6 @@ define(['knockout',
 				if(!found && wal.node_id === node_id){
                     found = true;
                     self.active_wallet(wal);
-                    self.node_id(node_id);
 					return wal;
 				}
             });

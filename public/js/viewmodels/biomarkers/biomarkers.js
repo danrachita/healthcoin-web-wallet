@@ -9,7 +9,10 @@ define(['knockout',
         var self = this, opts = options || {};
         self.wallet = opts.parent;
 
+        self.User = ko.observable({});
+        self.node_id = ko.observable("");
         self.account = ko.observable("");
+
         self.statusMessage = ko.observable("");
 
         self.hcbmDate = ko.observable("");
@@ -77,11 +80,11 @@ define(['knockout',
             var canSend = self.hcbmDate() !== "" &&
                           self.hcbmEHR_Source() !== "" &&
                           self.hcbmEHR_Type() !== "" &&
-                          self.hcbmA1c() !== "" &&
-                          self.hcbmTriglycerides() !== "" &&
-                          self.hcbmHDL() !== "" &&
-                          self.hcbmBPS() !== "" &&
-                          self.hcbmBPD() !== "";
+                          self.hcbmA1c() > 0 &&
+                          self.hcbmTriglycerides() > 0 &&
+                          self.hcbmHDL() > 0 &&
+                          self.hcbmBPS() > 0 &&
+                          self.hcbmBPD() > 0;
 
             var amount = self.amount(),
                 isNumber = !isNaN(amount),
@@ -103,16 +106,28 @@ define(['knockout',
 
     biomarkersType.prototype.load = function(User, node_id){
         var self = this;
-        if (self.account() === ""){
+        if (User && node_id){
+            self.User(User);
+            self.node_id(node_id);
             var date = Dateformat(Date.now(), "yyyymmdd");
             console.log("DEBUG: date: " + date);
-            self.hcbmDate(date.toString());
+            self.hcbmDate(date);
+            self.hcbmEHR_Source("");
+            self.hcbmEHR_Type("");
+            self.hcbmA1c("000");
+            self.hcbmTriglycerides("000");
+            self.hcbmHDL("000");
+            self.hcbmBPS("000");
+            self.hcbmBPD("000");
             self.hcbmAge(User.profile.age);
             self.hcbmWeight(User.profile.weight);
             self.hcbmWaist(User.profile.waist);
             self.hcbmGender(User.profile.gender);
             self.hcbmEthnicity(User.profile.ethnicity);
             self.hcbmCountry(User.profile.country);
+            self.hcbmDevice_Source("None");
+            self.hcbmDevice_Steps("000");
+            self.hcbmOther("n/a");
             var found = false;
 			// Get the address/account for the node_id
 			var wallet = User.wallet.filter(function(wal){
@@ -226,6 +241,7 @@ define(['knockout',
             .done(function(txid){
                 console.log("Success! TxId:" + txid);
                 self.statusMessage("Success! You've earned " + self.amount() + " credits.");
+                self.Reset();
 
                 if (self.isEncrypted()){
                     lockWallet()
