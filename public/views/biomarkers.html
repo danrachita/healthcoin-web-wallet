@@ -2,43 +2,37 @@
     <h1>Update Your Healthcoin<sup>&reg;</sup> Bio-Stats</h1>
     <h3 align="center" data-bind="text:statusMessage"></h3>
 
-    <form class="form-horizontal" role="form">
-
-
-    <!-- ko if: role() === 'Admin' -->
-        <p>[Everything below is for Admins only.]</p>
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="txcomment">Bio-Marker:</label>
-            <div class="col-sm-10">
-                <textarea rows="4" cols="40" type="text" class="form-control" id="txcomment" data-bind="textInput:txcommentBiomarker" placeholder="Enter your bio-marker data in JSON format."></textarea>
-            </div>
+    <!-- BIOMARKER INFORMATION -->
+    <div class="col-sm-6">
+        <div class="well">
+            <h3><span class="fa fa-heartbeat"></span> Biomarker</h3>
+            <table width="100%">
+                <tr><td><strong>Date</strong>: <span style="float:right" data-bind="editable: hcbmDate" data-type="date" data-viewformat="yyyymmdd"></span></td></tr>
+                <tr><td><strong>EHR</strong>: <span style="float:right" data-bind="editable: hcbmEHR_Source"></span></td></tr>
+                <tr><td><strong>EHR Type</strong>: <span style="float:right" data-bind="editable: hcbmEHR_Type"></span></td></tr>
+                <tr><td><strong>A1c</strong>: <span style="float:right" data-bind="editable: hcbmA1c"></span></td></tr>
+                <tr><td><strong>Triglycerides</strong>: <span style="float:right" data-bind="editable: hcbmTriglycerides"></span></td></tr>
+                <tr><td><strong>HDL</strong>: <span style="float:right" data-bind="editable: hcbmHDL"></span></td></tr>
+                <tr><td><strong>BPS</strong>: <span style="float:right" data-bind="editable: hcbmBPS"></span></td></tr>
+                <tr><td><strong>BPD</strong>: <span style="float:right" data-bind="editable: hcbmBPD"></span></td></tr>
+                <tr><td><strong>Age</strong>: <span style="float:right" data-bind="editable: hcbmAge"></span></td></tr>
+                <tr><td><strong>Weight</strong>: <span style="float:right" data-bind="editable: hcbmWeight"></span></td></tr>
+                <tr><td><strong>Waist</strong>: <span style="float:right" data-bind="editable: hcbmWaist"></span></td></tr>
+                <tr><td><strong>Gender</strong>: <span style="float:right" data-bind="editable: hcbmGender"></span></td></tr>
+                <tr><td><strong>Ethnicity</strong>: <span style="float:right" data-bind="editable: hcbmEthnicity"></span></td></tr>
+                <tr><td><strong>Country</strong>: <span style="float:right" data-bind="editable: hcbmCountry"></span></td></tr>
+                <tr><td><strong>Device</strong>: <span style="float:right" data-bind="editable: hcbmDevice_Source"></span></td></tr>
+                <tr><td><strong>Device Steps</strong>: <span style="float:right" data-bind="editable: hcbmDevice_Steps"></span></td></tr>
+                <tr><td><strong>Other</strong>: <span style="float:right" data-bind="editable: hcbmOther"></span></td></tr>
+                <th>&nbsp;</th>
+                <tr><td>
+                <div style="float:right">
+                    <button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
+                    <button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty() || !$data.canSend(), click: Submit">Submit</button>
+                </div>
+                </td></tr>
+            </table>
         </div>
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="recipient">Send To:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="recipient" data-bind="disable: true, textInput:recipientAddress" data-bind="value=$data.recipientAddress">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="amount">Amount:</label>
-            <div class="col-sm-4">
-                <input type="number" class="form-control" id="amount" data-bind="disable: true, numericInput, textInput:amount" data-bind="value=$data.amount">
-            </div>
-            <div class="col-sm-2">
-            <select class="form-control" id="sel1" data-bind="disable: true">
-                <option>HCN</option>
-                <!--<option>mHCN</option>
-                <option>µHCN</option>-->
-            </select>
-            </div>
-        </div>
-    <!-- /ko -->
-
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default" data-bind="disable: !$data.canSend(), click: sendSubmit">Submit</button>
-            </div>
-        </div>
-    </form>
+    </div>
 
 </div>

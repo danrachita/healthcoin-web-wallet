@@ -16,6 +16,7 @@ define(['knockout',
         self.description = ko.observable("");
         self.age = ko.observable("");
         self.weight = ko.observable("");
+        self.waist = ko.observable("");
         self.gender = ko.observable("");
         self.ethnicity = ko.observable("");
         self.country = ko.observable("");
@@ -26,7 +27,6 @@ define(['knockout',
         self.node_id = ko.observable("");
 
         self.dirtyFlag = ko.observable(false);
-
         self.isDirty = ko.computed(function() {
             //console.log("DEBUG: isDirty: " + (self.dirtyFlag() ? "true" : "false"));
             return self.dirtyFlag();
@@ -38,6 +38,7 @@ define(['knockout',
         self.description.subscribe(function (){self.dirtyFlag(true);});
         self.age.subscribe(function (){self.dirtyFlag(true);});
         self.weight.subscribe(function (){self.dirtyFlag(true);});
+        self.waist.subscribe(function (){self.dirtyFlag(true);});
         self.gender.subscribe(function (){self.dirtyFlag(true);});
         self.ethnicity.subscribe(function (){self.dirtyFlag(true);});
         self.country.subscribe(function (){self.dirtyFlag(true);});
@@ -70,6 +71,7 @@ define(['knockout',
             self.description(User.profile.description);
             self.age(User.profile.age);
             self.weight(User.profile.weight);
+            self.waist(User.profile.waist);
             self.gender(User.profile.gender);
             self.ethnicity(User.profile.ethnicity);
             self.country(User.profile.country);
@@ -120,6 +122,7 @@ define(['knockout',
         self.User().profile.description = self.description();
         self.User().profile.age = self.age();
         self.User().profile.weight = self.weight();
+        self.User().profile.waist = self.waist();
         self.User().profile.gender = self.gender();
         self.User().profile.ethnicity = self.ethnicity();
         self.User().profile.country = self.country();

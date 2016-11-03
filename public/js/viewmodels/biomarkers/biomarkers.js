@@ -3,50 +3,86 @@ define(['knockout',
     'viewmodels/common/confirmation-dialog',
     'viewmodels/common/wallet-passphrase',
     'viewmodels/common/command',
-    'patterns'], function(ko,dialog,ConfirmationDialog,WalletPassphrase,Command,patterns){
+    'lib/dateformat',
+    'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Dateformat, patterns){
     var biomarkersType = function(options){
         var self = this, opts = options || {};
-        this.wallet = opts.parent;
+        self.wallet = opts.parent;
 
-        this.role = ko.observable("");
+        self.account = ko.observable("");
+        self.statusMessage = ko.observable("");
 
-        this.account = ko.observable("");
-        this.statusMessage = ko.observable("");
+        self.hcbmDate = ko.observable("");
+        self.hcbmEHR_Source = ko.observable("");
+        self.hcbmEHR_Type = ko.observable("");
+        self.hcbmA1c = ko.observable(0);
+        self.hcbmTriglycerides = ko.observable(0);
+        self.hcbmHDL = ko.observable(0);
+        self.hcbmBPS = ko.observable(0);
+        self.hcbmBPD = ko.observable(0);
+        self.hcbmAge = ko.observable(0);
+        self.hcbmWeight = ko.observable(0);
+        self.hcbmWaist = ko.observable(0);
+        self.hcbmGender = ko.observable(0);
+        self.hcbmEthnicity = ko.observable(0);
+        self.hcbmCountry = ko.observable(0);
+        self.hcbmDevice_Source = ko.observable("None");
+        self.hcbmDevice_Steps = ko.observable(0);
+        self.hcbmOther = ko.observable("n/a");
 
-        this.hcbmDate = ko.observable("");
-        this.hcbmEHR_Source = ko.observable("");
-        this.hcbmEHR_Type = ko.observable("");
-        this.hcbmA1c = ko.observable(0);
-        this.hcbmTriglycerides = ko.observable(0);
-        this.hcbmHDL = ko.observable(0);
-        this.hcbmBPS = ko.observable(0);
-        this.hcbmBPD = ko.observable(0);
-        this.hcbmWaist = ko.observable(0);
-        this.hcbmWeight = ko.observable(0);
-        this.hcbmDevice_Source = ko.observable("");
-        this.hcbmDevice_Steps = ko.observable(0);
-        this.hcbmOther = ko.observable("");
+        self.dirtyFlag = ko.observable(false);
+        self.isDirty = ko.computed(function() {
+            return self.dirtyFlag();
+        });
+
+        // User changeables subscriptions
+        self.hcbmDate.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmEHR_Source.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmEHR_Type.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmA1c.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmTriglycerides.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmHDL.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmBPS.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmBPD.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmAge.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmWeight.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmWaist.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmGender.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmEthnicity.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmCountry.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmDevice_Source.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmDevice_Steps.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmOther.subscribe(function (){self.dirtyFlag(true);});
 
         // For Admin view only.
-        this.txcommentBiomarker = ko.observable("").extend(
+        self.txcommentBiomarker = ko.observable("hcbm").extend(
             {
                 pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
                 required: true
             });
         // Recipient address for biomarker submission is the User's HCN address. (Send to self.)
-        this.recipientAddress = ko.observable("").extend(
+        self.recipientAddress = ko.observable("").extend(
             {
                 pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                 required: true
             });
         // This is passed as a credit in the biomarker header for future granting.
-        this.amount = ko.observable(0.0001).extend(
+        self.amount = ko.observable(0.0001).extend(
             {
                 number: true,
                 required: true
             });
 
-        this.canSend = ko.computed(function(){
+        self.canSend = ko.computed(function(){
+            var canSend = self.hcbmDate() !== "" &&
+                          self.hcbmEHR_Source() !== "" &&
+                          self.hcbmEHR_Type() !== "" &&
+                          self.hcbmA1c() !== "" &&
+                          self.hcbmTriglycerides() !== "" &&
+                          self.hcbmHDL() !== "" &&
+                          self.hcbmBPS() !== "" &&
+                          self.hcbmBPD() !== "";
+
             var amount = self.amount(),
                 isNumber = !isNaN(amount),
                 biomarker = self.txcommentBiomarker(),
@@ -54,14 +90,13 @@ define(['knockout',
                 address = self.recipientAddress(),
                 addressValid = self.recipientAddress.isValid(),
                 amountValid = self.amount.isValid(),
-                available = self.wallet.walletStatus.available(),
-                canSend;
+                available = self.wallet.walletStatus.available();
 
-            canSend = isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
+            canSend = canSend && isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
             return canSend;
         });
 
-        this.isEncrypted = ko.computed(function(){
+        self.isEncrypted = ko.computed(function(){
             return self.wallet.walletStatus.encryptionStatus();
         });
     };
@@ -69,7 +104,15 @@ define(['knockout',
     biomarkersType.prototype.load = function(User, node_id){
         var self = this;
         if (self.account() === ""){
-            self.role(User.profile.role);
+            var date = Dateformat(Date.now(), "yyyymmdd");
+            console.log("DEBUG: date: " + date);
+            self.hcbmDate(date.toString());
+            self.hcbmAge(User.profile.age);
+            self.hcbmWeight(User.profile.weight);
+            self.hcbmWaist(User.profile.waist);
+            self.hcbmGender(User.profile.gender);
+            self.hcbmEthnicity(User.profile.ethnicity);
+            self.hcbmCountry(User.profile.country);
             var found = false;
 			// Get the address/account for the node_id
 			var wallet = User.wallet.filter(function(wal){
@@ -81,8 +124,22 @@ define(['knockout',
 				}
 			});
 			if (!found)
-                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
+                console.log("Error: wallet not found for self node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
+        self.dirtyFlag(false);
+    };
+
+    biomarkersType.prototype.Reset = function(){
+        var self = this;
+        this.load(self.User(), self.node_id());
+    };
+
+    biomarkersType.prototype.Submit = function(){
+        var self = this;
+        // Build and validate the biomarker.
+        self.txcommentBiomarker(self.buildBiomarker());
+
+        this.sendSubmit();
     };
 
     function lockWallet(){
@@ -162,10 +219,6 @@ define(['knockout',
 
     biomarkersType.prototype.sendToAddress = function(auth){
         var self = this;
-
-        // Build and validate the biomarker.
-        self.txcommentBiomarker(JSON.stringify(self.buildBiomarker()));
-
         // Add biomarker to schema server-side then encode base64 before sending.
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
         sendCommand = new Command('sendfrom',
@@ -202,23 +255,28 @@ define(['knockout',
     };
 
     biomarkersType.prototype.buildBiomarker = function(){
+        var self = this;
         var hcbm = {
-        "Date": this.hcbmDate(), // Date of activity
-		"EHR_Source": this.hcbmEHR_Source(),
-		"EHR_Type": this.hcbmEHR_Type(),
-        "A1c": this.hcbmA1c(),
-        "Triglycerides": this.hcbmTriglycerides(),
-        "HDL": this.hcbmHDL(),
-        "BPS": this.hcbmBPS(),
-        "BPD": this.hcbmBPD(),
-        "Waist": this.hcbmWaist(),
-        "Weight": this.hcbmWeight(),
-        "Device_Source": this.hcbmDevice_Source(),
-        "Device_Steps": this.hcbmDevice_Steps(),
-        "Other": this.hcbmOther()
+        "Date": self.hcbmDate(), // Date of activity
+		"EHR_Source": self.hcbmEHR_Source(),
+		"EHR_Type": self.hcbmEHR_Type(),
+        "A1c": self.hcbmA1c(),
+        "Triglycerides": self.hcbmTriglycerides(),
+        "HDL": self.hcbmHDL(),
+        "BPS": self.hcbmBPS(),
+        "BPD": self.hcbmBPD(),
+        "Age": self.hcbmAge(),
+        "Weight": self.hcbmWeight(),
+        "Waist": self.hcbmWaist(),
+		"Gender" : self.hcbmGender(),
+		"Ethnicity" : self.hcbmEthnicity(),
+		"Country" : self.hcbmCountry(),
+        "Device_Source": self.hcbmDevice_Source(),
+        "Device_Steps": self.hcbmDevice_Steps(),
+        "Other": self.hcbmOther()
         };
 
-        return hcbm;
+        return JSON.stringify(hcbm);
     };
 
     return biomarkersType;

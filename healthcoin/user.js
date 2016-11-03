@@ -28,6 +28,7 @@ var userSchema = mongoose.Schema({
 		description: String,
 		age: Number,
 		weight: Number,
+		waist: Number,
 		gender: String,
 		ethnicity: String,
 		country: String

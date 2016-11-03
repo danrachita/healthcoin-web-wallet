@@ -95,6 +95,7 @@ function Init() {
 					newUser.profile.description = "Keeper of Coins";
 					newUser.profile.age = "";
 					newUser.profile.weight = "";
+					newUser.profile.waist = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
 					newUser.profile.country = "";
