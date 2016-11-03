@@ -242,6 +242,12 @@ define(['knockout',
                 console.log("Success! TxId:" + txid);
                 self.statusMessage("Success! You've earned " + self.amount() + " credits.");
                 self.Reset();
+                self.User().profile.credit = self.User().profile.credit + self.amount();
+                var saveUserProfileCommand = new Command('saveuserprofile',
+                    [encodeURIComponent(btoa(JSON.stringify(self.User().profile)))]).execute()
+                    .done(function(){
+                        console.log("User Profile credited!");
+                    });
 
                 if (self.isEncrypted()){
                     lockWallet()
