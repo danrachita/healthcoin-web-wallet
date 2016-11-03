@@ -5,39 +5,42 @@
 		<div class="col-sm-6">
 			<div class="well">
 				<h3><span class="fa fa-user"></span> Profile</h3>
-				<!-- ko if: User().profile -->
-				<p>
-					<!--strong>Role</strong>: <span style="float:right"><a href="#profile" id="role" data-pk="role" data-url="#profile" data-title="User Role" data-type="text" data-bind="editable: User().profile.role"></a></span><br-->
-					<strong>Role</strong>: <span style="float:right" class="editable" id="role" data-bind="editable: User().profile.role, editableOptions: {name: 'role', pk: role, url: '/profile'}" data-title="User Role" data-type="text"></span><br>
-					<strong>Name</strong>: <span style="float:right" class="editable" id="name" data-bind="editable: User().profile.name, editableOptions: {name: 'name', pk: name, url: '/profile'}" data-title="User Name" data-type="text"></span><br>
-					<strong>Email</strong>: <span style="float:right" data-bind="text: User().profile.email"> </span><br>
-					<strong>Description</strong>: <span style="float:right" data-bind="text: User().profile.description"> </span><br>
-					<strong>Age</strong>: <span style="float:right" data-bind="text: User().profile.age"> </span><br>
-					<strong>Weight</strong>: <span style="float:right" data-bind="text: User().profile.weight"> </span><br>
-					<strong>Gender</strong>: <span style="float:right" data-bind="text: User().profile.gender"> </span><br>
-					<strong>Ethnicity</strong>: <span style="float:right" data-bind="text: User().profile.ethnicity"> </span><br>
-					<strong>HCN Credit</strong>: <span style="float:right" data-bind="text: User().profile.credit"> </span><br>
-				</p>
-				<!-- /ko -->
+				<table width="100%">
+					<tr><td><strong>Role</strong>: <span style="float:right" data-bind="text: role"></span></td></tr>
+					<tr><td><strong>Name</strong>: <span style="float:right" data-pk="profile" data-name="name" data-bind="editable: name"></span></td></tr>
+					<tr><td><strong>Email</strong>: <span style="float:right" data-pk="profile" data-name="email" data-bind="editable: email"></span></td></tr>
+					<tr><td><strong>Description</strong>: <span style="float:right" data-pk="profile" data-name="description" data-bind="editable: description"></span></td></tr>
+					<tr><td><strong>Age</strong>: <span style="float:right" data-pk="profile" data-name="age" data-bind="editable: age"></span></td></tr>
+					<tr><td><strong>Weight</strong>: <span style="float:right" data-pk="profile" data-name="weight" data-bind="editable: weight"></span></td></tr>
+					<tr><td><strong>Gender</strong>: <span style="float:right" data-pk="profile" data-name="gender" data-bind="editable: gender"></span></td></tr>
+					<tr><td><strong>Ethnicity</strong>: <span style="float:right" data-pk="profile" data-name="ethnicity" data-bind="editable: ethnicity"></span></td></tr>
+					<tr><td><strong>Country</strong>: <span style="float:right" data-pk="profile" data-name="country" data-bind="editable: country"></span></td></tr>
+					<tr><td><strong>HCN Credit</strong>: <span style="float:right" data-bind="text: credit"></span></td></tr>
+					<tr><td>
+					<div style="float:right">
+						<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
+						<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Submit">Submit</button>
+					</div>
+					</td></tr>
+				</table>
 				<!-- ko if: active_wallet -->
 				<h3><span class="fa fa-money"></span> HCN Wallet</h3>
-				<p>
-					<strong>Node_ID</strong>: <span style="float:right" data-bind="text: active_wallet().node_id"> </span><br>
-					<strong>Account</strong>: <span style="float:right" data-bind="text: active_wallet().account"> </span><br>
-					<strong>Address</strong>: <span style="float:right" data-bind="text: active_wallet().address"> </span><br>
-				</p>
+				<table width="100%">
+					<tr><td><strong>Node_ID</strong>: <span style="float:right" data-bind="text: active_wallet().node_id"></span></td></tr>
+					<tr><td><strong>Account</strong>: <span style="float:right" data-bind="text: active_wallet().account"></span></td></tr>
+					<tr><td><strong>Address</strong>: <span style="float:right" data-bind="text: active_wallet().address"></span></td></tr>
+				</table>
 				<!-- /ko -->
 			</div>
 		</div>
 
 		<!-- LOCAL INFORMATION -->
-		<!-- ko if: User().local -->
+		<!-- ko if: login_type() === 'local' -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3><span class="fa fa-database"></span> Account</h3>
 					<p>
-						<strong>UID</strong>: <span style="float:right" data-bind="text: User()._id"> </span><br>
-						<strong>Account</strong>: <span style="float:right" data-bind="text: User().local.username"> </span><br>
+						<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
 						<strong>Password</strong>: <span style="float:right">[<a href="/password">change</a>]</span><br>
 					</p>
 			</div>
@@ -45,47 +48,39 @@
 		<!-- /ko -->
 
 		<!-- FACEBOOK INFORMATION -->
-		<!-- ko if: User().facebook -->
+		<!-- ko if: login_type() === 'facebook' -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
 				<p>
-					<strong>UID</strong>: <span style="float:right" data-bind="text: User().facebook.id"> </span><br>
-					<strong>Token</strong>: <span style="float:right" data-bind="text: User().facebook.token"> </span><br>
+					<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
 				</p>
 			</div>
 		</div>
 		<!-- /ko -->
 
 		<!-- GOOGLE INFORMATION -->
-		<!-- ko if: User().google -->
+		<!-- ko if: login_type() === 'google' -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-google-plus"></span> Google</h3>
 				<p>
-					<strong>UID</strong>: <span style="float:right" data-bind="text: User().google.id"> </span><br>
-					<strong>Token</strong>: <span style="float:right" data-bind="text: User().google.token"> </span><br>
+					<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
 				</p>
 			</div>
 		</div>
 		<!-- /ko -->
 
 		<!-- TWITTER INFORMATION -->
-		<!-- ko if: User().twitter -->
+		<!-- ko if: login_type() === 'twitter' -->
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-twitter"></span> Twitter</h3>
 				<p>
-					<strong>UID</strong>: <span style="float:right" data-bind="text: User().twitter.id"> </span><br>
-					<strong>Token</strong>: <span style="float:right" data-bind="text: User().twitter.token"> </span><br>
+					<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
 				</p>
 			</div>
 		</div>
 		<!-- /ko -->
 	</div>
 </div>
-<script>
-$(document).ready(function() {
-    $('.editable').editable();
-});
-</script>

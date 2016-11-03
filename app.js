@@ -79,12 +79,13 @@ app.use(bodyParser.json());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// DB / Auth
+// DB/Auth Functions
 mongoose.connect('mongodb://' + HCN.mdbHost + ':' + HCN.mdbPort + '/healthcoin');
 require('./healthcoin/init-wallet')();      // Requires HCN
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./healthcoin/passport')(passport); // Requires HCN
 
+var MDB = require('./healthcoin/database');
 var Biomarkers = require('./healthcoin/biomarkers');
 
 // CORS headers
@@ -170,6 +171,21 @@ app.get('/getuseraccount', function(req,res){
     res.send(JSON.stringify(response));
 });
 
+// Saves user profile.
+app.get('/saveuserprofile/:profile', function(req,res){
+    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || HCN.User.profile,
+        result = null;
+    if (profile && profile.login_type){
+        HCN.User.profile = profile;
+        result = MDB.saveUserProfile(HCN.User._id, profile);
+    }
+    var response = {
+        error: null,
+        result: result
+    };
+    res.send(JSON.stringify(response));
+});
+
 
 // RPC routes //
 
@@ -215,7 +231,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
-    var txcomment = decodeURIComponent(req.params.txcomment) || '';
+    var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
     if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount < HCN.MaxSendAmount){
         if (comment === "HCBM" && txcomment !== ''){
             // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.

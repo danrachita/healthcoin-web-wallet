@@ -4,10 +4,14 @@ define( [
         "viewmodels/healthcoin-wallet",
         "knockout-amd-helpers",
         "knockout-validation",
-        "bindinghandlers/modal",
+        "lib/jquery.min",
+        "lib/bootstrap.min",
+        "lib/bootstrap-editable.min",
+        "lib/knockout.x-editable.min",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        "text"], function( ko, dialog, Wallet){
+        "bindinghandlers/modal"
+        ], function(ko, dialog, Wallet){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
@@ -20,11 +24,10 @@ define( [
 
         ko.applyBindings(wallet, $('#wrapper')[0]);
         dialog.init($('#defaultModal')[0]);
-        $.fn.editable.defaults.mode = 'inline';
+
+		$.fn.editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
 
         Sammy(function() {
-            this.get('#', function() {
-            });
             this.get('#biomarkers', function() {
                 wallet.currentView('biomarkers');
             });

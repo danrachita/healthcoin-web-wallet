@@ -65,7 +65,7 @@ module.exports = function(passport) {
 			if (!address || address === ""){
 				return done(null, false, req.flash('signupMessage', 'There was an error creating your account. Please try again later.'));
 			}
-			User.findOne({'local.username': email}, function(err, user){
+			User.findOne({'local.id': email}, function(err, user){
 				if(err)
 					return done(err);
 				if(user){
@@ -79,6 +79,7 @@ module.exports = function(passport) {
 					}
 
 					// Record last login
+					user.profile.login_type = "local";
 					user.profile.last_login = Date.now();
 					user.save(function(err){
 						if(err)
@@ -89,9 +90,10 @@ module.exports = function(passport) {
 					return done(null, false, req.flash('signupMessage', 'You already have an account. Please login, instead.'));
 				} else {
 					var newUser = new User();
-					newUser.local.username = email;
+					newUser.local.id = email;
 					newUser.local.password = newUser.local.generateHash(password);
 					newUser.local.changeme = false;
+					newUser.profile.login_type = "local";
 					newUser.profile.last_login = Date.now();
 					newUser.profile.role = "User";
 					newUser.profile.name = name;
@@ -101,6 +103,7 @@ module.exports = function(passport) {
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
+					newUser.profile.country = "";
                     newUser.profile.credit = 0;
 					newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
@@ -132,7 +135,7 @@ module.exports = function(passport) {
 			if (validator.isEmail(email))
 				email = validator.normalizeEmail(email);
 			process.nextTick(function(){
-				User.findOne({ 'local.username': email}, function(err, user){
+				User.findOne({ 'local.id': email}, function(err, user){
 					if(err)
 						return done(err);
 					if(!user)
@@ -171,6 +174,7 @@ module.exports = function(passport) {
 						}
 
 						// Record last login
+						user.profile.login_type = "local";
 						user.profile.last_login = Date.now();
 						user.save(function(err){
 							if(err)
@@ -196,7 +200,7 @@ module.exports = function(passport) {
 			if (typeof HCN.User.local === 'undefined'){
 				return done(null, false, req.flash('passwordMessage', 'Please login first.'));
 			}
-			if (email !== HCN.User.local.username){
+			if (email !== HCN.User.local.id){
 				return done(null, false, req.flash('passwordMessage', 'Please try again?'));
 			}
 			if (!validator.isByteLength(passwordNew, {min:8, max:255})){
@@ -213,7 +217,7 @@ module.exports = function(passport) {
 			}
 
 			process.nextTick(function(){
-				User.findOne({'local.username': email}, function(err, user){
+				User.findOne({'local.id': email}, function(err, user){
 					if(err)
 						return done(err);
 					if(!user){
@@ -287,6 +291,7 @@ module.exports = function(passport) {
 						}
 
 						// Record last login
+						user.profile.login_type = "facebook";
 						user.profile.last_login = Date.now();
 						user.save(function(err){
 							if(err)
@@ -300,6 +305,7 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.facebook.id = profile.id;
 	    				newUser.facebook.token = accessToken;
+						newUser.profile.login_type = "facebook";
 						newUser.profile.last_login = Date.now();
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
@@ -309,6 +315,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
+						newUser.profile.country = "";
 	                    newUser.profile.credit = 0;
 						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
@@ -375,6 +382,7 @@ module.exports = function(passport) {
 						}
 
 						// Record last login
+						user.profile.login_type = "google";
 						user.profile.last_login = Date.now();
 						user.save(function(err){
 							if(err)
@@ -388,6 +396,7 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.google.id = profile.id;
 	    				newUser.google.token = accessToken;
+						newUser.profile.login_type = "google";
 						newUser.profile.last_login = Date.now();
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
@@ -397,6 +406,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
+						newUser.profile.country = "";
 	                    newUser.profile.credit = 0;
 						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 
@@ -463,6 +473,7 @@ module.exports = function(passport) {
 						}
 
 						// Record last login
+						user.profile.login_type = "twitter";
 						user.profile.last_login = Date.now();
 						user.save(function(err){
 							if(err)
@@ -476,6 +487,7 @@ module.exports = function(passport) {
 	    				var newUser = new User(); // User not found, create one
 	    				newUser.twitter.id = profile.id;
 	    				newUser.twitter.token = token;
+						newUser.profile.login_type = "twitter";
 						newUser.profile.last_login = Date.now();
 						newUser.profile.role = "User";
 	    				newUser.profile.name = profile.displayName;
@@ -485,6 +497,7 @@ module.exports = function(passport) {
 						newUser.profile.weight = "";
 						newUser.profile.gender = "";
 						newUser.profile.ethnicity = "";
+						newUser.profile.country = "";
 	                    newUser.profile.credit = 0;
 						newUser.wallet.push( { node_id: HCN.Api.get('host'), account: account, address: address });
 

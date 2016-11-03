@@ -167,7 +167,7 @@ define(['knockout',
         self.txcommentBiomarker(JSON.stringify(self.buildBiomarker()));
 
         // Add biomarker to schema server-side then encode base64 before sending.
-        var hcbm = encodeURIComponent(self.txcommentBiomarker());
+        var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
         sendCommand = new Command('sendfrom',
             [self.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm]).execute()
             .done(function(txid){

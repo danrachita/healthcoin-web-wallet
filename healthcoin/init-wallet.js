@@ -6,13 +6,13 @@ function Init() {
 	var HCN = require('../app.js');
 	var foundNode_ID = false;
 
-	User.findOne({'local.username': HCN.MasterAccount, 'wallet.node_id': HCN.MasterNode_ID}, function(err, user){
+	User.findOne({'local.id': HCN.MasterAccount, 'wallet.node_id': HCN.MasterNode_ID}, function(err, user){
 		if (user)
 			foundNode_ID = true;
 	});
 
 
-	User.findOne({'local.username': HCN.MasterAccount}, function(err, user){
+	User.findOne({'local.id': HCN.MasterAccount}, function(err, user){
 		if(err)
 			return err;
 		if(user && !foundNode_ID){
@@ -84,9 +84,11 @@ function Init() {
 					clearInterval(interval3);
 					// Create the MasterAccount
 					var newUser = new User();
-					newUser.local.username = HCN.MasterAccount;
+					newUser.local.id = HCN.MasterAccount;
 					newUser.local.password = newUser.local.generateHash(HCN.MasterPassword);
 					newUser.local.changeme = HCN.MasterPassword === "password" ? true : false;
+					newUser.profile.login_type = "local";
+					newUser.profile.last_login = Date.now();
 					newUser.profile.role = "Admin";
 					newUser.profile.name = "Healthcoin Admin";
 					newUser.profile.email = HCN.MasterEmail;
@@ -95,6 +97,8 @@ function Init() {
 					newUser.profile.weight = "";
 					newUser.profile.gender = "";
 					newUser.profile.ethnicity = "";
+					newUser.profile.country = "";
+                    newUser.profile.credit = 0;
 					newUser.wallet.push( { node_id: HCN.MasterNode_ID, account: HCN.MasterAccount, address: HCN.MasterAddress });
 	
 					newUser.save(function(err){
