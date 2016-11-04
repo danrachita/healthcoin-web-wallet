@@ -141,7 +141,21 @@ define(['knockout',
 			if (!found)
                 console.log("Error: wallet not found for self node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
+        if (!self.profileComplete()){
+                self.statusMessage("Please complete your profile before continuing.");
+        }
         self.dirtyFlag(false);
+    };
+
+    biomarkersType.prototype.profileComplete = function(){
+        var self = this;
+        var profileComplete =   self.hcbmAge() > 0 &&
+                                self.hcbmWeight() > 0 &&
+                                self.hcbmWaist() > 0 &&
+                                self.hcbmGender() !== "" &&
+                                self.hcbmEthnicity() !== "" &&
+                                self.hcbmCountry() !== "";
+        return profileComplete;
     };
 
     biomarkersType.prototype.Reset = function(){
