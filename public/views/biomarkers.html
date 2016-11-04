@@ -6,27 +6,39 @@
     <div class="col-sm-6">
         <div class="well">
             <h3><span class="fa fa-heartbeat"></span> Biomarker</h3>
-            <table width="100%">
-                <tr><td><strong>Date</strong>: <i>(yyyymmdd)</i> <span style="float:right" data-bind="editable: hcbmDate" data-type="date" data-viewformat="yyyymmdd"></span></td></tr>
-                <tr><td><strong>EHR</strong>: <span style="float:right" data-bind="editable: hcbmEHR_Source"></span></td></tr>
-                <tr><td><strong>EHR Type</strong>: <span style="float:right" data-bind="editable: hcbmEHR_Type"></span></td></tr>
-                <th>&nbsp;</th>
-                <tr><td><strong>A1c</strong>: <span style="float:right" data-bind="editable: hcbmA1c" data-type="number"></span></td></tr>
-                <tr><td><strong>Triglycerides</strong>: <span style="float:right" data-bind="editable: hcbmTriglycerides" data-type="number"></span></td></tr>
-                <tr><td><strong>HDL</strong>: <span style="float:right" data-bind="editable: hcbmHDL" data-type="number"></span></td></tr>
-                <tr><td><strong>BPS</strong>: <span style="float:right" data-bind="editable: hcbmBPS" data-type="number"></span></td></tr>
-                <tr><td><strong>BPD</strong>: <span style="float:right" data-bind="editable: hcbmBPD" data-type="number"></span></td></tr>
-                <th>&nbsp;</th>
-                <tr><td><strong>Device</strong>: <span style="float:right" data-bind="editable: hcbmDevice_Source"></span></td></tr>
-                <tr><td><strong>Device Steps</strong>: <span style="float:right" data-bind="editable: hcbmDevice_Steps" data-type="number"></span></td></tr>
-                <th>&nbsp;</th>
-                <tr><td>
-                <div style="float:right">
+            <form action="#profile" method="post">
+                <div class="form-group">
+                    <label>Marker Date</label>
+                    <span class="form-control" data-type="date" data-bind="editable: hcbmDate" data-viewformat="yyyy-mm-dd" data-title="When did you make your mark?" data-placement="right"></span>
+                    <label>EHR</label>
+                    <select class="form-control" data-type="select" data-bind="options: hcbmEHR_SourceValues, value: hcbmEHR_Source"></select>
+                    <label>EHR Type</label>
+                    <select class="form-control" data-type="select" data-bind="options: hcbmEHR_TypeValues, value: hcbmEHR_Type"></select>
+                </div>
+                <div class="form-group">
+                    <label>A1c</label>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmA1c"></span>
+                    <label>Triglycerides</label>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmTriglycerides"></span>
+                    <label>HDL</label>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmHDL"></span>
+                    <label>BPS</label>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmBPS"></span>
+                    <label>BPD</label>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmBPD"></span>
+                </div>
+                <div class="form-group">
+                    <label>Device</label>
+                    <select class="form-control" data-type="select" data-bind="options: hcbmDevice_SourceValues, value: hcbmDevice_Source"></select>
+                    <label>Steps</label>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmDevice_Steps"></span>
+                </div>
+
+                <div class="form-group">
                     <button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
                     <button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty() || !$data.canSend(), click: Submit">Submit</button>
                 </div>
-                </td></tr>
-            </table>
+            </form>
         </div>
     </div>
 

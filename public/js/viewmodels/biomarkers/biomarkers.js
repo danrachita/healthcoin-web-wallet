@@ -17,7 +17,37 @@ define(['knockout',
 
         self.hcbmDate = ko.observable("");
         self.hcbmEHR_Source = ko.observable("");
+        self.hcbmEHR_SourceValues = ko.observableArray(["",
+                                    "Columbia South Valley Hospital, Gilroy",
+                                    "Community Hospital of Los Gatos, Los Gatos",
+                                    "El Camino Hospital, Mountain View",
+                                    "Good Samaritan Hospital, San Jose",
+                                    "Kaiser Permanente Medical Center Gilroy, Gilroy, California",
+                                    "Kaiser Permanente Santa Clara Medical Center, Santa Clara, California",
+                                    "Kaiser Permanente Santa Teresa Medical Center, San Jose, California",
+                                    "Lucile Salter Packard Children's Hospital at Stanford, Palo Alto, California",
+                                    "O'Connor Hospital, San Jose, California",
+                                    "Regional Medical Center of San Jose, San Jose, California",
+                                    "Saint Louise Regional Hospital, Gilroy, California",
+                                    "San Jose Medical Center, San Jose, California",
+                                    "Santa Clara Valley Medical Center, San Jose, California",
+                                    "Stanford University Medical Center, Stanford",
+                                    "VA Palo Alto Health Care System, Palo Alto"
+                                    ]);
         self.hcbmEHR_Type = ko.observable("");
+        self.hcbmEHR_TypeValues =   ko.observableArray(["",
+                                    "Athena Health",
+                                    "Cerner",
+                                    "CPSI",
+                                    "Drchrono",
+                                    "EClinicalWorks",
+                                    "Epic",
+                                    "GE Healthcare",
+                                    "Greenway Health",
+                                    "McKesson",
+                                    "Meditech",
+                                    "Nextgen"
+                                    ]);
         self.hcbmA1c = ko.observable(0);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
@@ -30,6 +60,59 @@ define(['knockout',
         self.hcbmEthnicity = ko.observable(0);
         self.hcbmCountry = ko.observable(0);
         self.hcbmDevice_Source = ko.observable("None");
+        self.hcbmDevice_SourceValues =   ko.observableArray(["",
+                                    "Adidas",
+                                    "Apple",
+                                    "Biomedtrics",
+                                    "BodyTrace",
+                                    "CareTRx",
+                                    "CoheroHealth",
+                                    "DailyMile",
+                                    "Edamam",
+                                    "Emfit",
+                                    "EpsonPulsense",
+                                    "Fatsecret",
+                                    "Fitbit",
+                                    "Fitbug",
+                                    "FitLinxx",
+                                    "Garmin Connect",
+                                    "Higi",
+                                    "iHealth",
+                                    "inrfood",
+                                    "Jawbone Up",
+                                    "Kiqplan",
+                                    "Life Fitness",
+                                    "LifeTrak",
+                                    "Lumo",
+                                    "ManageBGL",
+                                    "MapMyFitness",
+                                    "Microsoft",
+                                    "Misfit",
+                                    "Moov",
+                                    "Moveable",
+                                    "Moves",
+                                    "MyFitnessPal",
+                                    "Omron Wellness",
+                                    "PearSports",
+                                    "Personalabs",
+                                    "Polar",
+                                    "Precor",
+                                    "Qardio",
+                                    "RunKeeper",
+                                    "RxCheck",
+                                    "Sleep_Image",
+                                    "Sony",
+                                    "Strava",
+                                    "Striiv",
+                                    "Suunto",
+                                    "Telcare",
+                                    "TomTom MySports",
+                                    "Under Armour",
+                                    "Visiomed",
+                                    "VitaDock",
+                                    "Withings",
+                                    "Yoo"
+                                    ]);
         self.hcbmDevice_Steps = ko.observable(0);
         self.hcbmOther = ko.observable("n/a");
 
@@ -109,16 +192,15 @@ define(['knockout',
         if (User && node_id){
             self.User(User);
             self.node_id(node_id);
-            var date = Dateformat(Date.now(), "yyyymmdd");
-            console.log("DEBUG: date: " + date);
+            var date = Dateformat(Date.now(), "yyyy-mm-dd");
             self.hcbmDate(date);
             self.hcbmEHR_Source("");
             self.hcbmEHR_Type("");
-            self.hcbmA1c("000");
-            self.hcbmTriglycerides("000");
-            self.hcbmHDL("000");
-            self.hcbmBPS("000");
-            self.hcbmBPD("000");
+            self.hcbmA1c("0");
+            self.hcbmTriglycerides("0");
+            self.hcbmHDL("0");
+            self.hcbmBPS("0");
+            self.hcbmBPD("0");
             self.hcbmAge(User.profile.age);
             self.hcbmWeight(User.profile.weight);
             self.hcbmWaist(User.profile.waist);
@@ -126,7 +208,7 @@ define(['knockout',
             self.hcbmEthnicity(User.profile.ethnicity);
             self.hcbmCountry(User.profile.country);
             self.hcbmDevice_Source("None");
-            self.hcbmDevice_Steps("000");
+            self.hcbmDevice_Steps("0");
             self.hcbmOther("n/a");
             var found = false;
 			// Get the address/account for the node_id
@@ -141,21 +223,10 @@ define(['knockout',
 			if (!found)
                 console.log("Error: wallet not found for self node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
-        if (!self.profileComplete()){
+        if (!this.profileComplete()){
                 self.statusMessage("Please complete your profile then refresh this page before continuing.");
         }
         self.dirtyFlag(false);
-    };
-
-    biomarkersType.prototype.profileComplete = function(){
-        var self = this;
-        var profileComplete =   self.hcbmAge() > 0 &&
-                                self.hcbmWeight() > 0 &&
-                                self.hcbmWaist() > 0 &&
-                                self.hcbmGender() !== "" &&
-                                self.hcbmEthnicity() !== "" &&
-                                self.hcbmCountry() !== "";
-        return profileComplete;
     };
 
     biomarkersType.prototype.Reset = function(){
@@ -167,8 +238,20 @@ define(['knockout',
         var self = this;
         // Build and validate the biomarker.
         self.txcommentBiomarker(self.buildBiomarker());
+        console.log("DEBUG: txcommentBiomarker: " + self.txcommentBiomarker());
 
         this.sendSubmit();
+    };
+
+    biomarkersType.prototype.profileComplete = function(){
+        var self = this;
+        var isComplete = self.hcbmAge() > 0 &&
+                         self.hcbmWeight() > 0 &&
+                         self.hcbmWaist() > 0 &&
+                         self.hcbmGender() !== "" &&
+                         self.hcbmEthnicity() !== "" &&
+                         self.hcbmCountry() !== "";
+        return isComplete;
     };
 
     function lockWallet(){
@@ -223,8 +306,7 @@ define(['knockout',
                 console.log("Sending...");
                 self.sendToAddress(null);
             }
-        }
-        else{
+        } else {
             console.log("Can't send. Form in invalid state.");
         }
     };

@@ -25,7 +25,7 @@ define( [
         ko.applyBindings(wallet, $('#wrapper')[0]);
         dialog.init($('#defaultModal')[0]);
 
-		$.fn.editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
+		//$.fn.editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
 
         Sammy(function() {
             this.get('#biomarkers', function() {
