@@ -142,7 +142,7 @@ define(['knockout',
                 console.log("Error: wallet not found for self node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
         if (!self.profileComplete()){
-                self.statusMessage("Please complete your profile before continuing.");
+                self.statusMessage("Please complete your profile then refresh this page before continuing.");
         }
         self.dirtyFlag(false);
     };
