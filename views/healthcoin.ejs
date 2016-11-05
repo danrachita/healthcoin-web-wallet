@@ -33,27 +33,28 @@
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <li class="sidebar-brand"> <a href="/"></a> </li>
-                <li> <a href="#biomarkers"><div data-bind="css: { selected: $data.currentView() === 'biomarkers' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-home" aria-hidden="true"><span class="sidebar-nav-button-content">Healthcoin</span></div></div></a> </li>
-                <li> <a href="#send"><div data-bind="css: { selected: $data.currentView() === 'send' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-send" aria-hidden="true"><span class="sidebar-nav-button-content">Send</span></div></div></a> </li>
-                <li> <a href="#receive"><div data-bind="css: { selected: $data.currentView() === 'receive' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-inbox" aria-hidden="true"><span class="sidebar-nav-button-content">Receive</span></div></div></a> </li>
-                <li> <a href="#history"><div data-bind="css: { selected: $data.currentView() === 'history' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-time" aria-hidden="true"><span class="sidebar-nav-button-content">Coinstream</span></div></div></a> </li>
+                <li> <a href="#healthcoin"><div data-bind="css: { selected: $data.currentView() === 'healthcoin' }" class="sidebar-nav-button-content"><div class="fa fa-h-square" aria-hidden="true"><span class="sidebar-nav-button-content">Healthcoin</span></div></div></a> </li>
+                <li> <a href="#biomarkers"><div data-bind="css: { selected: $data.currentView() === 'biomarkers' }" class="sidebar-nav-button-content"><div class="fa fa-heartbeat" aria-hidden="true"><span class="sidebar-nav-button-content">Biomarkers</span></div></div></a> </li>
+                <li> <a href="#send"><div data-bind="css: { selected: $data.currentView() === 'send' }" class="sidebar-nav-button-content"><div class="fa fa-paper-plane" aria-hidden="true"><span class="sidebar-nav-button-content">Send</span></div></div></a> </li>
+                <li> <a href="#receive"><div data-bind="css: { selected: $data.currentView() === 'receive' }" class="sidebar-nav-button-content"><div class="fa fa-inbox" aria-hidden="true"><span class="sidebar-nav-button-content">Receive</span></div></div></a> </li>
+                <li> <a href="#history"><div data-bind="css: { selected: $data.currentView() === 'history' }" class="sidebar-nav-button-content"><div class="fa fa-calendar" aria-hidden="true"><span class="sidebar-nav-button-content">Coinstream</span></div></div></a> </li>
+                <li> <a href="#profile"><div data-bind="css: { selected: $data.currentView() === 'profile' }" class="sidebar-nav-button-content"><div class="fa fa-user" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a> </li>
 
     <!-- ko if: role() === 'Admin' -->
-                <li> <a href="#explore"><div data-bind="css: { selected: $data.currentView() === 'explore' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-search" aria-hidden="true"><span class="sidebar-nav-button-content">Explore EHR</span></div></div></a> </li>
-                <li> <a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-console" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a> </li>
+                <li> <a href="#explore"><div data-bind="css: { selected: $data.currentView() === 'explore' }" class="sidebar-nav-button-content"><div class="fa fa-search" aria-hidden="true"><span class="sidebar-nav-button-content">Explore EHR</span></div></div></a> </li>
+                <li> <a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="fa fa-terminal" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a> </li>
     <!-- /ko -->
     <!-- ko if: walletStatus.encryptionStatus() && (walletStatus.isLocalWallet() || role() === 'Admin') -->
         <!-- ko if: walletStatus.isUnlocked() === 'Yes' -->
-                <li> <a href="#"><div data-bind="click:lockWallet" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-eye-open" aria-hidden="true"><span class="sidebar-nav-button-content">Lock Wallet</span></div></div></a> </li>
+                <li> <a href="#"><div data-bind="click:lockWallet" class="sidebar-nav-button-content"><div class="fa fa-unlock" aria-hidden="true"><span class="sidebar-nav-button-content">Lock Wallet</span></div></div></a> </li>
         <!-- /ko -->
         <!-- ko if: walletStatus.isUnlocked() !== 'Yes' -->
-                <li> <a href="#"><div data-bind="click:unlockWallet" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-lock" aria-hidden="true"><span class="sidebar-nav-button-content">Unlock Wallet</span></div></div></a> </li>
+                <li> <a href="#"><div data-bind="click:unlockWallet" class="sidebar-nav-button-content"><div class="fa fa-lock" aria-hidden="true"><span class="sidebar-nav-button-content">Unlock Wallet</span></div></div></a> </li>
         <!-- /ko -->
     <!-- /ko -->
-                <li> <a href="#profile"><div data-bind="css: { selected: $data.currentView() === 'profile' }" class="sidebar-nav-button-content"><div class="glyphicon glyphicon-user" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a> </li>
 
                 <!-- off wallet links -->
-                <li> <a href="/logout"><div class="sidebar-nav-button-content"><div class="glyphicon glyphicon-lock" aria-hidden="true"><span class="sidebar-nav-button-content">Logout</span></div></div></a> </li>
+                <li> <a href="/logout"><div class="sidebar-nav-button-content"><div class="fa fa-sign-out" aria-hidden="true"><span class="sidebar-nav-button-content">Logout</span></div></div></a> </li>
 
     <!-- ko if: walletStatus.isLocalWallet() || role() === 'Admin' -->
                 <li> <span class="sidebar-nav-button-content"></span> </li>

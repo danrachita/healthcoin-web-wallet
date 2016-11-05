@@ -1,6 +1,7 @@
 define(['knockout',
     'common/dialog',
     'viewmodels/wallet-status',
+    'viewmodels/healthcoin/healthcoin',
     'viewmodels/biomarkers/biomarkers',
     'viewmodels/send/send',
     'viewmodels/receive/receive',
@@ -10,7 +11,7 @@ define(['knockout',
     'viewmodels/profile/profile',
     'bindinghandlers/modal',
     'viewmodels/common/wallet-passphrase',
-    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
+    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Healthcoin, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
         var self = this;
@@ -27,6 +28,7 @@ define(['knockout',
 
         self.role = ko.observable("");
 
+        self.healthcoin = new Healthcoin({parent: self});
         self.biomarkers = new Biomarkers({parent: self});
         self.send = new Send({parent: self});
         self.receive = new Receive({parent: self});

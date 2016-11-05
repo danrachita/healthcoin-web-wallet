@@ -28,6 +28,9 @@ define( [
 		//$.fn.editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
 
         Sammy(function() {
+            this.get('#healthcoin', function() {
+                wallet.currentView('healthcoin');
+            });
             this.get('#biomarkers', function() {
                 wallet.currentView('biomarkers');
             });
@@ -55,7 +58,7 @@ define( [
                 wallet.currentView('profile');
             });
 
-        }).run('#biomarkers');
+        }).run('#healthcoin');
     };
     return new App();
 });
