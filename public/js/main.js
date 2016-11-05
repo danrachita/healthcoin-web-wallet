@@ -12,5 +12,5 @@ require( [ "app" ], function( App ){
     // Delay Initialization
     setTimeout(function(){
         App.init();
-    },500);
+    },1000);
 });
