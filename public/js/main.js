@@ -9,5 +9,8 @@ require.config({
 });
 
 require( [ "app" ], function( App ){
-    App.init();
+    // Delay Initialization
+    setTimeout(function(){
+        App.init();
+    },500);
 });
