@@ -7,7 +7,7 @@
   "window": {
     "show": true,
     "title": "Healthcoin App",
-    "icon": "./images/healthcoin-logo.png",
+    "icon": "./public/images/Icon.png",
     "toolbar": false,
     "frame": true,
     "width": 1024,
