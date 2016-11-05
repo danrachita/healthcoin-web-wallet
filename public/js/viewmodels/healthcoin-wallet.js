@@ -61,6 +61,7 @@ define(['knockout',
         var self = this, refreshPromise = "";
         if (self.timeout < 60000){ // First timeout
             refreshPromise = $.when(self.walletStatus.load(self.User()),
+                                    self.healthcoin.load(self.User(), self.walletStatus.node_id()),
                                     self.biomarkers.load(self.User(), self.walletStatus.node_id()),
                                     self.send.load(self.User(), self.walletStatus.node_id()),
                                     self.receive.load(self.User(), self.walletStatus.node_id()),
