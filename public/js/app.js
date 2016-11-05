@@ -4,10 +4,10 @@ define( [
         "viewmodels/healthcoin-wallet",
         "lib/jquery.min",
         "lib/bootstrap.min",
-        "lib/bootstrap-editable.min",
-        "lib/knockout.x-editable.min",
         "knockout-amd-helpers",
         "knockout-validation",
+        "lib/bootstrap-editable.min",
+        "lib/knockout.x-editable.min",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
         "bindinghandlers/modal"
