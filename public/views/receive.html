@@ -1,29 +1,34 @@
 <div id="receive-container" class="container" data-bind="with:receive">
     <h1>Your Healthcoin<sup>&reg;</sup> Addresses</h1>
-    <table class="table table-hover table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Account</th>
-                <th>Address</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-    	<!-- ko if: $data.addresses -->
-        <tbody data-bind="foreach: addresses">
-			<!-- ko if: $data.address -->
-            <tr>
-                <td data-bind="text: account"></td>
-                <td data-bind="text: address"></td>
-                <td data-bind="text: amount"></td>
-            </tr>
+    <h3 align="center" data-bind="text:statusMessage"></h3>
+
+    <!-- RECEIVE -->
+	<div class="well">
+		<h3><span class="fa fa-inbox"></span> Receive Healthcoin</h3>
+		<table class="table table-hover table-striped table-bordered">
+			<thead>
+				<tr>
+					<th>Account</th>
+					<th>Address</th>
+					<th>Amount</th>
+				</tr>
+			</thead>
+			<!-- ko if: $data.addresses -->
+			<tbody data-bind="foreach: addresses">
+				<!-- ko if: $data.address -->
+				<tr>
+					<td data-bind="text: account"></td>
+					<td data-bind="text: address"></td>
+					<td data-bind="text: amount"></td>
+				</tr>
+				<!-- /ko -->
+			</tbody>
 			<!-- /ko -->
-        </tbody>
-		<!-- /ko -->
-    </table>
-    
-    <div>
-    <button type="button" class="btn btn-default" data-bind="click: newAddress" >
-        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Address
-    </button>
-    </div>
+		</table>
+		<div>
+			<button type="button" class="btn btn-default" data-bind="click: newAddress" >
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Address
+			</button>
+		</div>
+	</div>
 </div>

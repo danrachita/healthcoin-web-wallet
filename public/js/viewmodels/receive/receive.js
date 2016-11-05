@@ -7,6 +7,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent;
 
+        self.statusMessage = ko.observable("");
+
         self.account = ko.observable("");
         self.address = ko.observable("");
         self.addresses = ko.observableArray([]);

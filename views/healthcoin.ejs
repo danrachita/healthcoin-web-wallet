@@ -32,7 +32,7 @@
     <div id='wrapper' data-bind='css: { toggled: $data.sidebarToggled }'>
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
-                <li class="sidebar-brand"> <a href="/"></a> </li>
+                <li class="sidebar-brand"></li>
                 <li> <a href="#healthcoin"><div data-bind="css: { selected: $data.currentView() === 'healthcoin' }" class="sidebar-nav-button-content"><div class="fa fa-h-square" aria-hidden="true"><span class="sidebar-nav-button-content">Healthcoin</span></div></div></a> </li>
                 <li> <a href="#biomarkers"><div data-bind="css: { selected: $data.currentView() === 'biomarkers' }" class="sidebar-nav-button-content"><div class="fa fa-heartbeat" aria-hidden="true"><span class="sidebar-nav-button-content">Biomarkers</span></div></div></a> </li>
                 <li> <a href="#send"><div data-bind="css: { selected: $data.currentView() === 'send' }" class="sidebar-nav-button-content"><div class="fa fa-paper-plane" aria-hidden="true"><span class="sidebar-nav-button-content">Send</span></div></div></a> </li>
@@ -41,7 +41,7 @@
                 <li> <a href="#profile"><div data-bind="css: { selected: $data.currentView() === 'profile' }" class="sidebar-nav-button-content"><div class="fa fa-user" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a> </li>
 
     <!-- ko if: role() === 'Admin' -->
-                <li> <a href="#explore"><div data-bind="css: { selected: $data.currentView() === 'explore' }" class="sidebar-nav-button-content"><div class="fa fa-search" aria-hidden="true"><span class="sidebar-nav-button-content">Explore EHR</span></div></div></a> </li>
+                <li> <a href="#explore"><div data-bind="css: { selected: $data.currentView() === 'explore' }" class="sidebar-nav-button-content"><div class="fa fa-search" aria-hidden="true"><span class="sidebar-nav-button-content">Explore</span></div></div></a> </li>
                 <li> <a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="fa fa-terminal" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a> </li>
     <!-- /ko -->
     <!-- ko if: walletStatus.encryptionStatus() && (walletStatus.isLocalWallet() || role() === 'Admin') -->

@@ -72,8 +72,7 @@ define(['knockout',
         } else {
             refreshPromise = $.when(self.walletStatus.refresh(),
                                     self.receive.refresh(),
-                                    self.history.refresh(),
-                                    self.profile.refresh());
+                                    self.history.refresh());
         }
         return refreshPromise;
     };
