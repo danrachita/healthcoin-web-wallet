@@ -282,7 +282,7 @@ define(['knockout',
     biomarkersType.prototype.sendSubmit = function(){
         var self = this;
         console.log("Send request submitted.");
-        if(self.canSend()){
+        //if(self.canSend()){
             if (self.isEncrypted()){
                 console.log("Unlocking wallet for sending.");
                 lockWallet().done(function(){
@@ -306,9 +306,9 @@ define(['knockout',
                 console.log("Sending...");
                 self.sendToAddress(null);
             }
-        } else {
-            console.log("Can't send. Form in invalid state.");
-        }
+        //} else {
+        //    console.log("Can't send. Form in invalid state.");
+        //}
     };
 
     biomarkersType.prototype.sendConfirm = function(amount){
