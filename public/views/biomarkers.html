@@ -10,28 +10,28 @@
                 <div class="form-group">
                     <label>Marker Date</label>
                     <span class="form-control" data-type="date" data-bind="editable: hcbmDate" data-viewformat="yyyy-mm-dd" data-title="When did you make your mark?" data-placement="right"></span>
-                    <label>EHR</label>
-                    <select class="form-control" data-type="select" data-bind="options: hcbmEHR_SourceValues, value: hcbmEHR_Source"></select>
+                    <label>Electronic Health Record Source</label>
+                    <select class="form-control" data-type="select" data-bind="options: hcbmEHR_SourceValues, value: hcbmEHR_Source" data-title="Electronic Health Record Source"></select>
                     <label>EHR Type</label>
-                    <select class="form-control" data-type="select" data-bind="options: hcbmEHR_TypeValues, value: hcbmEHR_Type"></select>
+                    <select class="form-control" data-type="select" data-bind="options: hcbmEHR_TypeValues, value: hcbmEHR_Type" data-title="Electronic Health Record Type"></select>
                 </div>
                 <div class="form-group">
-                    <label>A1c</label>
-                    <span class="form-control" data-type="number" data-bind="editable: hcbmA1c"></span>
+                    <label>A1C</label>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmA1c" data-title="Blood Glucose Level"></span>
                     <label>Triglycerides</label>
-                    <span class="form-control" data-type="number" data-bind="editable: hcbmTriglycerides"></span>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmTriglycerides" data-title="Triglycerides Level"></span>
                     <label>HDL</label>
-                    <span class="form-control" data-type="number" data-bind="editable: hcbmHDL"></span>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmHDL" data-title="Cholesterol Level"></span>
                     <label>BPS</label>
-                    <span class="form-control" data-type="number" data-bind="editable: hcbmBPS"></span>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmBPS" data-title="Blood Pressure Systolic"></span>
                     <label>BPD</label>
-                    <span class="form-control" data-type="number" data-bind="editable: hcbmBPD"></span>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmBPD" data-title="Blood Pressure Diastolic"></span>
                 </div>
                 <div class="form-group">
-                    <label>Device</label>
-                    <select class="form-control" data-type="select" data-bind="options: hcbmDevice_SourceValues, value: hcbmDevice_Source"></select>
+                    <label>Wearable or Other Device</label>
+                    <select class="form-control" data-type="select" data-bind="options: hcbmDevice_SourceValues, value: hcbmDevice_Source" data-title="Select your wearable device."></select>
                     <label>Steps</label>
-                    <span class="form-control" data-type="number" data-bind="editable: hcbmDevice_Steps"></span>
+                    <span class="form-control" data-type="number" data-bind="editable: hcbmDevice_Steps" data-title="How many steps did you take?"></span>
                 </div>
 
                 <div class="form-group">

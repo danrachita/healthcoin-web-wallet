@@ -378,7 +378,7 @@ define(['knockout',
         "Date": self.hcbmDate(), // Date of activity
 		"EHR_Source": self.hcbmEHR_Source(),
 		"EHR_Type": self.hcbmEHR_Type(),
-        "A1c": self.hcbmA1c(),
+        "A1C": self.hcbmA1c(),
         "Triglycerides": self.hcbmTriglycerides(),
         "HDL": self.hcbmHDL(),
         "BPS": self.hcbmBPS(),
