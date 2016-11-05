@@ -1,88 +1,76 @@
 <div class="container" <span data-bind="with:profile">
     <h1>Your Healthcoin<sup>&reg;</sup> Profile</h1>
-	<div class="row">
-		<!-- GENERAL INFORMATION -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3><span class="fa fa-user"></span> Profile</h3>
-				<table width="100%">
-					<tr><td><strong>Role</strong>: <span style="float:right" data-bind="text: role"></span></td></tr>
-					<tr><td><strong>Name</strong>: <span style="float:right" data-bind="editable: name"></span></td></tr>
-					<tr><td><strong>Email</strong>: <span style="float:right" data-bind="editable: email"></span></td></tr>
-					<tr><td><strong>Description</strong>: <span style="float:right" data-bind="editable: description"></span></td></tr>
-					<tr><td><strong>Age</strong>: <span style="float:right" data-bind="editable: age"></span></td></tr>
-					<tr><td><strong>Weight</strong>: <span style="float:right" data-bind="editable: weight"></span></td></tr>
-					<tr><td><strong>Waist</strong>: <span style="float:right" data-bind="editable: waist"></span></td></tr>
-					<tr><td><strong>Gender</strong>: <span style="float:right" data-bind="editable: gender"></span></td></tr>
-					<tr><td><strong>Ethnicity</strong>: <span style="float:right" data-bind="editable: ethnicity"></span></td></tr>
-					<tr><td><strong>Country</strong>: <span style="float:right" data-bind="editable: country"></span></td></tr>
-					<tr><td><strong>HCN Credit</strong>: <span style="float:right" data-bind="text: credit"></span></td></tr>
-	                <th>&nbsp;</th>
-					<tr><td>
-					<div style="float:right">
-						<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
-						<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Submit">Submit</button>
-					</div>
-					</td></tr>
-				</table>
-				<!-- ko if: active_wallet -->
-				<h3><span class="fa fa-money"></span> HCN Wallet</h3>
-				<table width="100%">
-					<tr><td><strong>Node_ID</strong>: <span style="float:right" data-bind="text: active_wallet().node_id"></span></td></tr>
-					<tr><td><strong>Account</strong>: <span style="float:right" data-bind="text: active_wallet().account"></span></td></tr>
-					<tr><td><strong>Address</strong>: <span style="float:right" data-bind="text: active_wallet().address"></span></td></tr>
-				</table>
-				<!-- /ko -->
-			</div>
-		</div>
 
-		<!-- LOCAL INFORMATION -->
-		<!-- ko if: login_type() === 'local' -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3><span class="fa fa-database"></span> Account</h3>
-					<p>
-						<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
-						<strong>Password</strong>: <span style="float:right">[<a href="/password">change</a>]</span><br>
-					</p>
-			</div>
-		</div>
+	<!-- PROFILE -->
+	<div class="well">
+		<h3 class="text-primary"><span class="fa fa-user"></span> Profile <span style="float: right" data-bind="text: 'Credits: ' + credit()"></span></h3>
+        <form action="#profile" method="post">
+            <div class="form-group">
+                <label>Name</label>
+                <span class="form-control" data-type="text" data-bind="editable: name" placeholder="Enter your full name."></span><br>
+                <label>Email</label>
+                <span class="form-control" data-type="email" data-bind="editable: email" data-title="Enter your email address."></span><br>
+                <label>Description</label>
+                <span class="form-control" data-type="text" data-bind="editable: description" placeholder="Describe yourself."></span><br>
+
+                <label>Age</label>
+                <input class="form-control" type="number" data-bind="numericInput, textInput: age" placeholder="How many years old are you?"></input><br>
+                <label>Weight (kg)</label>
+                <input class="form-control" type="number" data-bind="numericInput, textInput: weight" placeholder="How many kilograms do you weigh?"></input><br>
+                <label>Waist (cm)</label>
+                <input class="form-control" type="number" data-bind="numericInput, textInput: waist" placeholder="How many centimeters is your waist line?"></input><br>
+
+                <label>Gender</label>
+                <select class="form-control" data-type="select" data-bind="options: genderValues, value: gender" data-title="Select your gender."></select><br>
+                <label>Ethnicity</label>
+                <select class="form-control" data-type="select" data-bind="options: ethnicityValues, value: ethnicity" data-title="Select your ethnicity."></select><br>
+                <label>Country</label>
+                <select class="form-control" data-type="select" data-bind="options: countryValues, value: country" data-title="Select your country of origin."></select><br>
+            </div>
+
+            <div class="form-group">
+				<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
+				<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Submit">Submit</button>
+            </div>
+        </form>
+
+		<!-- ko if: active_wallet -->
+		<h3 class="text-primary"><span class="fa fa-money"></span> Wallet Info</h3>
+		<table width="100%">
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span data-bind="text: active_wallet().account"></span></td></tr>
+			<tr><td width="15%"><strong>Address</strong>: </td><td><span data-bind="text: active_wallet().address"></span></td></tr>
+			<tr><td width="15%"><strong>Node_ID</strong>: </td><td><span data-bind="text: active_wallet().node_id"></span></td></tr>
+		</table>
 		<!-- /ko -->
 
-		<!-- FACEBOOK INFORMATION -->
-		<!-- ko if: login_type() === 'facebook' -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
-				<p>
-					<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
-				</p>
-			</div>
-		</div>
-		<!-- /ko -->
-
-		<!-- GOOGLE INFORMATION -->
-		<!-- ko if: login_type() === 'google' -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3 class="text-primary"><span class="fa fa-google-plus"></span> Google</h3>
-				<p>
-					<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
-				</p>
-			</div>
-		</div>
-		<!-- /ko -->
-
-		<!-- TWITTER INFORMATION -->
-		<!-- ko if: login_type() === 'twitter' -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3 class="text-primary"><span class="fa fa-twitter"></span> Twitter</h3>
-				<p>
-					<strong>ID</strong>: <span style="float:right" data-bind="text: login_id"> </span><br>
-				</p>
-			</div>
-		</div>
-		<!-- /ko -->
+	<!-- LOCAL -->
+	<!-- ko if: login_type() === 'local' -->
+		<h3 class="text-primary"><span class="fa fa-database"></span> Signed in with Account</h3>
+		<table width="100%">
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span data-bind="text: login_id"></span></td></tr>
+			<tr><td width="15%"><strong>Password</strong>: </td><td><span>[<a href="/password">change</a>]</span></td></tr>
+		</table>
+	<!-- /ko -->
+	<!-- FACEBOOK -->
+	<!-- ko if: login_type() === 'facebook' -->
+		<h3 class="text-primary"><span class="fa fa-facebook"></span> Signed in with Facebook</h3>
+		<table width="100%">
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: facebookUrl().concat(login_id())}" target="_blank">Facebook</a></span></td></tr>
+		</table>
+	<!-- /ko -->
+	<!-- GOOGLE -->
+	<!-- ko if: login_type() === 'google' -->
+		<h3 class="text-primary"><span class="fa fa-google-plus"></span> Signed in with Google</h3>
+		<table width="100%">
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: googleUrl().concat(login_id()), title: Google}" target="_blank">Google</a></span></td></tr>
+		</table>
+	<!-- /ko -->
+	<!-- TWITTER -->
+	<!-- ko if: login_type() === 'twitter' -->
+		<h3 class="text-primary"><span class="fa fa-twitter"></span> Signed in with Twitter</h3>
+		<table width="100%">
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: twitterUrl().concat(login_id()), title: Twitter}" target="_blank">Twitter</a></span></td></tr>
+		</table>
+	<!-- /ko -->
 	</div>
 </div>

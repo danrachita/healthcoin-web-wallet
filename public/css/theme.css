@@ -54,6 +54,11 @@ body {
     position: absolute;
 }
 
+#page-content-wrapper {
+    width: 100%;
+    border: 10px;
+}
+
 #wrapper.toggled #page-content-wrapper {
     /*width: auto;*/
     position: absolute;

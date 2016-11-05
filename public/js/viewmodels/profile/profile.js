@@ -14,6 +14,9 @@ define(['knockout',
         self.credit = ko.observable("");
         self.wallets = ko.observableArray([]);
         self.active_wallet = ko.observable("");
+        self.facebookUrl = ko.observable("https://facebook.com/");
+        self.googleUrl = ko.observable("https://plus.google.com/");
+        self.twitterUrl = ko.observable("https://twitter.com/");
 
         // User changeables
         self.name = ko.observable("");
@@ -23,8 +26,28 @@ define(['knockout',
         self.weight = ko.observable("");
         self.waist = ko.observable("");
         self.gender = ko.observable("");
+        self.genderValues = ko.observableArray(["",
+                                    "Female",
+                                    "Male",
+                                    "Other"
+                                    ]);
         self.ethnicity = ko.observable("");
+        self.ethnicityValues = ko.observableArray(["",
+                                    "Non-Hispanic White or Euro-American",
+                                    "Black, Afro-Caribbean, or African American",
+                                    "Latino or Hispanic American",
+                                    "East Asian or Asian American",
+                                    "South Asian or Indian American",
+                                    "Middle Eastern or Arab American",
+                                    "Native American or Alaskan Native",
+                                    "Other"
+                                    ]);
         self.country = ko.observable("");
+        self.countryValues = ko.observableArray(["",
+                                    "United States",
+                                    "Canada",
+                                    "Mexico"
+                                    ]);
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
