@@ -85,7 +85,7 @@ function Init() {
 			},1000); // end timeout
 
 			var interval3 = setInterval(function(){
-				console.log("DEBUG: done1,2,3:" + done1 + "," + done2 + "," + done3 + " MasterAddress:" + HCN.MasterAddress);
+				//console.log("DEBUG: done1,2,3:" + done1 + "," + done2 + "," + done3 + " MasterAddress:" + HCN.MasterAddress);
 				if (!done3 && !user){
 					clearInterval(interval3);
 					// Create the MasterAccount

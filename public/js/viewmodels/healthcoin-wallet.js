@@ -180,12 +180,5 @@ define(['knockout',
         this.sidebarToggled(!this.sidebarToggled());
     };
 
-
-// DEBUG
-    walletType.prototype.postProfile = function(wallet){
-        console.log("DEBUG: Got wallet:" + wallet);
-    };
-
-
     return walletType; 
 });

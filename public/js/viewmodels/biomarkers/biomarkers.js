@@ -238,7 +238,7 @@ define(['knockout',
         var self = this;
         // Build and validate the biomarker.
         self.txcommentBiomarker(self.buildBiomarker());
-        console.log("DEBUG: txcommentBiomarker: " + self.txcommentBiomarker());
+        //console.log("DEBUG: txcommentBiomarker: " + self.txcommentBiomarker());
 
         this.sendSubmit();
     };
@@ -335,7 +335,7 @@ define(['knockout',
         sendCommand = new Command('sendfrom',
             [self.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm]).execute()
             .done(function(txid){
-                console.log("Success! TxId:" + txid);
+                //console.log("DEBUG: TxId: " + txid);
                 self.statusMessage("Success! You've earned " + self.amount() + " credits.");
                 self.Reset();
                 self.User().profile.credit = self.User().profile.credit + self.amount();
