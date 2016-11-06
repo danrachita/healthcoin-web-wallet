@@ -1,19 +1,22 @@
-module.exports = {
-	'facebookAuth' : {
-		'clientID': '1287387224619327',
-		'clientSecret': 'c50f7c243605ed8ea8be3ecb4149df45',
-		'callbackURL': 'http://localhost:8181/auth/facebook/callback'
-	},
-
-	'googleAuth' : {
-		'clientID': '926349154416-i8ntj679c4td8aet9eujinfid2a1vmd2.apps.googleusercontent.com',
-		'clientSecret': 'SjDN6jPeXBEURCB98ieg8R5F',
-		'callbackURL': 'http://localhost:8181/auth/google/callback'
-	},
-
-	'twitterAuth' : {
-		'consumerKey': 'eFvIGtga2FR4v1w28z2uqxXdq',
-		'consumerSecret': 'FeYqsV8AoHx8N6c84tt6ksvSqrgXBAZ5RjArUT8qqcsAsoZpnb',
-		'callbackURL': 'http://localhost:8181/auth/twitter/callback'
-	}
+module.exports = function(appHost, appPort){
+	var auth = {
+		'facebookAuth' : {
+			'clientID': '1287387224619327',
+			'clientSecret': 'c50f7c243605ed8ea8be3ecb4149df45',
+			'callbackURL': 'http://' + appHost + ':' + appPort + '/auth/facebook/callback'
+		},
+	
+		'googleAuth' : {
+			'clientID': '926349154416-i8ntj679c4td8aet9eujinfid2a1vmd2.apps.googleusercontent.com',
+			'clientSecret': 'SjDN6jPeXBEURCB98ieg8R5F',
+			'callbackURL': 'http://' + appHost + ':' + appPort + '/auth/google/callback'
+		},
+	
+		'twitterAuth' : {
+			'consumerKey': 'eFvIGtga2FR4v1w28z2uqxXdq',
+			'consumerSecret': 'FeYqsV8AoHx8N6c84tt6ksvSqrgXBAZ5RjArUT8qqcsAsoZpnb',
+			'callbackURL': 'http://' + appHost + ':' + appPort + '/auth/twitter/callback'
+	    }
+    };
+	return auth;
 };

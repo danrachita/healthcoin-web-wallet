@@ -45,16 +45,21 @@ HCN.isLocal = healthcoinApi.isLocal; // TODO: Move all these to opts.
 HCN.mdbHost = healthcoinApi.mdbHost; // "
 HCN.mdbPort = healthcoinApi.mdbPort; // "
 
-HCN.appHost = '127.0.0.1';
+if (HCN.isLocal){
+    HCN.appHost = '127.0.0.1';
+} else {
+    HCN.appHost = 'nequals1.io';
+}
+app.set('host', HCN.appHost);
 HCN.appPort = app.get('port');
 
-HCN.MasterNode_ID  = HCN.Api.get('host');       // Master UI login account, and Label to assign to "" account(s).
-HCN.MasterAccount  = "MASTER_ACCOUNT";          // Master UI login account, and Label to assign to "" account(s).
-HCN.MasterAddress  = "";                        // Master Wallet Address to move coin from (assigned in init-wallet)
-HCN.MasterEmail    = "healthcoin@nequals1.io";  // Master email account.
-HCN.MasterPassword = "password";                // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
-HCN.NewUserAmount  = 1.0;                       // Aount to send new users at sign-up.
-HCN.MaxSendAmount  = 100.0;                     // Normal send amounts from MasterAccount should be small.
+HCN.MasterNode_ID  = HCN.Api.get('host');         // Master UI login account, and Label to assign to "" account(s).
+HCN.MasterAccount  = "MASTER_ACCOUNT";            // Master UI login account, and Label to assign to "" account(s).
+HCN.MasterAddress  = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
+HCN.MasterEmail    = "healthcoin@" + HCN.appHost; // Master email account.
+HCN.MasterPassword = "password";                  // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
+HCN.NewUserAmount  = 1.0;                         // Aount to send new users at sign-up.
+HCN.MaxSendAmount  = 100.0;                       // Normal send amounts from MasterAccount should be small.
 HCN.User           = {};
 
 module.exports = HCN;

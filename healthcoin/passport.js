@@ -3,14 +3,13 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 
+var HCN = require('../app.js');
 var User       = require('./user');
-var configAuth = require('./auth');
+var configAuth = require('./auth')(HCN.appHost, HCN.appPort);
 var bcrypt = require("bcryptjs");
 var validator = require('validator');
 
 module.exports = function(passport) {
-
-	var HCN = require('../app.js');
 
 	passport.serializeUser(function(user, done){
 		done(null, user.id);
