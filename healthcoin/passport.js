@@ -5,7 +5,7 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 
 var HCN = require('../app.js');
 var User       = require('./user');
-var configAuth = require('./auth')(HCN.appHost, HCN.appPort);
+var configAuth = require('./auth')(HCN.appHost);
 var bcrypt = require("bcryptjs");
 var validator = require('validator');
 
