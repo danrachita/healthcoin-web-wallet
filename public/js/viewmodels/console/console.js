@@ -1,15 +1,15 @@
 define(['knockout'], function(ko){
     var consoleType = function(options){
-        var self = this, sendOptions = options || {};
-        this.wallet = sendOptions.parent;
+        var self = this;
+        self.wallet = options.parent;
 
-        this.role = ko.observable("");
+        self.role = ko.observable("");
 
-        this.isLoading = ko.observable(false);
-        this.commandText = ko.observable('help');
-        this.commandOutput = ko.observable('');
-        this.decodeText = ko.observable('');
-        this.decodeOutput = ko.observable('');
+        self.isLoading = ko.observable(false);
+        self.commandText = ko.observable('help');
+        self.commandOutput = ko.observable('');
+        self.decodeText = ko.observable('');
+        self.decodeOutput = ko.observable('');
     };
 
     function parseCommand(commandText){
