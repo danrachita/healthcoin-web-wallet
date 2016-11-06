@@ -3,6 +3,11 @@ body {
   background-color: #EADFD5;
 }
 
+sup {
+  vertical-align: super;
+  font-size: small;
+}
+
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;

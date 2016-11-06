@@ -1,10 +1,9 @@
 <div class="container" data-bind="with:console">
-    <h1>Healthcoin<sup>&reg;</sup> Advanced Command Console</h1>
     <!-- ko if: isLoading --><p>Loading...</p><!-- /ko -->
 
     <!-- CONSOLE -->
     <div class="well">
-        <h3 class="text-primary"><span class="fa fa-terminal"></span> Healthcoin Console</h3>
+        <h1 class="text-primary"><span class="fa fa-terminal"></span> Healthcoin<sup>&reg;</sup> Console</h1>
         <!-- ko if: role() === 'Admin' -->
         <div class="row">
             <div class="col-sm-12">
@@ -25,7 +24,9 @@
             <pre class="pre-scrollable " data-bind="text: commandOutput" />
             </div>
         </div>
-        <h3 class="text-primary"><span class="fa fa-terminal"></span> Decode Base64 Text</h3>
+    </div>
+    <div class="well">
+        <h1 class="text-primary"><span class="fa fa-terminal"></span> Decode Base64 Text</h1>
         <div class="row">
             <div class="col-sm-12">
                 <form class="form-horizontal" role="form">

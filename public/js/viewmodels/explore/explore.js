@@ -6,6 +6,8 @@ define(['knockout',
             var self = this, opts = options || {};
             self.wallet = opts.parent;
 
+            self.statusMessage = ko.observable("");
+
             self.role = ko.observable("");
         };
 

@@ -8,6 +8,8 @@ define(['knockout',
         self.User = ko.observable({});
         self.node_id = ko.observable("");
 
+        self.statusMessage = ko.observable("");
+
         self.login_type = ko.observable("");
         self.login_id = ko.observable("");
         self.role = ko.observable("");

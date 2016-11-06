@@ -1,11 +1,11 @@
 <div id="history-container" class="container" data-bind="with:explore">
-    <h1>Explore the Healthcoin<sup>&reg;</sup> EHR</h1>
 
     <!-- EXPLORE -->
     <div class="well">
-        <h3 class="text-primary"><span class="fa fa-search"></span> Healthcoin Blockchain</h3>
+        <h1 class="text-primary"><span class="fa fa-search"></span> Explore the Healthcoin<sup>&reg;</sup> Blockchain</h1>
 		<!-- ko if: role() === 'Admin' -->
 		<iframe name="explorer" src="http://explorer.nequals1.io" border="0" height=640 width=100%></iframe>
 		<!-- /ko -->
+	    <h3 align="center" data-bind="text:statusMessage"></h3>
 	</div>
 </div>
