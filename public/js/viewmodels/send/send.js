@@ -142,7 +142,7 @@ define(['knockout',
         var self = this;
         sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount()]).execute()
             .done(function(txid){
-                console.log("Success! TxId:" + txid);
+                //console.log("Success! TxId:" + txid);
                 self.statusMessage("Success!");
                 self.recipientAddress('');
                 self.amount(0);

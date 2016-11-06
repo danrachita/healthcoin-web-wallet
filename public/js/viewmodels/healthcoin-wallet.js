@@ -17,7 +17,7 @@ define(['knockout',
         var self = this;
 
         self.currentView = ko.observable('biomarkers');
-        self.sidebarToggled = ko.observable(false);
+        self.sidebarToggled = ko.observable(true);
         self.encryptionStatus = ko.observable(-1);
 
         self.User = ko.observable({});

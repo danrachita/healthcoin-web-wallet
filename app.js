@@ -133,11 +133,11 @@ app.use(function(err, req, res, next) {
 function callHealthcoin(command, res, handler){
     var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
     var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
-    //console.log("DEBUG: command:"+command+" args:"+args);
+    console.log("DEBUG: command:"+command+" args:"+args);
     return HCN.Api[command].apply(HCN.Api, callargs);
 }
 function healthcoinHandler(err, result){
-    //console.log("DEBUG: err:"+err+" result:"+result);
+    console.log("DEBUG: err:"+err+" result:"+result);
     var response = {
         error: JSON.parse(err ? err.message : null),
         result: result
@@ -244,8 +244,10 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
             var txcommentObj = JSON.parse(txcomment) || {};
             var Biomarker = new Biomarkers().buildBiomarker(amount, HCN.User._id, txcommentObj);
             txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
+            callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
+        } else {
+            callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount);
         }
-        callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
     } else {
         res.send(JSON.stringify("Error: Invalid sendfrom."));
     }
