@@ -3,37 +3,59 @@
     <!-- BIOMARKER -->
     <div class="well">
         <h1 class="text-primary"><span class="fa fa-heartbeat"></span> Submit a Healthcoin<sup>&reg;</sup> Biomarker</h1>
-        <form action="#biomarkers" method="post">
+        <form class="form-horizontal" role="form">
             <div class="form-group">
-                <label>Marker Date</label>
-                <input class="form-control" type="date" data-bind="text, textInput: hcbmDate" data-format="yyyy-mm-dd" data-viewformat="yyyy-mm-dd" data-title="When did you make your mark?" data-placement="right"></input><br>
-                <label>Electronic Health Record Source</label>
-                <select class="form-control" data-type="select" data-bind="options: hcbmEHR_SourceValues, value: hcbmEHR_Source" data-title="Electronic Health Record Source"></select><br>
-                <label>EHR Type</label>
-                <select class="form-control" data-type="select" data-bind="options: hcbmEHR_TypeValues, value: hcbmEHR_Type" data-title="Electronic Health Record Type"></select><br>
+                <label class="control-label col-sm-2" for="hcbmDate">Marker Date</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="date" id="hcbmDate" data-bind="text, textInput: hcbmDate" data-format="yyyy-mm-dd" data-viewformat="yyyy-mm-dd" data-title="When did you make your mark?" data-placement="right"></input><br>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmEHR_Source">EHR Source</label>
+                <div class="col-sm-10">
+                    <select class="form-control" data-type="select" id="hcbmEHR_Source" data-bind="options: hcbmEHR_SourceValues, value: hcbmEHR_Source" data-title="Electronic Health Record Source"></select><br>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmEHR_Type">EHR Type</label>
+                <div class="col-sm-10">
+                    <select class="form-control" data-type="select" id="hcbmEHR_Type" data-bind="options: hcbmEHR_TypeValues, value: hcbmEHR_Type" data-title="Electronic Health Record Type"></select><br>
+                </div>
             </div>
             <div class="form-group">
-                <label>A1C</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: hcbmA1c" placeholder="Blood Glucose Level"></input><br>
-                <label>Triglycerides</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: hcbmTriglycerides" placeholder="Triglycerides Level"></input><br>
-                <label>HDL</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: hcbmHDL" placeholder="Cholesterol Level"></input><br>
-                <label>BPS</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: hcbmBPS" placeholder="Blood Pressure Systolic"></input><br>
-                <label>BPD</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: hcbmBPD" placeholder="Blood Pressure Diastolic"></input><br>
+                <label class="control-label col-sm-2" for="hcbmA1c">A1C</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" id="hcbmA1c" data-bind="numericInput, textInput: hcbmA1c" placeholder="Blood Glucose Level"></input><br>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmTriglycerides">Triglycerides</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" id="hcbmTriglycerides" data-bind="numericInput, textInput: hcbmTriglycerides" placeholder="Triglycerides Level"></input><br>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmHDL">HDL</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" id="hcbmHDL" data-bind="numericInput, textInput: hcbmHDL" placeholder="Cholesterol Level"></input><br>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmBPS">BPS</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" id="hcbmBPS" data-bind="numericInput, textInput: hcbmBPS" placeholder="Blood Pressure Systolic"></input><br>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmBPD">BPD</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" id="hcbmBPD" data-bind="numericInput, textInput: hcbmBPD" placeholder="Blood Pressure Diastolic"></input><br>
+                </div>
             </div>
             <div class="form-group">
-                <label>Wearable or Other Device (Optional)</label>
-                <select class="form-control" data-type="select" data-bind="options: hcbmDevice_SourceValues, value: hcbmDevice_Source" data-title="Select your wearable device."></select><br>
-                <label>Steps From Device</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: hcbmDevice_Steps" placeholder="How many steps did you take?"></input><br>
+                <label class="control-label col-sm-2" for="hcbmDevice_Source">Device (Optional)</label>
+                <div class="col-sm-10">
+                    <select class="form-control" data-type="select" id="hcbmDevice_Source" data-bind="options: hcbmDevice_SourceValues, value: hcbmDevice_Source" data-title="Select your wearable device."></select><br>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmDevice_Steps">Steps from Device</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" id="hcbmDevice_Steps" data-bind="numericInput, textInput: hcbmDevice_Steps" placeholder="How many steps did you take?"></input><br>
+                </div>
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
-                <button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty() || !$data.canSend(), click: Submit">Submit</button>
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
+                    <button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty() || !$data.canSend(), click: Submit">Submit</button>
+                </div>
             </div>
         </form>
         <h3 align="center" data-bind="text:statusMessage"></h3>

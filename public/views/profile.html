@@ -3,33 +3,53 @@
 	<!-- PROFILE -->
 	<div class="well">
 		<h1 class="text-primary"><span class="fa fa-user"></span> Your Healthcoin<sup>&reg;</sup> Profile <span style="float: right" data-bind="text: 'Credits: ' + credit()"></span></h1>
-        <form action="#profile" method="post">
+        <form class="form-horizontal" role="form">
             <div class="form-group">
-                <label>Name</label>
-                <input class="form-control" type="text" data-bind="text, textInput: name" placeholder="Enter your full name."></input><br>
-                <label>Email</label>
-                <input class="form-control" type="email" data-bind="email, textInput: email" placeholder="Enter your email address."></input><br>
-                <label>Description</label>
-                <input class="form-control" type="text" data-bind="text, textInput: description" placeholder="Describe yourself."></input><br>
+                <label class="control-label col-sm-2" for="name">Name</label>
+                <div class="col-sm-10">
+	                <input class="form-control" type="text" id="name" data-bind="text, textInput: name" placeholder="Enter your full name."></input><br>
+	            </div>
+                <label class="control-label col-sm-2" for="email">Email</label>
+                <div class="col-sm-10">
+	                <input class="form-control" type="email" id="email" data-bind="email, textInput: email" placeholder="Enter your email address."></input><br>
+	            </div>
+                <label class="control-label col-sm-2" for="description">Description</label>
+                <div class="col-sm-10">
+	                <input class="form-control" type="text" id="description" data-bind="text, textInput: description" placeholder="Describe yourself."></input><br>
+	            </div>
 
-                <label>Age</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: age" placeholder="How many years old are you?"></input><br>
-                <label>Weight (kg)</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: weight" placeholder="How many kilograms do you weigh?"></input><br>
-                <label>Waist (cm)</label>
-                <input class="form-control" type="number" data-bind="numericInput, textInput: waist" placeholder="How many centimeters is your waist line?"></input><br>
+                <label class="control-label col-sm-2" for="age">Age</label>
+                <div class="col-sm-10">
+	                <input class="form-control" type="number" id="age" data-bind="numericInput, textInput: age" placeholder="How many years old are you?"></input><br>
+	            </div>
+                <label class="control-label col-sm-2" for="weight">Weight (kg)</label>
+                <div class="col-sm-10">
+	                <input class="form-control" type="number" id="weight" data-bind="numericInput, textInput: weight" placeholder="How many kilograms do you weigh?"></input><br>
+	            </div>
+                <label class="control-label col-sm-2" for="waist">Waist (cm)</label>
+                <div class="col-sm-10">
+	                <input class="form-control" type="number" id="waist" data-bind="numericInput, textInput: waist" placeholder="How many centimeters is your waist line?"></input><br>
+	            </div>
 
-                <label>Gender</label>
-                <select class="form-control" data-type="select" data-bind="options: genderValues, value: gender" data-title="Select your gender."></select><br>
-                <label>Ethnicity</label>
-                <select class="form-control" data-type="select" data-bind="options: ethnicityValues, value: ethnicity" data-title="Select your ethnicity."></select><br>
-                <label>Country</label>
-                <select class="form-control" data-type="select" data-bind="options: countryValues, value: country" data-title="Select your country of origin."></select><br>
+                <label class="control-label col-sm-2" for="gender">Gender</label>
+                <div class="col-sm-10">
+	                <select class="form-control" data-type="select" id="gender" data-bind="options: genderValues, value: gender" data-title="Select your gender."></select><br>
+	            </div>
+                <label class="control-label col-sm-2" for="ethnicity">Ethnicity</label>
+                <div class="col-sm-10">
+	                <select class="form-control" data-type="select" id="ethnicity" data-bind="options: ethnicityValues, value: ethnicity" data-title="Select your ethnicity."></select><br>
+	            </div>
+                <label class="control-label col-sm-2" for="country">Country</label>
+                <div class="col-sm-10">
+	                <select class="form-control" data-type="select" id="country" data-bind="options: countryValues, value: country" data-title="Select your country of origin."></select><br>
+	            </div>
             </div>
 
             <div class="form-group">
-				<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
-				<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty() || !$data.canSubmit(), click: Submit">Submit</button>
+                <div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
+					<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty() || !$data.canSubmit(), click: Submit">Submit</button>
+				</div>
             </div>
         </form>
         <h3 align="center" data-bind="text:statusMessage"></h3>
