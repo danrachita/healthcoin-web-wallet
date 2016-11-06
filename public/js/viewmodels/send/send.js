@@ -143,7 +143,7 @@ define(['knockout',
         sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount()]).execute()
             .done(function(txid){
                 //console.log("Success! TxId:" + txid);
-                self.statusMessage("Success!");
+                self.statusMessage(self.amount() + " HCN Successfully Sent!");
                 self.recipientAddress('');
                 self.amount(0);
 
