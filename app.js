@@ -40,6 +40,7 @@ app.set('view engine', 'ejs');
 // HCN Object exported for client access
 var HCN     = {};
 HCN.Api     = healthcoinApi.healthcoin; // healthcoin opts and calls
+HCN.isAlive = healthcoinApi.isAlive; // TODO: Add isAlive() to healthcoinApi and abort here if not!
 HCN.isLocal = healthcoinApi.isLocal; // TODO: Move all these to opts.
 HCN.mdbHost = healthcoinApi.mdbHost; // "
 HCN.mdbPort = healthcoinApi.mdbPort; // "

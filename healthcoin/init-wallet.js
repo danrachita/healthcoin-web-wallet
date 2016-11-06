@@ -42,7 +42,7 @@ function Init() {
 				if (!done1){
 					clearInterval(interval1);
 
-					if (!hcn_addresses.length){
+					if (!hcn_addresses || !hcn_addresses.length){
 						// MasterAccount has not been labeled in wallet. Get all un-labeled addresses.
 						HCN.Api.exec('getaddressesbyaccount', "", function(err, res){
 							//console.log("DEBUG: err:" + err + " res:" + res);
@@ -53,20 +53,26 @@ function Init() {
 							if (!done2){
 								clearInterval(interval2);
 
-								// Foreach address: setaccount <address> <acccount>
-								for (var k in hcn_addresses){
-									// Make sure we have a Healthcoin address.
-									// NOTE: The rpc command setaccount has a "bug" that creates an unlabeled address after executing.
-									//       You have to go into the Qt wallet to label it. TODO: Fix rpc command.
-									if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
-										HCN.Api.exec('setaccount', hcn_addresses[k], HCN.MasterAccount, function(err, res){
-											if (err) console.log("Error: err:" + err + " res:" + res);
-											if (done3){
-												HCN.MasterAddress = hcn_addresses[0]; // Use first address
-												done3 = 0;
-											}
-											});
+								// If the node is down, hcn_addresses will be null and done3 will be 30.
+								if (hcn_addresses && hcn_addresses.length){
+									// Foreach address: setaccount <address> <acccount>
+									for (var k in hcn_addresses){
+										// Make sure we have a Healthcoin address.
+										// NOTE: The rpc command setaccount has a "bug" that creates an unlabeled address after executing.
+										//       You have to go into the Qt wallet to label it. TODO: Fix rpc command.
+										if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
+											HCN.Api.exec('setaccount', hcn_addresses[k], HCN.MasterAccount, function(err, res){
+												if (err) console.log("Error: err:" + err + " res:" + res);
+												if (done3){
+													HCN.MasterAddress = hcn_addresses[0]; // Use first address
+													done3 = 0;
+												}
+												});
+										}
 									}
+								} else {
+									// Node is down and DB is up.
+									user = null;
 								}
 							} else { done2--; }
 						},1000); // end timeout
