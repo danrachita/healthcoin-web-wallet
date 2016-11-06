@@ -5,29 +5,29 @@ define(['knockout',
         'viewmodels/common/command',
         'patterns'], function(ko,dialog,ConfirmationDialog,WalletPassphrase,Command,patterns){
     var sendType = function(options){
-        var self = this, sendOptions = options || {};
-        this.wallet = sendOptions.parent;
+        var self = this;
+        self.wallet = options.parent;
 
-        this.statusMessage = ko.observable("");
+        self.statusMessage = ko.observable("");
 
-        this.account = ko.observable("");
+        self.account = ko.observable("");
 
-        this.recipientAddress = ko.observable("").extend( 
+        self.recipientAddress = ko.observable("").extend( 
             { 
                 pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
                 required: true
             });
 
-        this.label = ko.observable("");
+        self.label = ko.observable("");
 
-        this.amount = ko.observable(sendOptions.amount || 0.0).extend(
+        self.amount = ko.observable(options.amount || 0.0).extend(
             { 
                 number: true,
                 required: true
             });
 
-        this.minerFee = ko.observable(sendOptions.minerFee || 0.0001);
-        this.canSend = ko.computed(function(){
+        self.minerFee = ko.observable(options.minerFee || 0.0001);
+        self.canSend = ko.computed(function(){
             var amount = self.amount(),
                 isNumber = !isNaN(amount),
                 address = self.recipientAddress(),
@@ -41,7 +41,7 @@ define(['knockout',
             return canSend;
         });
 
-        this.isEncrypted = ko.computed(function(){
+        self.isEncrypted = ko.computed(function(){
             return self.wallet.walletStatus.encryptionStatus();
         });
     };
@@ -122,7 +122,7 @@ define(['knockout',
     };
 
     sendType.prototype.sendConfirm = function(amount){
-        var self = this, 
+        var self = this,
             sendConfirmDeferred = $.Deferred(),
             sendConfirmDialog = new ConfirmationDialog({
                 title: 'Send Confirm',
@@ -173,5 +173,6 @@ define(['knockout',
             });
    
     };   
+
     return sendType; 
 });

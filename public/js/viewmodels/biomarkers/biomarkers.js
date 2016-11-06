@@ -6,8 +6,8 @@ define(['knockout',
     'lib/dateformat',
     'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Dateformat, patterns){
     var biomarkersType = function(options){
-        var self = this, opts = options || {};
-        self.wallet = opts.parent;
+        var self = this;
+        self.wallet = options.parent;
 
         self.User = ko.observable({});
         self.node_id = ko.observable("");

@@ -87,5 +87,6 @@ define(['knockout',
             });
         return receivePromise;
     };
+
     return receiveType; 
 });

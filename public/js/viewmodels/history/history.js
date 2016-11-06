@@ -47,19 +47,24 @@ define(['knockout',
     };
 
     historyType.prototype.refresh = function(){
+        var self = this;
         this.getTransactions(self.account(), self.page());
     };
 
     historyType.prototype.firstPage = function(){
+        var self = this;
         this.getTransactions(self.account(), self.pageFirst());
     };
     historyType.prototype.prevPage = function(){
+        var self = this;
         this.getTransactions(self.account(), self.pagePrev());
     };
     historyType.prototype.nextPage = function(){
+        var self = this;
         this.getTransactions(self.account(), self.pageNext());
     };
     historyType.prototype.lastPage = function(){
+        var self = this;
         this.getTransactions(self.account(), self.pageLast());
     };
 
@@ -101,5 +106,6 @@ define(['knockout',
             });
         return historyPromise;
     };
+
     return historyType;
 });
