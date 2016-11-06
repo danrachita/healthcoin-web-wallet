@@ -20,13 +20,13 @@ define(['knockout',
 
         self.label = ko.observable("");
 
-        self.amount = ko.observable(options.amount || 0.0).extend(
+        self.amount = ko.observable(0.0).extend(
             { 
                 number: true,
                 required: true
             });
 
-        self.minerFee = ko.observable(options.minerFee || 0.0001);
+        self.minerFee = ko.observable(0.0001);
         self.canSend = ko.computed(function(){
             var amount = self.amount(),
                 isNumber = !isNaN(amount),

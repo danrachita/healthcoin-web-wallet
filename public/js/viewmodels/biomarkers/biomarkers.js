@@ -332,8 +332,7 @@ define(['knockout',
         var self = this;
         // Add biomarker to schema server-side then encode base64 before sending.
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
-        sendCommand = new Command('sendfrom',
-            [self.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm]).execute()
+        sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm]).execute()
             .done(function(txid){
                 //console.log("DEBUG: TxId: " + txid);
                 self.statusMessage("Success! You've earned " + self.amount() + " credits.");
