@@ -65,6 +65,18 @@ define(['knockout',
         self.gender.subscribe(function (){self.dirtyFlag(true);});
         self.ethnicity.subscribe(function (){self.dirtyFlag(true);});
         self.country.subscribe(function (){self.dirtyFlag(true);});
+
+        self.canSubmit = ko.computed(function(){
+            var canSubmit = self.name() !== "" &&
+                          self.email() !== "" &&
+                          self.age() > 0 &&
+                          self.weight() > 0 &&
+                          self.waist() > 0 &&
+                          self.gender() !== "" &&
+                          self.ethnicity() !== "" &&
+                          self.country() !== "";
+            return canSubmit;
+        });
     };
 
     profileType.prototype.load = function(User, node_id){

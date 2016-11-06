@@ -4,10 +4,6 @@ define( [
         "viewmodels/healthcoin-wallet",
         "knockout-amd-helpers",
         "knockout-validation",
-        "lib/jquery.min",
-        "lib/bootstrap.min",
-        "lib/bootstrap-editable.min",
-        "lib/knockout.x-editable.min",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
         "bindinghandlers/modal"
@@ -24,8 +20,6 @@ define( [
 
         ko.applyBindings(wallet, $('#wrapper')[0]);
         dialog.init($('#defaultModal')[0]);
-
-		//$.fn.editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
 
         Sammy(function() {
             this.get('#healthcoin', function() {

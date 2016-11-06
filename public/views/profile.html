@@ -7,11 +7,11 @@
         <form action="#profile" method="post">
             <div class="form-group">
                 <label>Name</label>
-                <span class="form-control" data-type="text" data-bind="editable: name" placeholder="Enter your full name."></span><br>
+                <input class="form-control" type="text" data-bind="text, textInput: name" placeholder="Enter your full name."></input><br>
                 <label>Email</label>
-                <span class="form-control" data-type="email" data-bind="editable: email" data-title="Enter your email address."></span><br>
+                <input class="form-control" type="email" data-bind="email, textInput: email" placeholder="Enter your email address."></input><br>
                 <label>Description</label>
-                <span class="form-control" data-type="text" data-bind="editable: description" placeholder="Describe yourself."></span><br>
+                <input class="form-control" type="text" data-bind="text, textInput: description" placeholder="Describe yourself."></input><br>
 
                 <label>Age</label>
                 <input class="form-control" type="number" data-bind="numericInput, textInput: age" placeholder="How many years old are you?"></input><br>
@@ -30,7 +30,7 @@
 
             <div class="form-group">
 				<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
-				<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty(), click: Submit">Submit</button>
+				<button type="submit" class="btn btn-default" data-bind="disable: !$data.isDirty() || !$data.canSubmit(), click: Submit">Submit</button>
             </div>
         </form>
 
