@@ -62,14 +62,14 @@
 	<!-- ko if: login_type() === 'google' -->
 		<h3 class="text-primary"><span class="fa fa-google-plus"></span> Signed in with Google</h3>
 		<table width="100%">
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: googleUrl().concat(login_id()), title: Google}" target="_blank">Google</a></span></td></tr>
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: googleUrl().concat(login_id())}" target="_blank">Google</a></span></td></tr>
 		</table>
 	<!-- /ko -->
 	<!-- TWITTER -->
 	<!-- ko if: login_type() === 'twitter' -->
 		<h3 class="text-primary"><span class="fa fa-twitter"></span> Signed in with Twitter</h3>
 		<table width="100%">
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: twitterUrl().concat(login_id()), title: Twitter}" target="_blank">Twitter</a></span></td></tr>
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: twitterUrl().concat(login_id())}" target="_blank">Twitter</a></span></td></tr>
 		</table>
 	<!-- /ko -->
 	</div>
