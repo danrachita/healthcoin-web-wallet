@@ -16,7 +16,7 @@ define(['knockout',
     var walletType = function(){
         var self = this;
 
-        self.currentView = ko.observable('biomarkers');
+        self.currentView = ko.observable('healthcoin');
         self.sidebarToggled = ko.observable(true);
         self.encryptionStatus = ko.observable(-1);
 
