@@ -148,8 +148,8 @@ define(['knockout',
                 } else {
                     self.statusMessage("HCN Was Not Sent. Try a smaller ammount.");
                 }
-                self.recipientAddress('');
-                self.amount(0);
+                //self.recipientAddress('');
+                self.amount(0); // Resets Send button
 
                 if (self.isEncrypted()){
                     lockWallet()
