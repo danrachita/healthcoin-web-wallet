@@ -142,8 +142,12 @@ define(['knockout',
         var self = this;
         sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount()]).execute()
             .done(function(txid){
-                //console.log("Success! TxId:" + txid);
-                self.statusMessage(self.amount() + " HCN Successfully Sent!");
+                console.log("TxId: " + JSON.stringify(txid));
+                if (typeof txid !== 'undefined') {
+                    self.statusMessage(self.amount() + " HCN Successfully Sent!");
+                } else {
+                    self.statusMessage("HCN Was Not Sent. Try a smaller ammount.");
+                }
                 self.recipientAddress('');
                 self.amount(0);
 

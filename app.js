@@ -59,7 +59,7 @@ HCN.MasterAddress  = "";                          // Master Wallet Address to mo
 HCN.MasterEmail    = "healthcoin@" + HCN.appHost; // Master email account.
 HCN.MasterPassword = "password";                  // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
 HCN.NewUserAmount  = 1.0;                         // Aount to send new users at sign-up.
-HCN.MaxSendAmount  = 100.0;                       // Normal send amounts from MasterAccount should be small.
+HCN.MaxSendAmount  = 1000.0;                       // Normal send amounts from MasterAccount should be small.
 HCN.User           = {};
 
 module.exports = HCN;
@@ -133,11 +133,11 @@ app.use(function(err, req, res, next) {
 function callHealthcoin(command, res, handler){
     var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
     var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
-    console.log("DEBUG: command:"+command+" args:"+args);
+    //console.log("DEBUG: command:"+command+" args:"+args);
     return HCN.Api[command].apply(HCN.Api, callargs);
 }
 function healthcoinHandler(err, result){
-    console.log("DEBUG: err:"+err+" result:"+result);
+    //console.log("DEBUG: err:"+err+" result:"+result);
     var response = {
         error: JSON.parse(err ? err.message : null),
         result: result
@@ -238,7 +238,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
     var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
-    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount < HCN.MaxSendAmount){
+    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount <= HCN.MaxSendAmount){
         if (comment === "HCBM" && txcomment !== ''){
             // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
             var txcommentObj = JSON.parse(txcomment) || {};
@@ -249,7 +249,10 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
             callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount);
         }
     } else {
-        res.send(JSON.stringify("Error: Invalid sendfrom."));
+        if (amount > HCN.MaxSendAmount)
+            res.send(JSON.stringify("Error: Amount is greater than the maximum of " + HCN.MaxSendAmount + "."));
+        else
+            res.send(JSON.stringify("Error: Invalid sendfrom parameters."));
     }
 });
 
