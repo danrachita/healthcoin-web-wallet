@@ -79,6 +79,7 @@ define(['knockout',
                 //self.transactions(ko.utils.arrayMap(descendingTxns,function(transaction){
                 self.transactions(ko.utils.arrayMap(data, function(transaction){
                     i++;
+                    console.log("DEBUG: transaction: " + JSON.stringify(transaction));
                     return new Transaction({ transaction });
                 }));
                 if (page === self.pageLast()) page = self.pageNext(); // Go to last: page=99999999
