@@ -24,7 +24,7 @@ define(['knockout',
         self.login_type = ko.observable("");
         self.login_id = ko.observable("");
         self.role = ko.observable("");
-        self.credit = ko.observable("");
+        self.credit = ko.observable(0.0000);
         self.wallets = ko.observableArray([]);
         self.active_wallet = ko.observable("");
         self.facebookUrl = ko.observable("https://facebook.com/");
