@@ -94,7 +94,7 @@ require('./healthcoin/passport')(passport); // Requires HCN
 var MDB = require('./healthcoin/database');
 var Biomarkers = require('./healthcoin/biomarkers');
 
-// CORS headers
+// Add CORS headers to all requests
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
@@ -429,6 +429,11 @@ app.get('/getpeers', function(req, res){
         else
             res.send(JSON.stringify(result));
     });
+
+// Catch all unknown requests (i.e. facebook URI #_=_)
+app.all('*', function(req, res) {
+    res.redirect('/');
+    });
 });
 
 // Start it up!
@@ -439,5 +444,4 @@ function startHealthcoin(app) {
         console.log('Express server listening on port ' + app.get('port'));
     });
 }
-
 startHealthcoin(app);
