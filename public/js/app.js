@@ -52,7 +52,7 @@ define( [
                 wallet.currentView('profile');
 
             // Catch facebook URI #_=_ request)
-            this.get('/#_=_', function(req, res) {
+            this.get('#_=_', function(req, res) {
                 res.redirect('/');
                 });
             });
