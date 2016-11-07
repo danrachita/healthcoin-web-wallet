@@ -9,5 +9,7 @@ require.config({
 });
 
 require( [ "app" ], function( App ){
-    App.init();
+    setTimeout(function(){
+        App.init();
+    },100);
 });

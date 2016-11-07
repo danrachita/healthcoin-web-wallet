@@ -22,12 +22,13 @@ define(['knockout',
         self.isStaking = ko.observable("No");
         self.isEncrypted = ko.observable("No");
         self.isUnlocked = ko.observable("No");
-        self.totalFmt = ko.pureComputed(function(){return (self.total()).formatMoney(2, '.', ',');});
-        self.stakeFmt = ko.pureComputed(function(){return (self.stake()).formatMoney(2, '.', ',');});
-        self.availableFmt = ko.pureComputed(function(){return (self.total() - self.stake()).formatMoney(2, '.', ',');});
         self.isLocalWallet = ko.observable(false); // Is the node local?
         self.node_id = ko.observable("");          // wallet node host/IP
         self.account = ko.observable("");          // Current User account
+
+        self.totalFmt = ko.pureComputed(function(){return (self.total()).formatMoney(4, '.', ',');});
+        self.stakeFmt = ko.pureComputed(function(){return (self.stake()).formatMoney(4, '.', ',');});
+        self.availableFmt = ko.pureComputed(function(){return (self.total() - self.stake()).formatMoney(4, '.', ',');});
 
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();
