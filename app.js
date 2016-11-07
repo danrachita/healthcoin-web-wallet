@@ -430,10 +430,6 @@ app.get('/getpeers', function(req, res){
             res.send(JSON.stringify(result));
     });
 
-// Catch all unknown requests (i.e. facebook URI #_=_)
-app.all('*', function(req, res) {
-    res.redirect('/');
-    });
 });
 
 // Start it up!
