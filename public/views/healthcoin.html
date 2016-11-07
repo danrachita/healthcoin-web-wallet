@@ -9,9 +9,11 @@
         <li>Send Healthcoin to others on the blockchain.</li>
         <li>Receive Healthcoin from others on the blockchain by sharing your address with them.</li>
         <li>View you Healthcoin "Coinstream" history.</li>
-        <li>Keep your Healthcoin profile up-to-date.</li>
         <!-- ko if: role() === 'Admin' -->
         <li>Explore the Healthcoin blockchain.</li>
+        <!-- /ko -->
+        <!-- ko if: !profileComplete() -->
+        <li>Click Profile in the menu to complete your Healthcoin profile.</li>
         <!-- /ko -->
         </ul>
         <h3 align="center" data-bind="text:statusMessage"></h3>

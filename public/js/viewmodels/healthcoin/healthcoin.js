@@ -9,6 +9,21 @@ define(['knockout'], function(ko){
         self.name = ko.observable("");
 
         self.statusMessage = ko.observable("");
+
+        healthcoinType.prototype.profileComplete = function(){
+            var self = this;
+            var isComplete = false;
+            if (self.User().profile) {
+                isComplete = self.User().profile.age > 0 &&
+                             self.User().profile.weight > 0 &&
+                             self.User().profile.waist > 0 &&
+                             self.User().profile.gender !== "" &&
+                             self.User().profile.ethnicity !== "" &&
+                             self.User().profile.country !== "";
+            }
+            return isComplete;
+        };
+
     };
 
     healthcoinType.prototype.load = function(User, node_id){
@@ -18,6 +33,9 @@ define(['knockout'], function(ko){
             self.node_id(node_id);
             self.role(User.profile.role);
             self.name(User.profile.name);
+        }
+        if (!this.profileComplete()){
+                self.statusMessage("Please complete your profile before continuing.");
         }
     };
 
