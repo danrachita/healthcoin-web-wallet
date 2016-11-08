@@ -74,9 +74,11 @@
                 </div>
                 <div class='wallet-stats container'>
                     <div class="row">
-                        <div class="col-sm-4 left text">Total: <span data-bind='text: walletStatus.totalFmt'></span> HCN</div>
-                        <div class="col-sm-4 center text" data-bind="if: walletStatus.isLocalWallet() || role() === 'Admin'">Available: <span data-bind='text: walletStatus.availableFmt'></span> HCN</div>
-                        <div class="col-sm-4 right text" data-bind="if: walletStatus.isLocalWallet() || role() === 'Admin'">Staking: <span data-bind='text: walletStatus.stakeFmt'></span> HCN</div>
+                        <div class="col-lg-4 left text">Total: <span data-bind='text: walletStatus.totalFmt'></span> HCN</div>
+    <!-- ko if: walletStatus.isLocalWallet() || role() === 'Admin' -->
+                        <div class="col-lg-4 center text">Available: <span data-bind='text: walletStatus.availableFmt'></span> HCN</div>
+                        <div class="col-lg-4 right text">Staking: <span data-bind='text: walletStatus.stakeFmt'></span> HCN</div>
+    <!-- /ko -->
                     </div>
                 </div>
             </div>

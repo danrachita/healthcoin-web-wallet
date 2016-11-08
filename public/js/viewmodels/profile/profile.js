@@ -25,13 +25,12 @@ define(['knockout',
         self.login_id = ko.observable("");
         self.role = ko.observable("");
         self.credit = ko.observable(0.0000);
+        self.creditFmt = ko.pureComputed(function(){return (self.credit()).formatMoney(4, '.', ',');});
         self.wallets = ko.observableArray([]);
         self.active_wallet = ko.observable("");
         self.facebookUrl = ko.observable("https://facebook.com/");
         self.googleUrl = ko.observable("https://plus.google.com/");
         self.twitterUrl = ko.observable("https://twitter.com/");
-
-        self.creditFmt = ko.pureComputed(function(){return (self.credit()).formatMoney(4, '.', ',');});
 
         // User changeables
         self.name = ko.observable("");

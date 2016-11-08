@@ -21,12 +21,11 @@ define(['knockout',
         self.encryptionStatus = ko.observable(-1);
 
         self.User = ko.observable({});
+        self.role = ko.observable("");
         self.getUserAccount();
 
         self.walletStatus = new WalletStatus();
         self.walletStatus.getNodeInfo();
-
-        self.role = ko.observable("");
 
         self.healthcoin = new Healthcoin({parent: self});
         self.biomarkers = new Biomarkers({parent: self});
