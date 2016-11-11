@@ -71,12 +71,9 @@
             </ul>
         </div>
         <div id='page-content-wrapper'>
-        <div id='wallet-container'>
             <div class='top-content'>
-                <div class='container'>
-                    <div class="button-settings"><span data-bind="click: toggleSidebar" class="glyphicon glyphicon-menu-hamburger"></span></div>
-                    <div class="button-refresh"><span data-bind="click: refresh" class="glyphicon glyphicon-refresh"></span></div>
-                </div>
+                <div class="button-settings"><span data-bind="click: toggleSidebar" class="glyphicon glyphicon-menu-hamburger"></span></div>
+                <div class="button-refresh"><span data-bind="click: refresh" class="glyphicon glyphicon-refresh"></span></div>
                 <div class='wallet-stats'>
                     <div class="row">
                         <div class="col-lg-4 left text">Total: <span data-bind='text: walletStatus.totalFmt'></span> HCN</div>
@@ -89,8 +86,7 @@
             </div>
             <div id="main" class="container" role="main">
                 <!--ko template: currentView --> <!--/ko -->
-            </div> <!-- /container -->
-        </div> <!-- #walletcontainer -->
+            </div>
         </div>
     </div>
     <div data-bind="modal:showDialog"  id="defaultModal" class="modal" data-backdrop="static">
