@@ -43,7 +43,8 @@ sup {
     height: 100%;
     margin-left: -200px;
     overflow-y: auto;
-    background: #364357;
+    /*background: #364357;*/
+    background: rgba(97,75,175,0.5);
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -79,7 +80,7 @@ sup {
 .sidebar-nav li {
     text-indent: 20px;
     line-height: 40px;
-    color: #999999;
+    color: #333;
 }
 
 .sidebar-nav li a {
@@ -89,8 +90,8 @@ sup {
 
 .sidebar-nav li a:hover {
     text-decoration: none;
-    color: #fff;
-    background: rgba(255,255,255,0.2);
+    color: #333;
+    background: rgba(96,96,96,0.1);
 }
 
 .sidebar-nav li a:active,
@@ -100,7 +101,7 @@ sup {
 
 .sidebar-nav span.sidebar-nav-button-content {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     margin-left: 10px;
 }
 
@@ -112,12 +113,11 @@ sup {
 }
 
 .sidebar-nav div.sidebar-nav-button-content:hover{
-    /*background-color: #EB7260;*/
     background: rgba(255,255,255,0.2);
 }
 
 .sidebar-nav div.sidebar-nav-button-content.selected{
-    background: #3A97D4;
+    background: rgba(97,75,175,0.4);
 }
 
 .sidebar-nav > .sidebar-brand {
@@ -131,7 +131,7 @@ sup {
 }
 
 .sidebar-nav > .sidebar-brand a {
-    color: #999999;
+    color: #333;
 }
 
 .sidebar-nav > .sidebar-brand a:hover {
@@ -142,7 +142,7 @@ sup {
 
 .top-content {
   width: 100%;
-  background-color: #3A97D4;
+  background: rgba(251,199,30,0.5);
   /*position: fixed;*/
 }
 
