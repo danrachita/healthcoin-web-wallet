@@ -22,6 +22,7 @@ define(['knockout',
         self.isStaking = ko.observable("No");
         self.isEncrypted = ko.observable("No");
         self.isUnlocked = ko.observable("No");
+        self.unlockedUntil = ko.observable(-1);
         self.isLocalWallet = ko.observable(false); // Is the node local?
         self.node_id = ko.observable("");          // wallet node host/IP
         self.account = ko.observable("");          // Current User account
@@ -78,7 +79,8 @@ define(['knockout',
                 self.blocks(getInfoData.blocks);
                 self.isEnabled(getStakingInfoData.Enabled ? "Yes" : "No");
                 self.isStaking(getStakingInfoData.Staking ? "Yes" : "No");
-                self.isEncrypted(typeof getInfoData.unlocked_until !== 'undefined' ? "Yes" : "No");
+                self.unlockedUntil(typeof getInfoData.unlocked_until !== 'undefined' ? getInfoData.unlocked_until : -1);
+                self.isEncrypted(self.unlockedUntil() !== -1 ? "Yes" : "No");
                 if (typeof getInfoData.unlocked_until !== 'undefined' && getInfoData.unlocked_until > 0){
                     self.isUnlocked("Yes");
                 }else{

@@ -18,7 +18,6 @@ define(['knockout',
 
         self.currentView = ko.observable('healthcoin');
         self.sidebarToggled = ko.observable(true);
-        self.encryptionStatus = ko.observable(-1);
 
         self.User = ko.observable({});
         self.role = ko.observable("");
@@ -130,24 +129,19 @@ define(['knockout',
         // - or -
         // rpcconnect=127.0.0.1
         // - or -
-        // rpcconnect=some_hostname_with_no_tld
+        // rpcconnect=hostname_with_no_tld
         //
-        if (self.walletStatus.isLocalWallet() && !self.walletStatus.encryptionStatus()){
-            var getInfoCommand = new Command('getinfo',[]);
-            var statusPromise = $.when(getInfoCommand.execute())
-            .done(function(getInfoData){
-                self.encryptionStatus(typeof getInfoData.unlocked_until !== 'undefined' ? getInfoData.unlocked_until : -1);
-                switch(self.encryptionStatus()){
-                case -1: // wallet is unencrypted
-                    self.promptToEncrypt();
-                    break;
-                case 0: // wallet is locked
-                    self.promptToUnlockForStaking();
-                    break;
-                default: // wallet is already unlocked for staking
-                    break;
-                }
-            });
+        if (self.walletStatus.isLocalWallet()){
+            switch(self.walletStatus.unlockedUntil()){
+            case -1: // wallet is unencrypted
+                self.promptToEncrypt();
+                break;
+            case 0:  // wallet is locked
+                self.promptToUnlockForStaking();
+                break;
+            default: // 999999 - wallet is already unlocked for staking
+                break;
+            }
         }
     };
 
