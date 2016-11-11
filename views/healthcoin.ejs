@@ -58,12 +58,12 @@
 				<li><h4>Healthcoin Stats</h4></li>
                 <li>Total: <span data-bind='text: walletStatus.totalFmt'></span></li>
     <!-- ko if: walletStatus.isLocalWallet() || role() === 'Admin' -->
-                <li>Available: <span data-bind='text: walletStatus.availableFmt'></span></li>
-                <li>Staking: <span data-bind='text: walletStatus.stakeFmt'></span></li>
+                <li>Avail: <span data-bind='text: walletStatus.availableFmt'></span></li>
+                <li>Stake: <span data-bind='text: walletStatus.stakeFmt'></span></li>
     <!-- /ko -->
 
     <!-- ko if: walletStatus.isLocalWallet() || role() === 'Admin' -->
-                <li>Blocks: <span data-bind="text: walletStatus.blocks"></span></li>
+                <li>Block: <span data-bind="text: walletStatus.blocks"></span></li>
                 <li>Wallet Encrypted: <span data-bind="text: walletStatus.isEncrypted"></span></li>
                 <li>Staking Enabled: <span data-bind="text: walletStatus.isEnabled"></span></li>
                 <li>Currently Staking: <span data-bind="text: walletStatus.isStaking"></span></li>
