@@ -64,9 +64,6 @@ define(['knockout',
         self.isLoadingStatus(true);
         var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute(), getStakingInfoCommand.execute())
             .done(function(getInfoData, getBalanceData, getStakingInfoData){
-                //console.log(getInfoData);
-                //console.log(getBalanceData);
-                //console.log(getStakingInfoData);
                 self.account(account);
                 if (self.account() === "MASTER_ACCOUNT"){
                     self.stake(getInfoData.stake);

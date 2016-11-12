@@ -1,14 +1,3 @@
-Number.prototype.formatMoney = function(c, d, t){
-        var n = this,
-        c = isNaN(c = Math.abs(c)) ? 2 : c,
-        d = d === undefined ? "." : d,
-        t = t === undefined ? "," : t,
-        s = n < 0 ? "-" : "",
-        i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
-        j = (j = i.length) > 3 ? j % 3 : 0;
-       return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-};
-
 define(['knockout',
         'common/dialog',
         'viewmodels/common/confirmation-dialog',
@@ -31,7 +20,7 @@ define(['knockout',
 
         self.label = ko.observable("");
 
-        self.available = ko.observable("");
+        self.availableFmt = ko.observable("");
         self.amount = ko.observable(0.0).extend(
             { 
                 number: true,
@@ -59,8 +48,7 @@ define(['knockout',
     };
 
     sendType.prototype.load = function(User, node_id){
-        var self = this,
-            available = "";
+        var self = this;
         if (self.account() === ""){
             var found = false;
 			// Get the address/account for the node_id
@@ -73,9 +61,13 @@ define(['knockout',
 			});
 			if (!found)
                 console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
-            available = self.wallet.walletStatus.available();
-            self.available(available.formatMoney(4, '.', ','));
         }
+        self.availableFmt(self.wallet.walletStatus.availableFmt());
+    };
+
+    sendType.prototype.refresh = function(){
+        var self = this;
+        self.availableFmt(self.wallet.walletStatus.availableFmt());
     };
 
     function lockWallet(){

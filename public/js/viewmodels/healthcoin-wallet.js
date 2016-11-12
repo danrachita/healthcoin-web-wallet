@@ -69,6 +69,7 @@ define(['knockout',
                                     self.profile.load(self.User(), self.walletStatus.node_id()));
         } else {
             refreshPromise = $.when(self.walletStatus.refresh(),
+                                    self.send.refresh(),
                                     self.receive.refresh(),
                                     self.history.refresh());
         }
