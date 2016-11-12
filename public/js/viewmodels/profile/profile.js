@@ -178,8 +178,13 @@ define(['knockout',
         var saveUserProfileCommand = new Command('saveuserprofile',
             [encodeURIComponent(btoa(JSON.stringify(self.User().profile)))]).execute()
             .done(function(){
-                console.log("User Profile saved!");
+                console.log("User Profile Saved!");
+                self.statusMessage("User Profile Saved!");
                 self.dirtyFlag(false);
+            })
+            .fail(function(error){
+                console.log("Error:" + error.toString());
+                self.statusMessage("Save Error!");
             });
     };
 
