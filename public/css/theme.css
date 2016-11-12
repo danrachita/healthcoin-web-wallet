@@ -1,5 +1,6 @@
 body {
-  background-color: #EADFD5;
+  /*background-color: #EADFD5;*/
+    background: rgba(45,169,171,0.7);
 }
 
 #main {
