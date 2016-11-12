@@ -128,11 +128,11 @@ sup {
 .sidebar-nav > .sidebar-brand {
     display: table-cell;
     vertical-align: bottom;
-    height: 130px;
+    height: 140px;
     width: 200px;
     font-size: 16px;
     line-height: 60px;
-    background: url("../images/Icon.png") no-repeat 36px 0px;
+    background: url("../images/Icon.png") no-repeat 36px 5px;
 }
 
 .sidebar-nav > .sidebar-brand a {
@@ -146,7 +146,7 @@ sup {
 
 .top-content {
   width: 100%;
-  height: 130px;
+  height: 140px;
   background: rgba(251,199,30,0.7);
   /*position: fixed;*/
 }
@@ -154,7 +154,7 @@ sup {
 .top-content .text {
   text-align: center;
   font-weight: 600;
-  font-size: 7.2vw;
+  font-size: 6.2vw;
   color: white;
 }
  
