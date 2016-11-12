@@ -22,12 +22,14 @@
                     <input class="form-control" type="number" id="amount" data-bind="numericInput, textInput: amount" placeholder="Amount in HCN">
                 </div>
                 <div class="col-sm-4">
-                    <span style="font-size: medium;">HCN <i>(Maximum 1000)</i></span>
+                    <span style="font-size: medium;">HCN <i>(Max 1000)</i></span>
                 <!--select class="form-control" id="sel1">
                     <option>HCN</option>
                     <option>mHCN</option>
                     <option>µHCN</option>
                 </select-->
+                    <br>
+                    Available: <span data-bind="text: available"></span>
                 </div>
             </div>
     
