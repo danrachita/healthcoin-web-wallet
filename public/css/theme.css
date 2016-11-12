@@ -3,6 +3,11 @@ body {
   /*background-color: #FFFFFF;*/
 }
 
+#main {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
 sup {
   vertical-align: super;
   font-size: small;
@@ -187,11 +192,6 @@ sup {
   cursor: pointer;
 }
 
-#main {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
 .table-striped > tbody > tr:nth-of-type(2n) {
   background-color: #ffffff;
 }
@@ -243,6 +243,11 @@ sup {
   margin-right: auto;
   margin-left: auto;
   */
+}
+
+#wrapper.toggled .container {
+    margin-left: 15px;
+    padding-right: 200px;
 }
 
 /* Customize well from bootstrap.css */
