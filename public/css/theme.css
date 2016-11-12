@@ -151,6 +151,13 @@ sup {
   /*position: fixed;*/
 }
 
+.top-content .text {
+  text-align: center;
+  font-weight: 600;
+  font-size: 7.2vw;
+  color: white;
+}
+ 
 .wallet-stats {
   width:100%;
   float: right;

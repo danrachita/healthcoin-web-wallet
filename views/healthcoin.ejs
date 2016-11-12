@@ -74,15 +74,7 @@
             <div class='top-content'>
                 <div class="button-settings"><span data-bind="click: toggleSidebar" class="glyphicon glyphicon-menu-hamburger"></span></div>
                 <div class="button-refresh"><span data-bind="click: refresh" class="glyphicon glyphicon-refresh"></span></div>
-                <div class='wallet-stats'>
-                    <div class="row">
-                        <div class="col-lg-4 left text">Total: <span data-bind='text: walletStatus.totalFmt'></span></div>
-    <!-- ko if: walletStatus.isLocalWallet() || role() === 'Admin' -->
-                        <div class="col-lg-4 center text">Available: <span data-bind='text: walletStatus.availableFmt'></span></div>
-                        <div class="col-lg-4 right text">Staking: <span data-bind='text: walletStatus.stakeFmt'></span></div>
-    <!-- /ko -->
-                    </div>
-                </div>
+                <div class="top-content text"><span>healthcoin</span></div>
             </div>
             <div id="main" class="container" role="main">
                 <!--ko template: currentView --> <!--/ko -->
