@@ -1,5 +1,5 @@
 body {
-    background: rgba(247,247,247,1.0);
+    background: url("../images/Icon.png") rgba(247,247,247,1.0) no-repeat 36px 5px;
 }
 
 #main {
@@ -255,12 +255,6 @@ sup {
 #wrapper.toggled .container {
     /*margin-left: 15px;*/
     padding-right: 200px;
-}
-#wrapper.toggled .top-content {
-    padding-right: 200px;
-}
-#wrapper.toggled .top-content .text {
-    padding-right: 2px;
 }
 
 /* Customize well from bootstrap.css */
