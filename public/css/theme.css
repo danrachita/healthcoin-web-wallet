@@ -46,7 +46,7 @@ sup {
     width: 0;
     height: 100%;
     margin-left: -200px;
-    overflow-y: hidden; /* hide scrollbar */
+    /*overflow-y: hidden; /* hide scrollbar */
     background: rgba(45,169,171,1.0);
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
