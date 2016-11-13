@@ -261,12 +261,21 @@ sup {
     background: rgba(247,247,247,1.0);
 }
 
+.floatright {
+    float: right;
+}
+
+.floatleft {
+    float: left;
+}
+
 /* Customize well from bootstrap.css */
 .well {
     background-color: inherit;
     padding: 20px;
     margin-bottom: 0px;
     border-radius: 18px;
+    overflow: hidden;
 }
 /*.well {
     min-height: 20px;

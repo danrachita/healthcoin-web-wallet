@@ -54,6 +54,7 @@
         </form>
         <h3 align="center" data-bind="text:statusMessage"></h3>
 
+		<div class="floatleft">
 		<!-- ko if: active_wallet -->
 		<h3 class="text-primary"><span class="fa fa-money"></span> Wallet Info</h3>
 		<table width="100%">
@@ -62,7 +63,8 @@
 			<tr><td width="15%"><strong>Node_ID</strong>: </td><td><span data-bind="text: active_wallet().node_id"></span></td></tr>
 		</table>
 		<!-- /ko -->
-
+		</div>
+		<div class="floatright">
 	<!-- LOCAL -->
 	<!-- ko if: login_type() === 'local' -->
 		<h3 class="text-primary"><span class="fa fa-database"></span> Signed in with Account</h3>
@@ -92,5 +94,6 @@
 			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: twitterUrl().concat(login_id())}" target="_blank">Twitter</a></span></td></tr>
 		</table>
 	<!-- /ko -->
+		</div>
 	</div>
 </div>
