@@ -257,6 +257,10 @@ sup {
     padding-right: 200px;
 }
 
+.intro {
+    background: rgba(247,247,247,1.0);
+}
+
 /* Customize well from bootstrap.css */
 .well {
     background-color: inherit;
