@@ -74,7 +74,7 @@ app.use(session({name: 'healthcoin_' + HCN.appHost,
                 genid: function(req) {
                     return uuid.v4(); // use UUIDs
                 },
-                cookie: {maxAge: 1 * 60 * 100}, // Change 100 back to 1000
+                cookie: {maxAge: 1 * 60 * 1000}, // Change 100 back to 1000
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
