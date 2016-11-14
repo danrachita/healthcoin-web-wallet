@@ -60,7 +60,6 @@ HCN.MasterEmail    = "healthcoin@" + HCN.appHost; // Master email account.
 HCN.MasterPassword = "password";                  // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
 HCN.NewUserAmount  = 1.0;                         // Aount to send new users at sign-up.
 HCN.MaxSendAmount  = 1000.0;                       // Normal send amounts from MasterAccount should be small.
-HCN.User           = {};
 
 module.exports = HCN;
 // End HCN
@@ -69,9 +68,11 @@ module.exports = HCN;
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(session({secret: 'nequals1',
-                 saveUninitialized: true,
-                 resave: true}));
+app.use(session({secret: 'nequals1 describes unity',
+                duration: 30 * 60 * 1000,
+                activeDuration: 5 * 60 * 1000,
+                saveUninitialized: true,
+                resave: true}));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
@@ -170,20 +171,24 @@ app.get('/getwalletnodeid', function(req,res){
 
 // Returns user account and address.
 app.get('/getuseraccount', function(req,res){
-    var response = {
-        error: null,
-        result: { User: HCN.User }
-    };
-    res.send(JSON.stringify(response));
+    if (req.session && req.session.User) {
+        var response = {
+            error: null,
+            result: { User: req.session.User }
+        };
+        res.send(JSON.stringify(response));
+    } else {
+        res.redirect('/login');
+    }
 });
 
 // Saves user profile.
 app.get('/saveuserprofile/:profile', function(req,res){
-    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || HCN.User.profile,
+    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || res.locals.User.profile,
         result = null;
     if (profile && profile.login_type){
-        HCN.User.profile = profile;
-        result = MDB.saveUserProfile(HCN.User._id, profile);
+        res.locals.User.profile = profile;
+        result = MDB.saveUserProfile(res.locals.User._id, profile);
     }
     var response = {
         error: null,
@@ -242,7 +247,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
         if (comment === "HCBM" && txcomment !== ''){
             // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
             var txcommentObj = JSON.parse(txcomment) || {};
-            var Biomarker = new Biomarkers().buildBiomarker(amount, HCN.User._id, txcommentObj);
+            var Biomarker = new Biomarkers().buildBiomarker(amount, res.locals.User._id, txcommentObj);
             txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
             callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
         } else {

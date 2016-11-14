@@ -43,7 +43,7 @@ define(['knockout',
     // Called once at startup.
     walletType.prototype.getUserAccount = function(){
         var self = this,
-            getUserAccountCommand = new Command('getuseraccount',[]);
+            getUserAccountCommand = new Command('getuseraccount',[]); // Get the User from the session
         var userPromise = $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined'){
