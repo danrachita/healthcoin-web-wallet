@@ -24,6 +24,7 @@ var app = express();
 
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var uuid = require('uuid');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
@@ -68,10 +69,13 @@ module.exports = HCN;
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(session({secret: 'nequals1 describes unity',
-                duration: 30 * 60 * 1000,
-                activeDuration: 5 * 60 * 1000,
-                saveUninitialized: true,
+app.use(session({name: 'healthcoin_' + HCN.appHost,
+                secret: 'nequals1 describes unity',
+                genid: function(req) {
+                    return uuid.v4(); // use UUIDs
+                },
+                cookie: {maxAge: 1 * 60 * 100}, // Change 100 back to 1000
+                saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -101,6 +105,17 @@ app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
+});
+
+// catch session timeout
+app.use(function(req, res, next) {
+    if (Date.now() >= req.session.cookie.expires){
+        var err = new Error('Session Expired');
+        err.status = 401;
+        next(err);
+    } else {
+        next();
+    }
 });
 
 // catch 404 and forward to error handler

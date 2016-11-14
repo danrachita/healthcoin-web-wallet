@@ -51,12 +51,7 @@ define( [
             this.get('#profile', function() {
                 wallet.currentView('profile');
 
-            // Catch facebook URI #_=_ request)
-            this.get('/\#_=_', function(req, res) {
-                res.redirect('/');
-                });
             });
-
         }).run('#healthcoin');
     };
     return new App();
