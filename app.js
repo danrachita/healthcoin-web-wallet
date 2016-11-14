@@ -184,11 +184,11 @@ app.get('/getuseraccount', function(req,res){
 
 // Saves user profile.
 app.get('/saveuserprofile/:profile', function(req,res){
-    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || res.locals.User.profile,
+    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.session.User.profile,
         result = null;
     if (profile && profile.login_type){
-        res.locals.User.profile = profile;
-        result = MDB.saveUserProfile(res.locals.User._id, profile);
+        req.session.User.profile = profile;
+        result = MDB.saveUserProfile(req.session.User._id, profile);
     }
     var response = {
         error: null,
@@ -247,7 +247,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
         if (comment === "HCBM" && txcomment !== ''){
             // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
             var txcommentObj = JSON.parse(txcomment) || {};
-            var Biomarker = new Biomarkers().buildBiomarker(amount, res.locals.User._id, txcommentObj);
+            var Biomarker = new Biomarkers().buildBiomarker(amount, req.session.User._id, txcommentObj);
             txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
             callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
         } else {

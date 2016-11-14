@@ -127,16 +127,16 @@ define(['knockout',
             self.country(User.profile.country);
             self.credit(User.profile.credit);
             self.wallets(User.wallet);
-			// Get the wallet for the current node_id
+            // Get the wallet for the current node_id
             var found = false;
-			var wallet = User.wallet.filter(function(wal){
-				if(!found && wal.node_id === node_id){
-                    found = true;
-                    self.active_wallet(wal);
-					return wal;
-				}
+	    var wallet = User.wallet.filter(function(wal){
+	    if(!found && wal.node_id === node_id){
+                found = true;
+                self.active_wallet(wal);
+		return wal;
+		}
             });
-			if (!wallet)
+	    if (!wallet)
                 console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
         self.dirtyFlag(false);

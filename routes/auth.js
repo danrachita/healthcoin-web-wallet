@@ -63,6 +63,9 @@ module.exports = function(app, passport){
 	);
 
 	app.get('/logout', function(req, res){
+	    if (req.session && req.session.User) {
+			delete req.session.User;
+		}
 		req.logout();
 		res.redirect('/');
 	});
