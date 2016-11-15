@@ -50,17 +50,17 @@ define(['knockout',
 
     sendType.prototype.load = function(User, node_id){
         var self = this;
-        if (self.account() === ""){
-            var found = false;
-			// Get the address/account for the node_id
-			var wallet = User.wallet.filter(function(wal){
-				if(!found && wal.node_id === node_id){
+        var found = false;
+        // Get the address/account for the node_id
+        if (User && node_id){
+            var wallet = User.wallet.filter(function(wal){
+                if(!found && wal.node_id === node_id){
                     found = true;
                     self.account(wal.account);
-					return wal;
-				}
-			});
-			if (!found)
+                    return wal;
+                }
+            });
+            if (!found)
                 console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
         self.availableFmt(self.wallet.walletStatus.availableFmt());

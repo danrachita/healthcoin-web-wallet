@@ -22,7 +22,7 @@ define(['knockout'], function(ko){
 
     consoleType.prototype.load = function(User, node_id){
         var self = this;
-        if (self.role() === ""){
+        if (User && node_id){
             self.role(User.profile.role);
         }
     };

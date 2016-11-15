@@ -199,6 +199,17 @@ define(['knockout',
         });
     };
 
+    biomarkersType.prototype.profileComplete = function(){
+        var self = this;
+        var isComplete = self.hcbmAge() > 0 &&
+                         self.hcbmWeight() > 0 &&
+                         self.hcbmWaist() > 0 &&
+                         self.hcbmGender() !== "" &&
+                         self.hcbmEthnicity() !== "" &&
+                         self.hcbmCountry() !== "";
+        return isComplete;
+    };
+
     biomarkersType.prototype.load = function(User, node_id){
         var self = this;
         if (User && node_id){
@@ -253,17 +264,6 @@ define(['knockout',
         //console.log("DEBUG: txcommentBiomarker: " + self.txcommentBiomarker());
 
         this.sendSubmit();
-    };
-
-    biomarkersType.prototype.profileComplete = function(){
-        var self = this;
-        var isComplete = self.hcbmAge() > 0 &&
-                         self.hcbmWeight() > 0 &&
-                         self.hcbmWaist() > 0 &&
-                         self.hcbmGender() !== "" &&
-                         self.hcbmEthnicity() !== "" &&
-                         self.hcbmCountry() !== "";
-        return isComplete;
     };
 
     function lockWallet(){

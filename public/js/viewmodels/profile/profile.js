@@ -93,6 +93,20 @@ define(['knockout',
         });
     };
 
+    profileType.prototype.profileComplete = function(){
+        var self = this;
+        var isComplete = false;
+        if (self.User().profile) {
+            isComplete = self.User().profile.age > 0 &&
+                         self.User().profile.weight > 0 &&
+                         self.User().profile.waist > 0 &&
+                         self.User().profile.gender !== "" &&
+                         self.User().profile.ethnicity !== "" &&
+                         self.User().profile.country !== "";
+        }
+        return isComplete;
+    };
+
     profileType.prototype.load = function(User, node_id){
         var self = this;
         if (User && node_id){
@@ -138,6 +152,9 @@ define(['knockout',
             });
 	    if (!wallet)
                 console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
+        }
+        if (!this.profileComplete()){
+                self.statusMessage("Please complete your profile before continuing.");
         }
         self.dirtyFlag(false);
     };
