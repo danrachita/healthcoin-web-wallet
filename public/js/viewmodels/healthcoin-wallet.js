@@ -43,7 +43,7 @@ define(['knockout',
             self.sessionExpires(Date.now() + self.sessionTimeout());
         });
 
-        self.timeout = 2000;
+        self.timeout = 1000;
 
         self.pollWalletStatus();
     };
