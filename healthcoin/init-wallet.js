@@ -6,7 +6,7 @@ function Init() {
 	var HCN = require('../app.js');
 	var foundNode_ID = false;
 
-	User.findOne({'local.id': HCN.MasterAccount, 'wallet.node_id': HCN.MasterNode_ID}, function(err, user){
+	User.findOne({'local.id': HCN.MasterAccount, 'wallet.node_id': HCN.host}, function(err, user){
 		if (user)
 			foundNode_ID = true;
 	});
@@ -19,18 +19,18 @@ function Init() {
             var found = false;
 			// Get the address for the node_id
 			var wallet = user.wallet.filter(function(wal){
-				if(!found && wal.node_id === HCN.MasterNode_ID){
+				if(!found && wal.node_id === HCN.host){
                     found = true;
                     HCN.MasterAddress = wal.address;
 					return wal;
 				}
 			});
 			if (!found)
-                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + HCN.MasterNode_ID);
+                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + HCN.host);
 
 			HCN.MasterPassword = "XXXXXXXX";
 		} else {
-			// Lots of synchronous stuff needs to be done at first setup. TODO: Convert to async functions.
+			// Lots of synchronous stuff needs to be done at first startup.
 			var done1 = 10, done2 = 20, done3 = 30;
 			var hcn_addresses = [];
 			HCN.Api.exec('getaddressesbyaccount', HCN.MasterAccount, function(err, res){
@@ -106,7 +106,7 @@ function Init() {
 					newUser.profile.ethnicity = "";
 					newUser.profile.country = "";
                     newUser.profile.credit = 0;
-					newUser.wallet.push( { node_id: HCN.MasterNode_ID, account: HCN.MasterAccount, address: HCN.MasterAddress });
+					newUser.wallet.push( { node_id: HCN.host, account: HCN.MasterAccount, address: HCN.MasterAddress });
 	
 					newUser.save(function(err){
 						if(err)

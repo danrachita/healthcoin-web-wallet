@@ -14,12 +14,16 @@ define(['knockout',
     'viewmodels/common/command'], function(ko, dialog, WalletStatus, Healthcoin, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
-        var self = this;
+        var self = this,
+            sessionTimeout = 2 * 60 * 60 * 1000; // Application session timeout = 2 Hours between change of views.
+
+        self.sessionExpires = ko.observable(Date.now() + sessionTimeout);
 
         self.currentView = ko.observable('healthcoin');
         self.sidebarToggled = ko.observable(true);
 
         self.User = ko.observable({});
+        self.account = ko.observable("");
         self.role = ko.observable("");
         self.getUserAccount();
 
@@ -35,6 +39,10 @@ define(['knockout',
         self.console = new Console({parent: self});
         self.profile = new Profile({parent: self});
 
+        self.currentView.subscribe(function (){
+            self.sessionExpires(Date.now() + sessionTimeout);
+        });
+
         self.timeout = 1000;
 
         self.pollWalletStatus();
@@ -48,6 +56,7 @@ define(['knockout',
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined'){
                     self.User(getUserAccountData.User);
+                    self.account(self.User().wallet[0].account);
                     self.role(self.User().profile.role);
                 }
                 //console.log('DEBUG: User: ' + JSON.stringify(self.User()));
@@ -58,7 +67,7 @@ define(['knockout',
     walletType.prototype.refresh = function(){
         var self = this, refreshPromise = "";
         if (self.timeout < 60000){ // First timeout
-            refreshPromise = $.when(self.walletStatus.load(self.User()),
+            refreshPromise = $.when(self.walletStatus.refresh(self.account()),
                                     self.healthcoin.load(self.User(), self.walletStatus.node_id()),
                                     self.biomarkers.load(self.User(), self.walletStatus.node_id()),
                                     self.send.load(self.User(), self.walletStatus.node_id()),
@@ -68,7 +77,7 @@ define(['knockout',
                                     self.console.load(self.User(), self.walletStatus.node_id()),
                                     self.profile.load(self.User(), self.walletStatus.node_id()));
         } else {
-            refreshPromise = $.when(self.walletStatus.refresh(),
+            refreshPromise = $.when(self.walletStatus.refresh(self.account()),
                                     self.send.refresh(),
                                     self.receive.refresh(),
                                     self.history.refresh());
@@ -79,14 +88,20 @@ define(['knockout',
     walletType.prototype.pollWalletStatus = function(){
         var self = this;
         setTimeout(function(){
-            self.refresh().then(function(){
-                if (self.timeout < 60000){ // First timeout
-                    self.timeout = 60000;
-                    // One-time call after first refresh
-                    self.checkEncryptionStatus();
-                }
-                self.pollWalletStatus();
-            });
+            if (Date.now() <= self.sessionExpires()){
+                self.refresh().then(function(){
+                    if (self.timeout < 60000){ // First timeout
+                        self.timeout = 60000;
+                        // One-time call after first refresh
+                        self.checkEncryptionStatus();
+                    }
+                    self.pollWalletStatus();
+                });
+            } else {
+                console.log("Session Expired. Polling stopped.");
+                // TODO: Prompt for the user to continue, but timeout after 1 minute if no response.
+                window.location = '/logout';
+            }
         },self.timeout);
     };
 

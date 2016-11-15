@@ -27,6 +27,7 @@ var biomarkersSchema = mongoose.Schema({
 		"Country" : String,
 		"Device_Source" : String,
 		"Device_Steps" : Number,
+		"Score" : Number,
 		"Other" : String
 	}
 });
@@ -57,6 +58,7 @@ biomarkersSchema.methods.buildBiomarker = function(credit, user_id, txcomment){
 		"Country" : txcomment.Country,
 		"Device_Source": txcomment.Device_Source,
 		"Device_Steps": txcomment.Device_Steps,
+		"Score" : txcomment.Score,
 		"Other": txcomment.Other
 	};
 

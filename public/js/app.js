@@ -50,7 +50,6 @@ define( [
 
             this.get('#profile', function() {
                 wallet.currentView('profile');
-
             });
         }).run('#healthcoin');
     };

@@ -46,21 +46,18 @@ HCN.isLocal = healthcoinApi.isLocal; // TODO: Move all these to opts.
 HCN.mdbHost = healthcoinApi.mdbHost; // "
 HCN.mdbPort = healthcoinApi.mdbPort; // "
 
+// Some configurable stuff.
 if (HCN.isLocal){
-    HCN.appHost = '127.0.0.1';
+    HCN.host = '127.0.0.1';
 } else {
-    HCN.appHost = 'nequals1.io';
+    HCN.host = 'nequals1.io';
 }
-app.set('host', HCN.appHost);
-HCN.appPort = app.get('port');
-
-HCN.MasterNode_ID  = HCN.Api.get('host');         // Master UI login account, and Label to assign to "" account(s).
-HCN.MasterAccount  = "MASTER_ACCOUNT";            // Master UI login account, and Label to assign to "" account(s).
-HCN.MasterAddress  = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
-HCN.MasterEmail    = "healthcoin@" + HCN.appHost; // Master email account.
-HCN.MasterPassword = "password";                  // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
-HCN.NewUserAmount  = 1.0;                         // Aount to send new users at sign-up.
-HCN.MaxSendAmount  = 1000.0;                       // Normal send amounts from MasterAccount should be small.
+HCN.MasterAccount  = "MASTER_ACCOUNT";          // Master UI login account, and Label to assign to "" account(s).
+HCN.MasterAddress  = "";                        // Master Wallet Address to move coin from (assigned in init-wallet)
+HCN.MasterEmail    = "healthcoin@nequals1.io";  // Master email account.
+HCN.MasterPassword = "password";                // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
+HCN.NewUserAmount  = 1.0;                       // Aount to send new users at sign-up.
+HCN.MaxSendAmount  = 1000.0;                    // Normal send amounts from MasterAccount should be small.
 
 module.exports = HCN;
 // End HCN
@@ -69,12 +66,12 @@ module.exports = HCN;
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(session({name: 'healthcoin_' + HCN.appHost,
+app.use(session({name: 'healthcoin',
                 secret: 'nequals1 describes unity',
                 genid: function(req) {
                     return uuid.v4(); // use UUIDs
                 },
-                cookie: {maxAge: 1 * 60 * 1000}, // Change 100 back to 1000
+                cookie: {maxAge: 30 * 24 * 60 * 60 * 1000}, // Expires in 30 days
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
@@ -109,12 +106,10 @@ app.all('*', function(req, res, next) {
 
 // catch session timeout
 app.use(function(req, res, next) {
-    if (Date.now() >= req.session.cookie.expires){
-        var err = new Error('Session Expired');
-        err.status = 401;
-        next(err);
-    } else {
+    if (req.session && Date.now() <= req.session.cookie.expires){
         next();
+    } else {
+   		res.redirect('/');
     }
 });
 
@@ -166,24 +161,6 @@ function healthcoinHandler(err, result){
 
 // Non-RPC routes //
 
-// Returns true if the RPC node is localhost.
-app.get('/islocal', function(req,res){
-    var response = {
-        error: null,
-        result: HCN.isLocal
-    };
-    res.send(JSON.stringify(response));
-});
-
-// Returns this rpc wallet node.
-app.get('/getwalletnodeid', function(req,res){
-    var response = {
-        error: null,
-        result: HCN.Api.get('host')
-    };
-    res.send(JSON.stringify(response));
-});
-
 // Returns user account and address.
 app.get('/getuseraccount', function(req,res){
     if (req.session && req.session.User) {
@@ -208,6 +185,15 @@ app.get('/saveuserprofile/:profile', function(req,res){
     var response = {
         error: null,
         result: result
+    };
+    res.send(JSON.stringify(response));
+});
+
+// Returns this rpc wallet node info.
+app.get('/getnodeinfo', function(req,res){
+    var response = {
+        error: null,
+        result: {isLocal: HCN.isLocal, node_id: HCN.host}
     };
     res.send(JSON.stringify(response));
 });
@@ -381,75 +367,8 @@ app.get('/setadressbookname/:address/:label', function(req, res){
 
 // Custom routes //
 
-app.get('/totalhealthcoin', function(req, res){
-    HCN.Api.getinfo(function(err, result){
-        console.log("err:"+err+" result:"+result);
-        if(err)
-            res.send(err);
-        else{
-            var money = result.moneysupply.toString();	
-            res.send(money);
-        }
-    });
-});
-
-app.get('/blockcount', function(req,res){
-    HCN.Api.getinfo(function(err, result){
-        console.log("err:"+err+" result:"+result);
-        if(err)
-            res.send(err);
-        else{
-            var blocks = result.blocks.toString();
-            res.send(blocks);
-        }
-    });
-});
-
-app.get('/difficulty', function(req,res){
-    HCN.Api.getDifficulty(function(err, result){
-        console.log("err:"+err+" result:"+result);
-        if(err)
-            res.send(err);
-        else
-            res.send(result);
-    });
-});	
-
-app.get('/getblockhash/:index', function(req, res){
-    HCN.Api.getblockhash(parseInt(req.params.index), function(err, hash){
-        if(err)
-            res.send(err);
-        else
-            res.send(hash);
-    });
-});
-
-app.get('/getblock/:hash', function(req, res){
-    HCN.Api.getblock(req.params.hash, function(err, data){
-        if(err)
-            res.send(err);
-        else
-            res.render('block', data);
-    });
-});
-
-app.get('/gettx/:txid', function(req, res){
-    HCN.Api.gettransaction(req.params.txid, function(err, data){
-        if(err)
-            res.send("Error parsing transaction id");
-        else
-            res.render('tx', data);
-    });
-});
-
-app.get('/getpeers', function(req, res){
-    HCN.Api.getpeers(function(err, result){
-        if(err)
-            res.send(err);
-        else
-            res.send(JSON.stringify(result));
-    });
-
+app.get('/', function(req, res){
+    res.render('index');
 });
 
 // Start it up!

@@ -56,9 +56,9 @@ define(['knockout',
         self.hcbmAge = ko.observable(0);
         self.hcbmWeight = ko.observable(0);
         self.hcbmWaist = ko.observable(0);
-        self.hcbmGender = ko.observable(0);
-        self.hcbmEthnicity = ko.observable(0);
-        self.hcbmCountry = ko.observable(0);
+        self.hcbmGender = ko.observable("");
+        self.hcbmEthnicity = ko.observable("");
+        self.hcbmCountry = ko.observable("");
         self.hcbmDevice_Source = ko.observable("None");
         self.hcbmDevice_SourceValues =   ko.observableArray(["",
                                     "Adidas",
@@ -114,6 +114,7 @@ define(['knockout',
                                     "Yoo"
                                     ]);
         self.hcbmDevice_Steps = ko.observable(0);
+        self.hcbmScore = ko.observable(0);
         self.hcbmOther = ko.observable("n/a");
 
         self.dirtyFlag = ko.observable(false);
@@ -180,6 +181,16 @@ define(['knockout',
 
             canSend = canSend && isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
             return canSend;
+        });
+
+        self.tallyScore = ko.computed(function(){
+            // TODO: Use Nick's algo.
+            var score = self.hcbmA1c() +
+                        self.hcbmTriglycerides() +
+                        self.hcbmHDL() +
+                        self.hcbmBPS() +
+                        self.hcbmBPD();
+            return score;
         });
 
         self.isEncrypted = ko.computed(function(){
@@ -385,11 +396,12 @@ define(['knockout',
         "Age": self.hcbmAge(),
         "Weight": self.hcbmWeight(),
         "Waist": self.hcbmWaist(),
-		"Gender" : self.hcbmGender(),
-		"Ethnicity" : self.hcbmEthnicity(),
-		"Country" : self.hcbmCountry(),
+		"Gender": self.hcbmGender(),
+		"Ethnicity": self.hcbmEthnicity(),
+		"Country": self.hcbmCountry(),
         "Device_Source": self.hcbmDevice_Source(),
         "Device_Steps": self.hcbmDevice_Steps(),
+		"Score": self.hcbmScore(),
         "Other": self.hcbmOther()
         };
 
