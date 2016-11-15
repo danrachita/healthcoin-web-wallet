@@ -171,7 +171,7 @@ app.get('/getuseraccount', function(req,res){
         res.send(JSON.stringify(response));
         console.log("DEBUG: response: " + JSON.stringify(response));
     } else {
-        console.log("DEBUG: req: " + JSON.stringify(req));
+        console.log("DEBUG: req: " + req);
         res.redirect('/login');
     }
 });
