@@ -52,10 +52,8 @@ define(['knockout',
     walletType.prototype.getUserAccount = function(){
         var self = this,
             getUserAccountCommand = new Command('getuseraccount',[]); // Get the User from the session
-        console.log("DEBUG: Getting User Account");
         var userPromise = $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
-                console.log("DEBUG: User: " + JSON.stringify(getUserAccountData));
                 if (typeof getUserAccountData.User !== 'undefined'){
                     self.User(getUserAccountData.User);
                     self.account(self.User().wallet[0].account);
