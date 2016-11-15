@@ -43,7 +43,7 @@ define(['knockout',
             self.sessionExpires(Date.now() + self.sessionTimeout());
         });
 
-        self.timeout = 1000;
+        self.timeout = 2000;
 
         self.pollWalletStatus();
     };
@@ -54,6 +54,7 @@ define(['knockout',
             getUserAccountCommand = new Command('getuseraccount',[]); // Get the User from the session
         var userPromise = $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
+                console.log("DEBUG: User: " + JSON.stringify(getUserAccountData));
                 if (typeof getUserAccountData.User !== 'undefined'){
                     self.User(getUserAccountData.User);
                     self.account(self.User().wallet[0].account);
