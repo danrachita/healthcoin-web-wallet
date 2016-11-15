@@ -14,10 +14,10 @@ define(['knockout',
     'viewmodels/common/command'], function(ko, dialog, WalletStatus, Healthcoin, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
-        var self = this,
-            sessionTimeout = 2 * 60 * 60 * 1000; // Application session timeout = 2 Hours between change of views.
+        var self = this;
 
-        self.sessionExpires = ko.observable(Date.now() + sessionTimeout);
+        self.sessionTimeout = ko.observable(2 * 60 * 60 * 1000); // Application session timeout = 2 Hours between change of views.
+        self.sessionExpires = ko.observable(Date.now() + self.sessionTimeout());
 
         self.currentView = ko.observable('healthcoin');
         self.sidebarToggled = ko.observable(true);
@@ -40,7 +40,7 @@ define(['knockout',
         self.profile = new Profile({parent: self});
 
         self.currentView.subscribe(function (){
-            self.sessionExpires(Date.now() + sessionTimeout);
+            self.sessionExpires(Date.now() + self.sessionTimeout());
         });
 
         self.timeout = 1000;

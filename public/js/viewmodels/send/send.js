@@ -39,6 +39,7 @@ define(['knockout',
                 canSend;
 
             canSend = isNumber && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
+            self.wallet.sessionExpires(Date.now() + self.wallet.sessionTimeout());
             return canSend;
         });
 

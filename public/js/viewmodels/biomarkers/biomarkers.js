@@ -119,6 +119,7 @@ define(['knockout',
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
+            self.wallet.sessionExpires(Date.now() + self.wallet.sessionTimeout());
             return self.dirtyFlag();
         });
 

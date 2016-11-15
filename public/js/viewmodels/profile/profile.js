@@ -65,7 +65,7 @@ define(['knockout',
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
-            //console.log("DEBUG: isDirty: " + (self.dirtyFlag() ? "true" : "false"));
+            self.wallet.sessionExpires(Date.now() + self.wallet.sessionTimeout());
             return self.dirtyFlag();
         });
 
