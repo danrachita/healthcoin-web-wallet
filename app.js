@@ -68,7 +68,11 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({name: 'healthcoin',
                 secret: 'nequals1 describes unity',
-                cookie: {secure : false, maxAge: 30 * 24 * 60 * 60 * 1000}, // Set 'secure: true' when https is implemnted. Expires in 30 days
+                genid: function(req) {
+                    return uuid.v4(); // use UUIDs
+                },
+                // TODO: Set 'secure: true' when https is implemnted. Expires in 30 days
+                cookie: {secure : false, httpOnly: false, maxAge: 30 * 24 * 60 * 60 * 1000},
                 saveUninitialized: true,
                 resave: true}));
 app.use(passport.initialize());
