@@ -108,7 +108,6 @@ app.all('*', function(req, res, next) {
 
 // catch session timeout
 app.use(function(req, res, next) {
-    console.log("DEBUG: :(");
     if (req.session && Date.now() <= req.session.cookie.expires){
         next();
     } else {
@@ -172,9 +171,7 @@ app.get('/getuseraccount', function(req,res){
             result: { User: req.session.User }
         };
         res.send(JSON.stringify(response));
-        console.log("DEBUG: response: " + JSON.stringify(response));
     } else {
-        console.log("DEBUG: req: " + JSON.stringify(req.query));
         res.redirect('/login');
     }
 });
