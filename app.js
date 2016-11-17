@@ -71,7 +71,7 @@ app.use(session({name: 'healthcoin',
                 genid: function(req) {
                     return uuid.v4(); // use UUIDs
                 },
-                cookie: {maxAge: 30 * 24 * 60 * 60 * 1000}, // Expires in 30 days
+                cookie: {secure : false, maxAge: 30 * 24 * 60 * 60 * 1000}, // Set 'secure: true' when https is implemnted. Expires in 30 days
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
