@@ -83,7 +83,7 @@ app.use(session({name: 'healthcoin',
                     return uuid.v4(); // use UUIDs
                 },
                 // TODO: Set 'secure: true' when https is implemnted. Expires in 30 days
-                cookie: {secure: true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: HCN.host},
+                cookie: {secure: HCN.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: HCN.host},
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
