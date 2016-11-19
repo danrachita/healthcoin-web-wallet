@@ -35,6 +35,7 @@ RUN cd ~ \
 
 # Expose the nodejs port.
 EXPOSE 8181
+#EXPOSE 8383
 
 # Add VOLUMEs to allow backup of data
 VOLUME  ['/home/healthcoin']
