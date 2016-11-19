@@ -17,6 +17,10 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var http = require('http');
+var https = require('https');
+var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
 var path = require('path');
 var atob = require('atob');
 var btoa = require('btoa');
@@ -35,6 +39,7 @@ var healthcoinApi = require('./healthcoin/healthcoinapi');
 // All environments
 app.use(cors());
 app.set('port', process.env.PORT || 8181);
+app.set('sslport', process.env.SSLPORT || 8383);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -67,7 +72,7 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({name: 'healthcoin',
-                secret: 'nequals1 describes unity',
+                secret: 'nequals1 describes unity', // FYI: This is the ssl csr request password, too.
                 genid: function(req) {
                     return uuid.v4(); // use UUIDs
                 },
@@ -376,9 +381,16 @@ app.get('/', function(req, res){
 // Start it up!
 function startHealthcoin(app) {
     // Start the Healthcoin Express server
-    console.log('Healthcoin Express server starting');
-    var server = http.createServer(app).listen(app.get('port'), function(){
-        console.log('Express server listening on port ' + app.get('port'));
-    });
+    if (HCN.isLocal){
+        console.log('Healthcoin Express server starting');
+        var httpServer = http.createServer(app).listen(app.get('port'), function(){
+            console.log('Express server listening on port ' + app.get('port'));
+        });
+    } else {
+        console.log('Healthcoin Express secure server starting');
+        var httpsServer = https.createServer(credentials, app).listen(app.get('sslport'), function(){
+            console.log('Express secure server listening on port ' + app.get('sslport'));
+        });
+    }
 }
 startHealthcoin(app);

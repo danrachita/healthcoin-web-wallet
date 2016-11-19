@@ -47,3 +47,5 @@ Temporary Items
 
 *.komodoproject
 
+sslcert
+sslcert/*
