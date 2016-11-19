@@ -1,5 +1,10 @@
 /**
  * Module dependencies.
+ * 
+ * Creating SSL Certificate in /sslcert
+ * openssl req -new > server.csr
+ * openssl rsa -in privkey.pem -out server.key
+ * openssl x509 -in server.csr -out server.crt -req -signkey server.key -days 9999
  */
 
 Object.defineProperty(Error.prototype, 'toJSON', {
@@ -78,7 +83,7 @@ app.use(session({name: 'healthcoin',
                     return uuid.v4(); // use UUIDs
                 },
                 // TODO: Set 'secure: true' when https is implemnted. Expires in 30 days
-                cookie: {secure: false, maxAge: 30 * 24 * 60 * 60 * 1000, domain: HCN.host},
+                cookie: {secure: true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: HCN.host},
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
