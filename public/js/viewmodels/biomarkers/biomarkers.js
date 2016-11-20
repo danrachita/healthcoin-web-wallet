@@ -186,11 +186,7 @@ define(['knockout',
 
         self.tallyScore = ko.computed(function(){
             // TODO: Use Nick's algo.
-            var score = self.hcbmA1c() +
-                        self.hcbmTriglycerides() +
-                        self.hcbmHDL() +
-                        self.hcbmBPS() +
-                        self.hcbmBPD();
+            var score = Number(self.hcbmA1c()) + Number(self.hcbmTriglycerides()) + Number(self.hcbmHDL()) + Number(self.hcbmBPS()) + Number(self.hcbmBPD());
             return score;
         });
 

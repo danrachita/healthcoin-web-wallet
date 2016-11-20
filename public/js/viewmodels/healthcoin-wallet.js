@@ -111,13 +111,13 @@ define(['knockout',
             new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'This action will unlock the wallet for sending or staking','OK')
             .done(function(result){
                 //console.log(result);
-                self.walletStatus.load(self.User());
+                self.walletStatus.refresh(self.account());
                 result.passphrase = "XXXXXXXX"; // Clear password in memory
             })
             .fail(function(error){
                 console.log(error);
                 dialog.notification(error.message);
-                self.walletStatus.load(self.User());
+                self.walletStatus.refresh(self.account());
             });
         }
     };
@@ -128,11 +128,11 @@ define(['knockout',
             var walletLockCommand = new Command('walletlock',[]).execute()
             .done(function(){
                 dialog.notification("Wallet is now locked. To send transactions or stake you must unlock the wallet.");
-                self.walletStatus.load(self.User());
+                self.walletStatus.refresh(self.account());
             })
             .fail(function(){
                 dialog.notification("Wallet is already locked.");
-                self.walletStatus.load(self.User());
+                self.walletStatus.refresh(self.account());
             });
         }
     };
