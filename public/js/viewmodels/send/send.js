@@ -20,7 +20,7 @@ define(['knockout',
 
         self.label = ko.observable("");
 
-        self.availableFmt = ko.observable("");
+        self.available = ko.observable(0.0);
         self.amount = ko.observable(0.0).extend(
             { 
                 number: true,
@@ -35,7 +35,7 @@ define(['knockout',
                 addressValid = self.recipientAddress.isValid(),
                 //label = self.label,
                 amountValid = self.amount.isValid(),
-                available = self.wallet.walletStatus.available(),
+                available = self.available(),
                 canSend;
 
             canSend = isNumber && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
@@ -63,12 +63,12 @@ define(['knockout',
             if (!found)
                 console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
         }
-        self.availableFmt(self.wallet.walletStatus.availableFmt());
+        self.available(self.wallet.walletStatus.total() - self.wallet.walletStatus.stake());
     };
 
     sendType.prototype.refresh = function(){
         var self = this;
-        self.availableFmt(self.wallet.walletStatus.availableFmt());
+        self.available(self.wallet.walletStatus.total() - self.wallet.walletStatus.stake());
     };
 
     function lockWallet(){
