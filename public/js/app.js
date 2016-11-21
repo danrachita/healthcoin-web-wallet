@@ -26,9 +26,9 @@ define( [
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
         $( document ).ready(function() {
             $('.editable').editable();
-            ko.applyBindings(wallet, $('#wrapper')[0]);
         });
 
+        ko.applyBindings(wallet, $('#wrapper')[0]);
         dialog.init($('#defaultModal')[0]);
 
         Sammy(function() {
