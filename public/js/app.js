@@ -12,7 +12,7 @@ define( [
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
         "bindinghandlers/modal"
-        ], function($, bootstrap, bootstrapEditable, ko, dialog, Wallet, Sammy){
+        ], function(jquery, bootstrap, bootstrapEditable, ko, dialog, Wallet, Sammy){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
