@@ -1,6 +1,6 @@
 require.config({
     paths: {
-        jquery: 'lib/jquery.min', // Reverted back to 2.2.4 for date picker bugs
+        jquery: 'lib/jquery.min',
         bootstrap: 'lib/bootstrap.min',
         "bootstrap-editable": 'lib/bootstrap-editable-customized.min',
         knockout: 'lib/knockout',
