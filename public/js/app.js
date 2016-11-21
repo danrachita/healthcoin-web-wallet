@@ -11,7 +11,7 @@ define( [
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
         "bindinghandlers/modal"
-        ], function($, bs, be, ko, dialog, Wallet){
+        ], function(jquery, bs, be, ko, dialog, Wallet){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
