@@ -30,7 +30,7 @@ define( [
         ko.applyBindings(wallet, $('#wrapper')[0]);
         setTimeout(function(){
             dialog.init($('#defaultModal')[0]);
-        },500); // Added short delay to solve TypeError on undefined element. (Must be under 1000 for main wallet init delay.)
+        },900); // Added short delay to solve TypeError on undefined element. (Must be under 1000 for main wallet init delay.)
 
         Sammy(function() {
             this.get('#healthcoin', function() {
