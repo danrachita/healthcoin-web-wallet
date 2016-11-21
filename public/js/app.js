@@ -5,14 +5,13 @@ define( [
         "knockout",
         "common/dialog",
         "viewmodels/healthcoin-wallet",
-        "sammy",
         "knockout-amd-helpers",
         "knockout-validation",
         "knockout-x-editable",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
         "bindinghandlers/modal"
-        ], function(jquery, bootstrap, bootstrapEditable, ko, dialog, Wallet, Sammy){
+        ], function(jquery, bootstrap, bootstrapEditable, ko, dialog, Wallet){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";

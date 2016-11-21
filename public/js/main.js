@@ -8,8 +8,7 @@ require.config({
         "knockout-validation": 'lib/knockout.validation.min',
         "knockout-x-editable": 'lib/knockout.x-editable.min',
         text: "lib/text",
-        patterns: 'extenders/patterns',
-        sammy: "lib/sammy"
+        patterns: 'extenders/patterns'
     }
 });
 
