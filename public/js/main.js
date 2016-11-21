@@ -7,9 +7,9 @@ require.config({
         "knockout-amd-helpers": 'lib/knockout-amd-helpers',
         "knockout-validation": 'lib/knockout.validation.min',
         "knockout-x-editable": 'lib/knockout.x-editable.min',
-        sammy: "lib/sammy",
         text: "lib/text",
-        patterns: 'extenders/patterns'
+        patterns: 'extenders/patterns',
+        sammy: "lib/sammy"
     }
 });
 
