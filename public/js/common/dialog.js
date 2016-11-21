@@ -19,9 +19,7 @@ define(['knockout'],function(ko){
 
     return {
         init: function(element){
-            setTimeout(function(){
-                ko.applyBindings(vm, element);
-            },500); // Added short delay to solve TypeError on undefined element. (Must be under 1000 for main wallet init delay.)
+            ko.applyBindings(vm, element);
         },        
         openDialog: function(viewmodel, view){
             openDialog(viewmodel, view);
