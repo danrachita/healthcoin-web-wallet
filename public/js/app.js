@@ -4,9 +4,10 @@ define( [
         "viewmodels/healthcoin-wallet",
         "knockout-amd-helpers",
         "knockout-validation",
+        "knockout-x-editable",
+        "bindinghandlers/modal",
         "bindinghandlers/numeric-text",
-        "bindinghandlers/numeric-input",
-        "bindinghandlers/modal"
+        "bindinghandlers/numeric-input"
         ], function(ko, dialog, Wallet){
     var App = function(){
     };
@@ -20,11 +21,11 @@ define( [
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
         //$( document ).ready(function() {
-        //    $('.editable').editable();
+        //   $('.editable').editable();
         //});
 
-        dialog.init($('#defaultModal')[0]);
         ko.applyBindings(wallet, $('#wrapper')[0]);
+        dialog.init($('#defaultModal')[0]);
 
         Sammy(function() {
             this.get('#healthcoin', function() {
