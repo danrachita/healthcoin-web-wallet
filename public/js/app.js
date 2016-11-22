@@ -1,17 +1,13 @@
 define( [
-        "jquery",
-        "bootstrap",
-        "bootstrap-editable",
         "knockout",
         "common/dialog",
         "viewmodels/healthcoin-wallet",
         "knockout-amd-helpers",
         "knockout-validation",
-        "knockout-x-editable",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
         "bindinghandlers/modal"
-        ], function(jquery, bs, be, ko, dialog, Wallet){
+        ], function(ko, dialog, Wallet){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
@@ -27,10 +23,8 @@ define( [
         //    $('.editable').editable();
         //});
 
+        dialog.init($('#defaultModal')[0]);
         ko.applyBindings(wallet, $('#wrapper')[0]);
-        setTimeout(function(){
-            dialog.init($('#defaultModal')[0]);
-        },900); // Added short delay to solve TypeError on undefined element. (Must be under 1000 for main wallet init delay.)
 
         Sammy(function() {
             this.get('#healthcoin', function() {

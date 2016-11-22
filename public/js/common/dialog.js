@@ -19,7 +19,9 @@ define(['knockout'],function(ko){
 
     return {
         init: function(element){
-            ko.applyBindings(vm, element);
+            if (element){
+                ko.applyBindings(vm, element);
+            }
         },        
         openDialog: function(viewmodel, view){
             openDialog(viewmodel, view);
