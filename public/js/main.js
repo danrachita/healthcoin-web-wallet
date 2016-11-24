@@ -1,6 +1,5 @@
 require.config({
     paths: {
-        jQuery: 'jquery.min', // 2.2.4
         jquery: 'jquery.min', // 2.2.4
         sammy: "lib/sammy",
         bootstrap: 'lib/bootstrap.min',
@@ -15,5 +14,6 @@ require.config({
 });
 
 require( [ "app" ], function( App ){
+    window.jQuery = window.$ = require('jquery');
     App.init();
 });
