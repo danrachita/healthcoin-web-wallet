@@ -13,6 +13,7 @@ define( [
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
         ], function(jQuery, bs, bse, ko, kah, kv, kxe, dialog, Wallet, Sammy){
+    var $ = jQuery;
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
