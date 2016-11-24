@@ -12,8 +12,7 @@ define( [
         "bindinghandlers/modal",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        ], function(jQuery, bs, bse, ko, kah, kv, kxe, dialog, Wallet, Sammy){
-    var $ = jQuery;
+        ], function(jQuery, bs, bse, ko, koah, kov, koxe, dialog, Wallet, Sammy){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
@@ -22,6 +21,7 @@ define( [
     ko.bindingHandlers.module.baseDir = "viewmodels";
 
     App.prototype.init = function() {
+        var $ = jQuery;
         var wallet = new Wallet();
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)

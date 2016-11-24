@@ -1,7 +1,7 @@
 require.config({
     paths: {
         jquery: 'lib/jquery.min', // 2.2.4
-        bootstrap: 'lib/bootstrap.min',
+        bootstrap: 'lib/bootstrap',
         //"bootstrap-editable": 'lib/bootstrap-editable-customized.min',
         "bootstrap-editable": 'lib/bootstrap-editable',
         knockout: 'lib/knockout',
