@@ -1,5 +1,4 @@
-define( [
-        "jQuery",
+define( ["jQuery",
         "sammy",
         "bootstrap",
         "bootstrap-editable",
