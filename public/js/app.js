@@ -1,6 +1,7 @@
 define( [
         "jquery",
         "sammy",
+        "moment",
         "bootstrap",
         "bootstrap-editable",
         "knockout",
@@ -12,7 +13,7 @@ define( [
         "bindinghandlers/modal",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        ], function(jQuery, Sammy, bs, bse, ko, koah, kov, koxe, dialog, Wallet){
+        ], function(jQuery, Sammy, Moment, bs, bse, ko, koah, kov, koxe, dialog, Wallet){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
