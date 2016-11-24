@@ -1,6 +1,6 @@
 require.config({
     paths: {
-        jQuery: 'lib/jquery.min', // 2.2.4
+        jquery: 'lib/jquery.min', // 2.2.4
         sammy: "lib/sammy",
         bootstrap: 'lib/bootstrap',
         //"bootstrap-editable": 'lib/bootstrap-editable-customized.min',

@@ -1,5 +1,5 @@
 define( [
-        "jQuery",
+        "jquery",
         "sammy",
         "bootstrap",
         "bootstrap-editable",
