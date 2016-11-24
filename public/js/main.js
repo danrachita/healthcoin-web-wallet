@@ -17,9 +17,14 @@ require.config({
 require( [ "jquery" ], function(jQuery){
         window.jQuery = window.$ = jQuery;
 });
-
-require( [ "moment" ], function(){
-});
+require( [ "sammy" ] );
+require( [ "moment" ] );
+require( [ "bootstrap" ] );
+require( [ "bootstrap-editable" ] );
+require( [ "knockout" ] );
+require( [ "knockout-amd-helpers" ] );
+require( [ "knockout-validation" ] );
+require( [ "knockout-x-editable" ] );
 
 require( [ "app" ], function( App ){
     App.init();
