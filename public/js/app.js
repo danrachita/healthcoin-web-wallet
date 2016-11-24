@@ -1,5 +1,5 @@
 define( [
-        "jquery",
+        "jQuery",
         "bootstrap",
         "bootstrap-editable",
         "knockout",
