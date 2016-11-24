@@ -18,6 +18,9 @@ require( [ "jquery" ], function(jQuery){
         window.jQuery = window.$ = jQuery;
 });
 
+require( [ "moment" ], function(){
+});
+
 require( [ "app" ], function( App ){
     App.init();
 });
