@@ -1,6 +1,6 @@
 define( [
         "jQuery",
-        "Sammy",
+        "sammy",
         "bootstrap",
         "bootstrap-editable",
         "knockout",
