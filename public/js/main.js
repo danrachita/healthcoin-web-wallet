@@ -13,6 +13,10 @@ require.config({
     }
 });
 
+require( [ "jquery" ], function(jQuery){
+        window.jQuery = window.$ = jQuery;
+});
+
 require( [ "app" ], function( App ){
     App.init();
 });
