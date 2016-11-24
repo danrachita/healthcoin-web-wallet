@@ -21,7 +21,7 @@ define( [
     ko.bindingHandlers.module.baseDir = "viewmodels";
 
     App.prototype.init = function() {
-        window.jQuery = window.$ = require('jquery');
+        window.jQuery = window.$ = jQuery;
         var wallet = new Wallet();
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
