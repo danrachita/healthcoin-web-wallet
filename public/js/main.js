@@ -22,6 +22,7 @@ require( [ "jquery" ], function(jQuery){
     window.jQuery = window.$ = jQuery;
     // Requre bootstrap plugins.
     require( [ "npm" ], function(){
+        // Require the App
         require( [ "app" ], function( App ){
             App.init();
         });
