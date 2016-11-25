@@ -18,13 +18,17 @@ require.config({
 });
 
 // Requre jQuery and assign the object to the window since we do not include jQuery on the page.
+// Enforce order for dependant modules.
 require( [ "jquery" ], function(jQuery){
     window.jQuery = window.$ = jQuery;
-    // Requre bootstrap plugins.
+    // Require bootstrap plugins.
     require( [ "npm" ], function(){
-        // Require the App
-        require( [ "app" ], function( App ){
-            App.init();
+        // Require moment for bootstrap-editable.
+        require( [ "moment" ], function(){
+            // Require the App
+            require( [ "app" ], function( App ){
+                App.init();
+            });
         });
     });
 });
