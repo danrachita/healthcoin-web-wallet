@@ -14,8 +14,8 @@ define(['knockout',
     var walletStatusType = function(){
         var self = this;
 
-        self.total = ko.observable(0);
-        self.stake = ko.observable(0);
+        self.total = ko.observable(0.0);
+        self.stake = ko.observable(0.0);
         self.isLoadingStatus = ko.observable(false);
         self.blocks = ko.observable(0);
         self.isEnabled = ko.observable("No");
