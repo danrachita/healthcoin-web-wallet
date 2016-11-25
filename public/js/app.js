@@ -13,7 +13,7 @@ define( [
         "bindinghandlers/modal",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        ], function(jQuery, Sammy, Moment, bs, bse, ko, koah, kov, koxe, dialog, Wallet){
+        ], function(jQuery, Sammy, moment, bs, bse, ko, koah, kov, koxe, dialog, Wallet){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
