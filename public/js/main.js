@@ -19,12 +19,11 @@ require.config({
 
 // Requre jQuery and assign the object to the window since we do not include jQuery on the page.
 require( [ "jquery" ], function(jQuery){
-        window.jQuery = window.$ = jQuery;
-});
-
-// Requre bootstrap plugins.
-require( [ "npm" ] );
-
-require( [ "app" ], function( App ){
-    App.init();
+    window.jQuery = window.$ = jQuery;
+    // Requre bootstrap plugins.
+    require( [ "npm" ], function(){
+        require( [ "app" ], function( App ){
+            App.init();
+        });
+    });
 });
