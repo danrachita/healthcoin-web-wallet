@@ -279,6 +279,10 @@ sup {
     overflow: hidden;
 }
 
+#wrapper.toggled .well {
+    overflow: visible;
+}
+
 /* Customize jumbotron from bootstrap.css */
 .jumbotron {
     background-color: inherit;
