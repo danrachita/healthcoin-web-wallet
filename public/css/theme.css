@@ -319,4 +319,5 @@ a.text-primary:focus {
 /* Customize slider from bootstrap-slider.min.css */
 .slider {
     margin-left: 10px;
+    margin-right: 10px;
 }
