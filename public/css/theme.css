@@ -145,6 +145,7 @@ sup {
 
 .top-content {
     width: 100%;
+    min-width: 480px !important;
     height: 140px;
     background: rgba(251,199,30,1.0);
     /*position: fixed;*/
@@ -267,7 +268,7 @@ sup {
 
 /* Customize well from bootstrap.css */
 .well {
-    min-width: 500px !important;
+    min-width: 480px !important;
     background-color: inherit;
     padding: 20px;
     margin-bottom: 0px;
