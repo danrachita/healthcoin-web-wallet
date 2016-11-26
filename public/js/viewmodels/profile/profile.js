@@ -31,8 +31,7 @@ define(['knockout',
         self.gender = ko.observable("");
         self.genderValues = ko.observableArray(["",
                                     "Female",
-                                    "Male",
-                                    "Other"
+                                    "Male"
                                     ]);
         self.ethnicity = ko.observable("");
         self.ethnicityValues = ko.observableArray(["",
