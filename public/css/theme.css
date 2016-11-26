@@ -60,7 +60,6 @@ sup {
 
 #page-content-wrapper {
     width: 100%;
-    min-width: 480px !important;
     position: absolute;
     overflow: hidden;
 }
@@ -265,6 +264,7 @@ sup {
 
 /* Customize container from bootstrap.css */
 .container {
+    min-width: 480px !important;
     padding-left: 0px;
     padding-right: 0px;
 }
