@@ -276,7 +276,7 @@ sup {
     padding: 20px;
     margin-bottom: 0px;
     border-radius: 18px;
-    /*overflow: hidden;*/
+    overflow: visible;
 }
 
 /* Customize jumbotron from bootstrap.css */
