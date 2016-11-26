@@ -60,6 +60,7 @@ sup {
 
 #page-content-wrapper {
     width: 100%;
+    min-width: 480px !important;
     position: absolute;
     overflow: hidden;
 }
@@ -70,7 +71,25 @@ sup {
     margin-right: -200px;
 }
 
-/* Sidebar Styles */
+/* Top Content Header */
+
+.top-content {
+    width: 100%;
+    min-width: 480px !important;
+    height: 140px;
+    background: rgba(251,199,30,1.0);
+    /*position: fixed;*/
+}
+
+.top-content .text {
+    text-align: center;
+    font-weight: 600;
+    font-size: 24px;
+    font-size: 6.2vw;
+    color: white;
+}
+ 
+/* Sidebar */
 
 .sidebar-nav {
     position: absolute;
@@ -143,22 +162,6 @@ sup {
     background: none;
 }
 
-.top-content {
-    width: 100%;
-    min-width: 480px !important;
-    height: 140px;
-    background: rgba(251,199,30,1.0);
-    /*position: fixed;*/
-}
-
-.top-content .text {
-    text-align: center;
-    font-weight: 600;
-    font-size: 24px;
-    font-size: 6.2vw;
-    color: white;
-}
- 
 .wallet-stats {
     width:100%;
     float: right;
@@ -268,7 +271,6 @@ sup {
 
 /* Customize well from bootstrap.css */
 .well {
-    min-width: 480px !important;
     background-color: inherit;
     padding: 20px;
     margin-bottom: 0px;
