@@ -27,12 +27,6 @@ define( [
         var wallet = new Wallet();
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
-        $('.editable').editable();
-        $('.slider').slider({
-            formatter: function(value) {
-                return 'Value: ' + value;
-            }
-        });
 
         ko.applyBindings(wallet, $('#wrapper')[0]);
         dialog.init($('#defaultModal')[0]);
