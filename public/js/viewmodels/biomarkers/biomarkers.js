@@ -168,11 +168,11 @@ define(['knockout',
             var canSend = self.hcbmDate() !== "" &&
                           self.hcbmEHR_Source() !== "" &&
                           self.hcbmEHR_Type() !== "" &&
-                          self.hcbmA1c() >= 2 && self.hcbmA1c() <= 10.5 &&
-                          self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
-                          self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
-                          self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
-                          self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130;
+                          self.hcbmA1c() > 2.00 && self.hcbmA1c() <= 12.00 &&
+                          self.hcbmTriglycerides() > 0 && self.hcbmTriglycerides() <= 400 &&
+                          self.hcbmHDL() > 0 && self.hcbmHDL() <= 100 &&
+                          self.hcbmBPS() > 90 && self.hcbmBPS() <= 180 &&
+                          self.hcbmBPD() > 60 && self.hcbmBPD() <= 130;
 
             var amount = self.amount(),
                 isNumber = !isNaN(amount),
@@ -189,7 +189,8 @@ define(['knockout',
 
         self.tallyScore = ko.computed(function(){
             // TODO: Use Nick's algo.
-            var score = Number(self.hcbmA1c()) + Number(self.hcbmTriglycerides()) + Number(self.hcbmHDL()) + Number(self.hcbmBPS()) + Number(self.hcbmBPD());
+            var bpScore = Number(self.hcbmBPS()) / Number(self.hcbmBPD()) - 1;
+            var score = Number(self.hcbmA1c()) + Number(self.hcbmTriglycerides()) + Number(self.hcbmHDL()) + bpScore;
             return score;
         });
 

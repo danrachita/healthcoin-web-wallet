@@ -1,3 +1,14 @@
+Number.prototype.formatNumber = function(p, d, c){
+        var n = this,
+        p = isNaN(p = Math.abs(p)) ? 2 : p,
+        d = d === undefined ? "." : d,
+        c = c === undefined ? "," : c,
+        s = n < 0 ? "-" : "",
+        i = parseInt(n = Math.abs(+n || 0).toFixed(p)) + "",
+        j = (j = i.length) > 3 ? j % 3 : 0;
+       return s + (j ? i.substr(0, j) + c : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + c) + (p ? d + Math.abs(n - i).toFixed(p).slice(2) : "");
+};
+
 define(['knockout',
     'common/dialog',
     'viewmodels/wallet-status',
@@ -27,7 +38,7 @@ define(['knockout',
         self.role = ko.observable("");
         self.getUserAccount();
 
-        self.walletStatus = new WalletStatus();
+        self.walletStatus = new WalletStatus({parent: self});
         self.walletStatus.getNodeInfo();
 
         self.healthcoin = new Healthcoin({parent: self});
@@ -183,6 +194,10 @@ define(['knockout',
                 console.log(error);
                 dialog.notification(error.message);
             });
+    };
+
+    walletType.prototype.formatNumber = function(value, precision, decimalPoint, commaSeparator){
+        return value.formatNumber(precision, decimalPoint, commaSeparator);
     };
 
     walletType.prototype.toggleSidebar = function(){

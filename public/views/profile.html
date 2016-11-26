@@ -5,43 +5,46 @@
 		<h1 class="text-primary"><span class="fa fa-user"></span> Your Healthcoin<sup>&reg;</sup> Profile <span style="float: right" data-bind="text: 'Credits: ' + creditFmt()"></span></h1>
         <form class="form-horizontal" role="form">
             <div class="form-group">
+				<!-- Personal data -->
                 <label class="control-label col-sm-2" for="name">Name</label>
                 <div class="col-sm-10">
-	                <input class="form-control" type="text" id="name" data-bind="text, textInput: name" placeholder="Enter your full name."></input><br>
+	                <p><input class="form-control" type="text" id="name" data-bind="text, textInput: name" placeholder="Enter your full name."></input></p>
 	            </div>
                 <label class="control-label col-sm-2" for="email">Email</label>
                 <div class="col-sm-10">
-	                <input class="form-control" type="email" id="email" data-bind="email, textInput: email" placeholder="Enter your email address."></input><br>
+	                <p><input class="form-control" type="email" id="email" data-bind="email, textInput: email" placeholder="Enter your email address."></input></p>
 	            </div>
                 <label class="control-label col-sm-2" for="description">Description</label>
                 <div class="col-sm-10">
-	                <input class="form-control" type="text" id="description" data-bind="text, textInput: description" placeholder="Describe yourself. (Optional)"></input><br>
+	                <p><input class="form-control" type="text" id="description" data-bind="text, textInput: description" placeholder="Describe yourself. (Optional)"></input></p>
 	            </div>
 
-                <label class="control-label col-sm-2" for="age">Age</label>
-                <div class="col-sm-10">
-	                <input class="form-control" type="number" id="age" data-bind="numericInput, textInput: age" placeholder="How many years-old are you?"></input><br>
-	            </div>
-                <label class="control-label col-sm-2" for="weight">Weight (kg)</label>
-                <div class="col-sm-10">
-	                <input class="form-control" type="number" id="weight" data-bind="numericInput, textInput: weight" placeholder="How many kilograms do you weigh?"></input><br>
-	            </div>
-                <label class="control-label col-sm-2" for="waist">Waist (cm)</label>
-                <div class="col-sm-10">
-	                <input class="form-control" type="number" id="waist" data-bind="numericInput, textInput: waist" placeholder="How many centimeters is your waist line?"></input><br>
-	            </div>
-
+				<!-- Demographic data -->
                 <label class="control-label col-sm-2" for="gender">Gender</label>
                 <div class="col-sm-10">
-	                <select class="form-control" data-type="select" id="gender" data-bind="options: genderValues, value: gender" data-title="Select your gender."></select><br>
+	                <p><select class="form-control" data-type="select" id="gender" data-bind="options: genderValues, value: gender" data-title="Select your gender."></select></p>
 	            </div>
                 <label class="control-label col-sm-2" for="ethnicity">Ethnicity</label>
                 <div class="col-sm-10">
-	                <select class="form-control" data-type="select" id="ethnicity" data-bind="options: ethnicityValues, value: ethnicity" data-title="Select your ethnicity."></select><br>
+	                <p><select class="form-control" data-type="select" id="ethnicity" data-bind="options: ethnicityValues, value: ethnicity" data-title="Select your ethnicity."></select></p>
 	            </div>
                 <label class="control-label col-sm-2" for="country">Country</label>
                 <div class="col-sm-10">
-	                <select class="form-control" data-type="select" id="country" data-bind="options: countryValues, value: country" data-title="Select your country of origin."></select><br>
+	                <p><select class="form-control" data-type="select" id="country" data-bind="options: countryValues, value: country" data-title="Select your country of origin."></select></p>
+	            </div>
+
+				<!-- Biomarker data -->
+                <label class="control-label col-sm-2" for="age">Age</label>
+                <div class="col-sm-10">
+                    <p><input class="slider form-control" type="text" id="age" data-bind="sliderValue: {value: age, min: 18, max: 130, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: age"></b></p>
+	            </div>
+                <label class="control-label col-sm-2" for="weight">Weight (kg)</label>
+                <div class="col-sm-10">
+                    <p><input class="slider form-control" type="text" id="weight" data-bind="sliderValue: {value: weight, min: 90, max: 400, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: weight"></b></p>
+	            </div>
+                <label class="control-label col-sm-2" for="waist">Waist (cm)</label>
+                <div class="col-sm-10">
+                    <p><input class="slider form-control" type="text" id="waist" data-bind="sliderValue: {value: waist, min: 20, max: 100, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: waist"></b></p>
 	            </div>
             </div>
 

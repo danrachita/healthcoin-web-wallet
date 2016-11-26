@@ -1,18 +1,8 @@
-Number.prototype.formatMoney = function(c, d, t){
-        var n = this,
-        c = isNaN(c = Math.abs(c)) ? 2 : c,
-        d = d === undefined ? "." : d,
-        t = t === undefined ? "," : t,
-        s = n < 0 ? "-" : "",
-        i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
-        j = (j = i.length) > 3 ? j % 3 : 0;
-       return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-};
-
 define(['knockout',
     'viewmodels/common/command'], function(ko,Command){
-    var walletStatusType = function(){
+    var walletStatusType = function(options){
         var self = this;
+        self.wallet = options.parent;
 
         self.total = ko.observable(0.0);
         self.stake = ko.observable(0.0);
@@ -27,9 +17,9 @@ define(['knockout',
         self.node_id = ko.observable("127.0.0.1"); // wallet node host/IP
         self.account = ko.observable("");          // Current User account
 
-        self.totalFmt = ko.pureComputed(function(){return (self.total()).formatMoney(2, '.', ',');});
-        self.stakeFmt = ko.pureComputed(function(){return (self.stake()).formatMoney(2, '.', ',');});
-        self.availableFmt = ko.pureComputed(function(){return (self.total() - self.stake()).formatMoney(2, '.', ',');});
+        self.totalFmt = ko.pureComputed(function(){return self.wallet.formatNumber(self.total(), 2, '.', ',');});
+        self.stakeFmt = ko.pureComputed(function(){return self.wallet.formatNumber(self.stake(), 2, '.', ',');});
+        self.availableFmt = ko.pureComputed(function(){return self.wallet.formatNumber(self.total() - self.stake(), 2, '.', ',');});
 
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();

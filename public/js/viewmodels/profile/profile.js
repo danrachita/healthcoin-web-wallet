@@ -1,14 +1,3 @@
-Number.prototype.formatMoney = function(c, d, t){
-        var n = this,
-        c = isNaN(c = Math.abs(c)) ? 2 : c,
-        d = d === undefined ? "." : d,
-        t = t === undefined ? "," : t,
-        s = n < 0 ? "-" : "",
-        i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
-        j = (j = i.length) > 3 ? j % 3 : 0;
-       return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-};
-
 define(['knockout',
         'viewmodels/common/command',
         'viewmodels/wallet-status'], function(ko,Command){
@@ -25,7 +14,7 @@ define(['knockout',
         self.login_id = ko.observable("");
         self.role = ko.observable("");
         self.credit = ko.observable(0.0000);
-        self.creditFmt = ko.pureComputed(function(){return (self.credit()).formatMoney(4, '.', ',');});
+        self.creditFmt = ko.pureComputed(function(){return self.wallet.formatNumber(self.credit(), 4, '.', ',');});
         self.wallets = ko.observableArray([]);
         self.active_wallet = ko.observable("");
         self.facebookUrl = ko.observable("https://facebook.com/");
