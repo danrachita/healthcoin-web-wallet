@@ -2,9 +2,11 @@ body {
     background: url("../images/Icon.png") rgba(247,247,247,1.0) no-repeat 36px 5px;
 }
 
-#main {
-    margin-top: 20px;
-    margin-bottom: 20px;
+@media screen and (min-width: 720px) {
+    #main {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
 }
 
 sup {
@@ -59,6 +61,7 @@ sup {
 }
 
 #page-content-wrapper {
+    min-width: 500px !important;
     width: 100%;
     position: absolute;
     overflow: hidden;
@@ -67,7 +70,7 @@ sup {
 #wrapper.toggled #page-content-wrapper {
     /*width: auto;*/
     position: absolute;
-    margin-right: -200px;
+    margin-right: -100px;
 }
 
 /* Top Content Header */
@@ -84,7 +87,7 @@ sup {
     text-align: center;
     font-weight: 600;
     font-size: 24px;
-    font-size: 6.2vh;
+    font-size: 8.2vh;
     color: white;
 }
  
@@ -276,7 +279,7 @@ sup {
     padding: 20px;
     margin-bottom: 0px;
     border-radius: 18px;
-    overflow: visible;
+    overflow: visible !important;
 }
 
 /* Customize jumbotron from bootstrap.css */
