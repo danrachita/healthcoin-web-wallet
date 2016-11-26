@@ -267,7 +267,7 @@ sup {
 
 /* Customize well from bootstrap.css */
 .well {
-    min-width: 600px !important;
+    min-width: 500px !important;
     background-color: inherit;
     padding: 20px;
     margin-bottom: 0px;
