@@ -279,7 +279,7 @@ sup {
     background-color: inherit;
 }
 
-/* Customize tet-primary from bootstrap.css */
+/* Customize text-primary from bootstrap.css */
 .text-primary {
   color: #2da9ab;
 }
@@ -309,4 +309,9 @@ a.text-primary:focus {
 .btn-primary.active {
   background-color: #3f4c6b;
   border-color: #374463;
+}
+
+/* Customize popover from bootstrap-editable.css */
+.editable-container.popover {
+    padding: 10px;
 }
