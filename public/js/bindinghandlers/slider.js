@@ -18,8 +18,12 @@ define(['knockout'], function(ko){
                 $(element).slider(params);
             }
             // Make sure we update the observable when changing the slider value
-            $(element).on('slide', function (ev) {
-                valueObservable(ev.value);
+            //$(element).on('slide', function (ev) {
+            //    valueObservable(ev.value);
+            //});
+            // SDW - Handle the change event instead since it is called on slide or click.
+            $(element).on('change', function (ev) {
+                valueObservable(ev.value.newValue);
             });
         },
         update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
