@@ -4,6 +4,7 @@ define( [
         "moment",
         "bootstrap",
         "bootstrap-editable",
+        "bootstrap-slider",
         "knockout",
         "knockout-amd-helpers",
         "knockout-validation",
@@ -11,9 +12,10 @@ define( [
         "common/dialog",
         "viewmodels/healthcoin-wallet",
         "bindinghandlers/modal",
+        "bindinghandlers/slider",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        ], function(jQuery, Sammy, moment, bs, bse, ko, koah, kov, koxe, dialog, Wallet){
+        ], function(jQuery, Sammy, moment, bootstrap, bse, slider, ko, koah, kov, koxe, dialog, Wallet){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
@@ -25,9 +27,12 @@ define( [
         var wallet = new Wallet();
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
-        //$( document ).ready(function() {
-            $('.editable').editable();
-        //});
+        $('.editable').editable();
+        $('.slider').slider({
+            formatter: function(value) {
+                return 'Value: ' + value;
+            }
+        });
 
         ko.applyBindings(wallet, $('#wrapper')[0]);
         dialog.init($('#defaultModal')[0]);

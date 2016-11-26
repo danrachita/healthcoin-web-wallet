@@ -15,7 +15,7 @@ define(['knockout',
 
         self.statusMessage = ko.observable("");
 
-        self.hcbmDate = ko.observable("");
+        self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmEHR_SourceValues = ko.observableArray(["",
                                     "Columbia South Valley Hospital, Gilroy",
@@ -48,17 +48,20 @@ define(['knockout',
                                     "Meditech",
                                     "Nextgen"
                                     ]);
-        self.hcbmA1c = ko.observable(0);
+        self.hcbmA1c = ko.observable(2.0);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
-        self.hcbmBPS = ko.observable(0);
-        self.hcbmBPD = ko.observable(0);
+        self.hcbmBPS = ko.observable(90);
+        self.hcbmBPD = ko.observable(60);
+
+        // These come from profile
         self.hcbmAge = ko.observable(0);
         self.hcbmWeight = ko.observable(0);
         self.hcbmWaist = ko.observable(0);
         self.hcbmGender = ko.observable("");
         self.hcbmEthnicity = ko.observable("");
         self.hcbmCountry = ko.observable("");
+
         self.hcbmDevice_Source = ko.observable("None");
         self.hcbmDevice_SourceValues =   ko.observableArray(["",
                                     "Adidas",
@@ -165,11 +168,11 @@ define(['knockout',
             var canSend = self.hcbmDate() !== "" &&
                           self.hcbmEHR_Source() !== "" &&
                           self.hcbmEHR_Type() !== "" &&
-                          self.hcbmA1c() > 0 &&
-                          self.hcbmTriglycerides() > 0 &&
-                          self.hcbmHDL() > 0 &&
-                          self.hcbmBPS() > 0 &&
-                          self.hcbmBPD() > 0;
+                          self.hcbmA1c() >= 2 && self.hcbmA1c() <= 10.5 &&
+                          self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
+                          self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
+                          self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
+                          self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130;
 
             var amount = self.amount(),
                 isNumber = !isNaN(amount),
@@ -211,24 +214,12 @@ define(['knockout',
         if (User && node_id){
             self.User(User);
             self.node_id(node_id);
-            var date = Dateformat(Date.now(), "yyyy-mm-dd");
-            self.hcbmDate(date);
-            self.hcbmEHR_Source("");
-            self.hcbmEHR_Type("");
-            self.hcbmA1c("0");
-            self.hcbmTriglycerides("0");
-            self.hcbmHDL("0");
-            self.hcbmBPS("0");
-            self.hcbmBPD("0");
             self.hcbmAge(User.profile.age);
             self.hcbmWeight(User.profile.weight);
             self.hcbmWaist(User.profile.waist);
             self.hcbmGender(User.profile.gender);
             self.hcbmEthnicity(User.profile.ethnicity);
             self.hcbmCountry(User.profile.country);
-            self.hcbmDevice_Source("None");
-            self.hcbmDevice_Steps("0");
-            self.hcbmOther("n/a");
             var found = false;
 			// Get the address/account for the node_id
 			var wallet = User.wallet.filter(function(wal){

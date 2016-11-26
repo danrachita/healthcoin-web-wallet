@@ -7,6 +7,7 @@ require.config({
         bootstrap: 'lib/bootstrap/dist/js/bootstrap.min',
         npm: 'lib/npm',
         "bootstrap-editable": 'lib/bootstrap-editable-customized.min',
+        "bootstrap-slider": 'lib/bootstrap-slider.min',
         knockout: 'lib/knockout',
         "knockout-amd-helpers": 'lib/knockout-amd-helpers',
         "knockout-validation": 'lib/knockout.validation.min',

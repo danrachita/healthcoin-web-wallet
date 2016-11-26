@@ -7,7 +7,7 @@
             <div class="form-group">
                 <label class="control-label col-sm-2" for="hcbmDate">Marker Date</label>
                 <div class="col-sm-10">
-                    <p><a href="#biomarkers" class="form-control" id="hcbmDate" data-type="date" data-bind="editable: hcbmDate" data-format="yyyy-mm-dd" data-viewformat="yyyy-mm-dd" data-title="When did you make your mark?" data-placement="bottom"></a></p>
+                    <p><a href="#biomarkers" class="editable form-control" id="hcbmDate" data-type="date" data-bind="editable: hcbmDate" data-format="yyyy-mm-dd" data-viewformat="yyyy-mm-dd" data-title="When did you make your mark?" data-placement="bottom"></a></p>
                 </div>
                 <label class="control-label col-sm-2" for="hcbmEHR_Source">EHR Source</label>
                 <div class="col-sm-10">
@@ -21,37 +21,38 @@
             <div class="form-group">
                 <label class="control-label col-sm-2" for="hcbmA1c">A1C</label>
                 <div class="col-sm-10">
-                    <p><input class="form-control" type="number" id="hcbmA1c" data-bind="numericInput, textInput: hcbmA1c" placeholder="Blood Glucose Level"></input></p>
+                    <p><input class="slider form-control" type="text" id="hcbmA1c" value="" data-bind="sliderValue: {value: hcbmA1c, min: 2, max: 10.5, step: 0.1, precision: 1, tooltip: 'hide'}"></input> &nbsp; <b data-bind="text: hcbmA1c"></b></p>
                 </div>
                 <label class="control-label col-sm-2" for="hcbmTriglycerides">Triglycerides</label>
                 <div class="col-sm-10">
-                    <p><input class="form-control" type="number" id="hcbmTriglycerides" data-bind="numericInput, textInput: hcbmTriglycerides" placeholder="Triglycerides Level"></input></p>
+                    <p><input class="slider form-control" type="text" id="hcbmTriglycerides" data-bind="sliderValue: {value: hcbmTriglycerides, min: 0, max: 400, step: 1, tooltip: 'hide'}"></input> &nbsp; <b data-bind="text: hcbmTriglycerides"></b></p>
                 </div>
                 <label class="control-label col-sm-2" for="hcbmHDL">HDL</label>
                 <div class="col-sm-10">
-                    <p><input class="form-control" type="number" id="hcbmHDL" data-bind="numericInput, textInput: hcbmHDL" placeholder="Cholesterol Level"></input></p>
+                    <p><input class="slider form-control" type="text" id="hcbmHDL" data-bind="sliderValue: {value: hcbmHDL, min: 0, max: 100, step: 1, tooltip: 'hide'}"></input> &nbsp; <b data-bind="text: hcbmHDL"></b></p>
                 </div>
                 <label class="control-label col-sm-2" for="hcbmBPS">BPS</label>
                 <div class="col-sm-10">
-                    <p><input class="form-control" type="number" id="hcbmBPS" data-bind="numericInput, textInput: hcbmBPS" placeholder="Blood Pressure Systolic"></input></p>
+                    <p><input class="slider form-control" type="text" id="hcbmBPS" data-bind="sliderValue: {value: hcbmBPS, min: 90, max: 180, step: 1, tooltip: 'hide'}"></input> &nbsp; <b data-bind="text: hcbmBPS"></b></p>
                 </div>
                 <label class="control-label col-sm-2" for="hcbmBPD">BPD</label>
                 <div class="col-sm-10">
-                    <p><input class="form-control" type="number" id="hcbmBPD" data-bind="numericInput, textInput: hcbmBPD" placeholder="Blood Pressure Diastolic"></input></p>
+                    <p><input class="slider form-control" type="text" id="hcbmBPD" data-bind="sliderValue: {value: hcbmBPD, min: 60, max: 130, step: 1, tooltip: 'hide'}"></input> &nbsp; <b data-bind="text: hcbmBPD"></b></p>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmDevice_Source">Device (Optional)</label>
+                <p align="center">Optional</p>
+                <label class="control-label col-sm-2" for="hcbmDevice_Source">Wearable Device</label>
                 <div class="col-sm-10">
                     <p><select class="form-control" data-type="select" id="hcbmDevice_Source" data-bind="options: hcbmDevice_SourceValues, value: hcbmDevice_Source" data-title="Select your wearable device."></select></p>
                 </div>
                 <label class="control-label col-sm-2" for="hcbmDevice_Steps">Steps from Device</label>
                 <div class="col-sm-10">
-                    <p><input class="form-control" type="number" id="hcbmDevice_Steps" data-bind="numericInput, textInput: hcbmDevice_Steps" placeholder="How many steps did you take?"></input></p>
+                    <p><input class="slider form-control" type="text" id="hcbmDevice_Steps" data-bind="sliderValue: {value: hcbmDevice_Steps, min: 0, max: 10000, step: 100, tooltip: 'hide'}"></input> &nbsp; <b data-bind="text: hcbmDevice_Steps"></b></p>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmScore">Score</label>
+                <label class="control-label col-sm-2" for="hcbmScore">Biomarker Score</label>
                 <div class="col-sm-10">
                     <p><span class="form-control" data-type="number" id="hcbmScore" data-bind="text: tallyScore"></span></p>
                 </div>

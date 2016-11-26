@@ -315,3 +315,8 @@ a.text-primary:focus {
 .editable-container.popover {
     padding: 10px;
 }
+
+/* Customize slider from bootstrap-slider.min.css */
+.slider {
+    margin-left: 10px;
+}
