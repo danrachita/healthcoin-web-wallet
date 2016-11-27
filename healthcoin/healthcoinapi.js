@@ -82,7 +82,7 @@ healthcoin.set('port', rpcPort);
 healthcoin.auth(rpcUser, rpcPass);
 
 var isLocal = false;
-if (rpcHost === "localhost" || rpcHost === "127.0.0.1" || rpcHost.indexOf(".") === -1){
+if (rpcHost === "localhost" || rpcHost === "127.0.0.1" || rpcHost.indexOf("192.168.") === 0 || rpcHost.indexOf(".") === -1){
     isLocal = true;
 }
 
