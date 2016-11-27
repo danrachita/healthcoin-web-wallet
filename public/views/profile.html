@@ -46,28 +46,29 @@
                 <div class="col-sm-10">
                     <p><input class="slider form-control" type="text" id="waist" data-bind="sliderValue: {value: waist, min: 20, max: 100, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: waist"></b></p>
 	            </div>
-            </div>
 
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-					<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
-					<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty() || !$data.canSubmit(), click: Submit">Submit</button>
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
+						<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty() || !$data.canSubmit(), click: Submit">Submit</button>
+					</div>
 				</div>
             </div>
         </form>
         <h3 align="center" data-bind="text:statusMessage"></h3>
+	</div>
 
-		<div class="floatleft">
-		<!-- ko if: active_wallet -->
+	<div class="floatleft">
+	<!-- ko if: active_wallet -->
 		<h3 class="text-primary"><span class="fa fa-money"></span> Wallet Info</h3>
 		<table width="100%">
 			<tr><td width="15%"><strong>Account</strong>: </td><td><span data-bind="text: active_wallet().account"></span></td></tr>
 			<tr><td width="15%"><strong>Address</strong>: </td><td><span data-bind="text: active_wallet().address"></span></td></tr>
 			<tr><td width="15%"><strong>Node_ID</strong>: </td><td><span data-bind="text: active_wallet().node_id"></span></td></tr>
 		</table>
-		<!-- /ko -->
-		</div>
-		<div class="floatright">
+	<!-- /ko -->
+	</div>
+	<div class="floatright">
 	<!-- LOCAL -->
 	<!-- ko if: login_type() === 'local' -->
 		<h3 class="text-primary"><span class="fa fa-database"></span> Signed in with Account</h3>
@@ -97,6 +98,5 @@
 			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: twitterUrl().concat(login_id())}" target="_blank">Twitter</a></span></td></tr>
 		</table>
 	<!-- /ko -->
-		</div>
 	</div>
 </div>

@@ -48,11 +48,11 @@ define(['knockout',
                                     "Meditech",
                                     "Nextgen"
                                     ]);
-        self.hcbmA1c = ko.observable(2.0);
+        self.hcbmA1c = ko.observable(0.0);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
-        self.hcbmBPS = ko.observable(90);
-        self.hcbmBPD = ko.observable(60);
+        self.hcbmBPS = ko.observable(0);
+        self.hcbmBPD = ko.observable(0);
 
         // These come from profile
         self.hcbmAge = ko.observable(0);
@@ -168,11 +168,11 @@ define(['knockout',
             var canSend = self.hcbmDate() !== "" &&
                           self.hcbmEHR_Source() !== "" &&
                           self.hcbmEHR_Type() !== "" &&
-                          self.hcbmA1c() > 2.00 && self.hcbmA1c() <= 12.00 &&
-                          self.hcbmTriglycerides() > 0 && self.hcbmTriglycerides() <= 400 &&
-                          self.hcbmHDL() > 0 && self.hcbmHDL() <= 100 &&
-                          self.hcbmBPS() > 90 && self.hcbmBPS() <= 180 &&
-                          self.hcbmBPD() > 60 && self.hcbmBPD() <= 130;
+                          self.hcbmA1c() >= 2.00 && self.hcbmA1c() <= 12.00 &&
+                          self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
+                          self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
+                          self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
+                          self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130;
 
             var amount = self.amount(),
                 isNumber = !isNaN(amount),
