@@ -150,14 +150,7 @@ define(['knockout',
 
     walletType.prototype.checkEncryptionStatus = function(){
         var self = this;
-        // DO NOT allow non-local wallets to be encrypted!
-        // A wallet is local if the healthcoin.conf file has the parameter:
-        // rpcconnect=localhost
-        // - or -
-        // rpcconnect=127.0.0.1
-        // - or -
-        // rpcconnect=hostname_with_no_tld
-        //
+        // DO NOT allow non-local wallets to be encrypted! (See README.md)
         if (self.walletStatus.isLocalWallet()){
             switch(self.walletStatus.unlockedUntil()){
             case -1: // wallet is unencrypted

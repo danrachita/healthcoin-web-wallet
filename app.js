@@ -40,7 +40,18 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-var healthcoinApi = require('./healthcoin/healthcoinapi');
+// HCN Object //
+var HCN = require('./healthcoin/healthcoinapi');  // healthcoin opts and api calls
+                   // Some configurable stuff...
+HCN.appHost        = HCN.isLocal ? "127.0.0.1" : "nequals1.io"; // Hostname of node.js / webserver (See README.md)
+HCN.MasterAccount  = "MASTER_ACCOUNT";            // Master UI login account, and Label to assign to "" account(s).
+HCN.MasterAddress  = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
+HCN.MasterEmail    = "healthcoin@" + HCN.appHost; // Master email account.
+HCN.MasterPassword = "password";                  // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
+HCN.NewUserAmount  = 1.0;                         // Amount to send new users at sign-up.
+HCN.MaxSendAmount  = 1000.0;                      // Normal send amounts from MasterAccount should be small.
+module.exports     = HCN;
+// End HCN Object //
 
 // All environments
 app.use(cors());
@@ -48,30 +59,6 @@ app.set('port', process.env.PORT || 8181);
 app.set('sslport', process.env.SSLPORT || 8383);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-// HCN Object exported for client access
-var HCN     = {};
-HCN.Api     = healthcoinApi.healthcoin; // healthcoin opts and calls
-HCN.isAlive = healthcoinApi.isAlive; // TODO: Add isAlive() to healthcoinApi and abort here if not!
-HCN.isLocal = healthcoinApi.isLocal; // TODO: Move all these to opts.
-HCN.mdbHost = healthcoinApi.mdbHost; // "
-HCN.mdbPort = healthcoinApi.mdbPort; // "
-
-// Some configurable stuff.
-if (HCN.isLocal){
-    HCN.host = '127.0.0.1';
-} else {
-    HCN.host = 'nequals1.io';
-}
-HCN.MasterAccount  = "MASTER_ACCOUNT";          // Master UI login account, and Label to assign to "" account(s).
-HCN.MasterAddress  = "";                        // Master Wallet Address to move coin from (assigned in init-wallet)
-HCN.MasterEmail    = "healthcoin@nequals1.io";  // Master email account.
-HCN.MasterPassword = "password";                // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
-HCN.NewUserAmount  = 1.0;                       // Aount to send new users at sign-up.
-HCN.MaxSendAmount  = 1000.0;                    // Normal send amounts from MasterAccount should be small.
-
-module.exports = HCN;
-// End HCN
 
 // Auth modules
 app.use(morgan('dev'));
@@ -83,12 +70,12 @@ app.use(session({name: 'healthcoin',
                     return uuid.v4(); // use UUIDs
                 },
                 // TODO: Set 'secure: true' when https is implemnted. Expires in 30 days
-                cookie: {secure: HCN.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: HCN.host},
+                cookie: {secure: HCN.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: HCN.appHost},
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
+app.use(flash());            // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 
 app.use(express.favicon());
 app.use(express.logger('dev'));
@@ -158,7 +145,7 @@ function callHealthcoin(command, res, handler){
     var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
     var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
     //console.log("DEBUG: command:"+command+" args:"+args);
-    return HCN.Api[command].apply(HCN.Api, callargs);
+    return HCN.api[command].apply(HCN.api, callargs);
 }
 function healthcoinHandler(err, result){
     //console.log("DEBUG: err:"+err+" result:"+result);
@@ -206,7 +193,7 @@ app.get('/saveuserprofile/:profile', function(req,res){
 app.get('/getnodeinfo', function(req,res){
     var response = {
         error: null,
-        result: {isLocal: HCN.isLocal, node_id: HCN.host}
+        result: {isLocal: HCN.isLocal, node_id: HCN.rpcHost}
     };
     res.send(JSON.stringify(response));
 });
@@ -303,7 +290,7 @@ app.get('/getnewaddress/:account', function(req, res){
 });
 
 app.get('/setaccount/:address/:account', function(req, res){
-    HCN.Api.setaccount(req.params.address, req.params.account, function(err, result){
+    HCN.api.setaccount(req.params.address, req.params.account, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -349,7 +336,7 @@ app.get('/listreceivedbyaddress/:minconf?/:includeempty?', function(req, res){
 });
 
 app.get('/getaccount/:address', function(req, res){
-    HCN.Api.getaccount(req.params.address, function(err, result){
+    HCN.api.getaccount(req.params.address, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -359,7 +346,7 @@ app.get('/getaccount/:address', function(req, res){
 });
 
 app.get('/listaddressgroupings', function(req, res){
-    HCN.Api.listaddressgroupings(function(err, result){
+    HCN.api.listaddressgroupings(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -369,7 +356,7 @@ app.get('/listaddressgroupings', function(req, res){
 });
 
 app.get('/setadressbookname/:address/:label', function(req, res){
-    HCN.Api.setadressbookname(req.params.address, req.params.label, function(err, result){
+    HCN.api.setadressbookname(req.params.address, req.params.label, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);

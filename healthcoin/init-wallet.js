@@ -6,7 +6,7 @@ function Init() {
 	var HCN = require('../app.js');
 	var foundNode_ID = false;
 
-	User.findOne({'local.id': HCN.MasterAccount, 'wallet.node_id': HCN.host}, function(err, user){
+	User.findOne({'local.id': HCN.MasterAccount, 'wallet.node_id': HCN.rpcHost}, function(err, user){
 		if (user)
 			foundNode_ID = true;
 	});
@@ -19,21 +19,21 @@ function Init() {
             var found = false;
 			// Get the address for the node_id
 			var wallet = user.wallet.filter(function(wal){
-				if(!found && wal.node_id === HCN.host){
+				if(!found && wal.node_id === HCN.rpcHost){
                     found = true;
                     HCN.MasterAddress = wal.address;
 					return wal;
 				}
 			});
 			if (!found)
-                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + HCN.host);
+                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + HCN.rpcHost);
 
 			HCN.MasterPassword = "XXXXXXXX";
 		} else {
 			// Lots of synchronous stuff needs to be done at first startup.
 			var done1 = 10, done2 = 20, done3 = 30;
 			var hcn_addresses = [];
-			HCN.Api.exec('getaddressesbyaccount', HCN.MasterAccount, function(err, res){
+			HCN.api.exec('getaddressesbyaccount', HCN.MasterAccount, function(err, res){
 				//console.log("DEBUG: err:" + err + " res:" + res);
 				hcn_addresses = res;
 				done1 = 0;
@@ -44,7 +44,7 @@ function Init() {
 
 					if (!hcn_addresses || !hcn_addresses.length){
 						// MasterAccount has not been labeled in wallet. Get all un-labeled addresses.
-						HCN.Api.exec('getaddressesbyaccount', "", function(err, res){
+						HCN.api.exec('getaddressesbyaccount', "", function(err, res){
 							//console.log("DEBUG: err:" + err + " res:" + res);
 							hcn_addresses = res;
 							done2 = 0;
@@ -61,7 +61,7 @@ function Init() {
 										// NOTE: The rpc command setaccount has a "bug" that creates an unlabeled address after executing.
 										//       You have to go into the Qt wallet to label it. TODO: Fix rpc command.
 										if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
-											HCN.Api.exec('setaccount', hcn_addresses[k], HCN.MasterAccount, function(err, res){
+											HCN.api.exec('setaccount', hcn_addresses[k], HCN.MasterAccount, function(err, res){
 												if (err) console.log("Error: err:" + err + " res:" + res);
 												if (done3){
 													HCN.MasterAddress = hcn_addresses[0]; // Use first address
@@ -106,7 +106,7 @@ function Init() {
 					newUser.profile.ethnicity = "";
 					newUser.profile.country = "";
                     newUser.profile.credit = 0;
-					newUser.wallet.push( { node_id: HCN.host, account: HCN.MasterAccount, address: HCN.MasterAddress });
+					newUser.wallet.push( { node_id: HCN.rpcHost, account: HCN.MasterAccount, address: HCN.MasterAddress });
 	
 					newUser.save(function(err){
 						if(err)
