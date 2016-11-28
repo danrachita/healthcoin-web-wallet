@@ -266,7 +266,7 @@ sup {
     float: left !important;
 }
 
-/* Overrides */
+/*** Bootstrap Overrides ***/
 
 /* Customize container from bootstrap.css */
 .container {
@@ -333,3 +333,5 @@ a.text-primary:focus {
     margin-right: 10px;
     margin-top: 5px;
 }
+
+/*** End Bootstrap  Overrides ***/
