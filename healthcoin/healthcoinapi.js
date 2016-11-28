@@ -90,7 +90,7 @@ api.set('host', rpcHost);
 api.set('port', rpcPort);
 api.set('user', rpcUser);
 api.set('pass', rpcPass);
-if (!isLocal) api.set('https', true);
+//if (!isLocal) api.set('https', true); // TODO: Get https working with rpc.
 api.auth();
 
 module.exports.api = api;
