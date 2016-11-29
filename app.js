@@ -22,8 +22,6 @@ var fs = require('fs');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var http = require('http');
-var https = require('https');
 var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
 var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
 var credentials = {key: privateKey, cert: certificate};
@@ -55,8 +53,7 @@ module.exports     = HCN;
 
 // All environments
 app.use(cors());
-app.set('port', process.env.PORT || 8181);
-app.set('sslport', process.env.SSLPORT || 8383);
+app.set('port', HCN.isLocal ? 8181 : 8383);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -374,40 +371,22 @@ app.get('/', function(req, res){
 // Start it up!
 function startHealthcoin(app) {
     // Start the Healthcoin Express server
-    if (HCN.isLocal){
-        console.log('Healthcoin Express Server starting...');
-        var httpServer = http.createServer(app).listen(app.get('port'), function(){
-            var io = require('socket.io')(httpServer);
-            io.on('connection', function (socket) {
-                socket.emit('news', { news: 'Socket.io connected!' });
-                socket.on('connect_error', function (err) {
-                    socket.emit('news', { news: 'Healthcoin connection error.' });
-                    console.log("Socket.io Error: " + err);
-                });
-                process.on('uncaughtException', function (err) {
-                  socket.emit('news', { news: 'Healthcoin connection error.' });
-                  console.log('Caught exception: ' + err);
-                });
+    var protocol = HCN.isLocal ? require('http') : require('https');
+    console.log("Healthcoin Express " + (HCN.isLocal ? "" : "Secure ") + "Server starting...");
+    var server = protocol.createServer(app).listen(app.get('port'), function(){
+        var io = require('socket.io')(server);
+        io.on('connection', function (socket) {
+            socket.emit('news', { news: 'Socket.io connected!' });
+            socket.on('connect_error', function (err) {
+                socket.emit('news', { news: 'Healthcoin connection error.' });
+                console.log("Socket.io Error: " + err);
             });
-            console.log('  Server listening on port ' + app.get('port'));
-        });
-    } else {
-        console.log('Healthcoin Express Secure Server starting...');
-        var httpsServer = https.createServer(credentials, app).listen(app.get('sslport'), function(){
-            var io = require('socket.io')(httpsServer);
-            io.on('connection', function (socket) {
-                socket.emit('news', { news: 'Socket.io connected!' });
-                socket.on('connect_error', function (err) {
-                    socket.emit('news', { news: 'Healthcoin connection error.' });
-                    console.log("Socket.io Error: " + err);
-                });
-                process.on('uncaughtException', function (err) {
-                  socket.emit('news', { news: 'Healthcoin connection error.' });
-                  console.log('Caught exception: ' + err);
-                });
+            process.on('uncaughtException', function (err) {
+              socket.emit('news', { news: 'Healthcoin connection error.' });
+              console.log('Caught exception: ' + err);
             });
-            console.log('  Server listening on port ' + app.get('sslport'));
         });
-    }
+        console.log('  Server listening on port ' + app.get('port'));
+    });
 }
 startHealthcoin(app);

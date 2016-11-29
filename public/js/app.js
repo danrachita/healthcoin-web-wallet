@@ -33,7 +33,7 @@ define( [
         });
         socket.on('connect_error', function(err) {
           // handle server error
-          console.log('Error connecting to Healthcoin server. Try again later. Error: ' + err);
+          console.log('Error connecting to Healthcoin server. Try again later. ' + err);
         });
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
