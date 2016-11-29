@@ -29,7 +29,7 @@ define( [
 
         var port = (window.location.port === '' ? '' : ":" + window.location.port);
         var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port);
-        console.log("DEBUG: " + window.location.protocol + '//' + window.location.hostname + port);
+        socket.emit('news', { news: 'Connected from: ' + window.location.protocol + '//' + window.location.hostname + port });
         socket.on('news', function (data) {
           console.log(data);
         });

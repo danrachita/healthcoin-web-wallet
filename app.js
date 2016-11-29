@@ -378,10 +378,25 @@ function startHealthcoin(app) {
     console.log("Healthcoin Express " + (HCN.isLocal ? "" : "Secure ") + "Server starting...");
     var protocol = HCN.isLocal ? require('http') : require('https');
     var server = HCN.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
+    var io = require('socket.io')(server, {
+            port: app.get('port'),
+            transports: [
+                'polling',
+                'websocket',
+                'flashsocket',
+                'htmlfile',
+                'xhr-polling',
+                'jsonp-polling'
+            ],
+            heartbeat: 10
+        });
+
     server.listen(app.get('port'), function(){
-        var io = require('socket.io')(server);
         io.on('connection', function (socket) {
             socket.emit('news', { news: 'Socket.io connected!' });
+            socket.on('news', function (data) {
+              console.log(data);
+            });
             socket.on('connect_error', function (err) {
                 socket.emit('news', { news: 'Healthcoin socket connection error.' });
                 console.log("Socket.io Error: " + err);
