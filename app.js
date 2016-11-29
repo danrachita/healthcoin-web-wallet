@@ -118,7 +118,7 @@ app.use(function(req, res, next) {
 });
 
 // TODO: Change to 'production' in production.
-//app.set('env', 'development');
+app.set('env', 'development');
 
 // development error handler will print stacktrace
 if (app.get('env') === 'development') {
