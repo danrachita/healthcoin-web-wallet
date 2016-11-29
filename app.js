@@ -383,11 +383,11 @@ function startHealthcoin(app) {
         io.on('connection', function (socket) {
             socket.emit('news', { news: 'Socket.io connected!' });
             socket.on('connect_error', function (err) {
-                socket.emit('news', { news: 'Healthcoin connection error.' });
+                socket.emit('news', { news: 'Healthcoin socket connection error.' });
                 console.log("Socket.io Error: " + err);
             });
             process.on('uncaughtException', function (err) {
-              socket.emit('news', { news: 'Healthcoin connection error.' });
+              socket.emit('news', { news: 'Healthcoin node connection error.' });
               console.log('Caught exception: ' + err);
             });
         });
