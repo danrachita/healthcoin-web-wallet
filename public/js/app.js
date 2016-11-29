@@ -27,7 +27,8 @@ define( [
     App.prototype.init = function() {
         var wallet = new Wallet();
 
-        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/');
+        var secure = (window.location.protocol === 'https:' ? true : false);
+        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + window.location.port, {secure: secure});
         socket.on('news', function (data) {
           console.log(data);
         });
