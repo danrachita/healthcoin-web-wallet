@@ -27,7 +27,7 @@ define( [
     App.prototype.init = function() {
         var wallet = new Wallet();
 
-        var port = (window.location.port === '' ? ':8383' : ":" + window.location.port);
+        var port = (window.location.port === '' ? '' : ":" + window.location.port);
         var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port);
         console.log("DEBUG: " + window.location.protocol + '//' + window.location.hostname + port);
         socket.on('news', function (data) {
