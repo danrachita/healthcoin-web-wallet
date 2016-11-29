@@ -117,6 +117,9 @@ app.use(function(req, res, next) {
     next(err);
 });
 
+// TODO: Change to 'production' in production.
+app.set('env', 'development');
+
 // development error handler will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
@@ -126,18 +129,18 @@ if (app.get('env') === 'development') {
             error: err
         });
     });
+} else {
+    // production error handler no stacktraces leaked to user
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: {}
+        });
+    });
 }
 
-// production error handler no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
-
-
+// Healthcoin handler for indirect calls to daemon
 function callHealthcoin(command, res, handler){
     var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
     var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
