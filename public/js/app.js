@@ -29,6 +29,7 @@ define( [
 
         var secure = (window.location.protocol === 'https:' ? true : false);
         var socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + window.location.port, {secure: secure});
+        console.log("DEBUG: " + window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + " secure=" + secure);
         socket.on('news', function (data) {
           console.log(data);
         });
