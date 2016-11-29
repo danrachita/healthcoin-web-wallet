@@ -19,15 +19,18 @@ Object.defineProperty(Error.prototype, 'toJSON', {
 });
 
 var fs = require('fs');
-var express = require('express');
-var cors = require('cors');
-var bodyParser = require('body-parser');
-var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
-var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
 var path = require('path');
 var atob = require('atob');
 var btoa = require('btoa');
+
+var express = require('express');
+var cors = require('cors');
+var bodyParser = require('body-parser');
+var http = require('http');
+var https = require('https');
+var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
 var app = express();
 
 var cookieParser = require('cookie-parser');
@@ -40,7 +43,7 @@ var flash = require('connect-flash');
 
 // HCN Object //
 var HCN = require('./healthcoin/healthcoinapi');  // healthcoin opts and api calls
-                   // Some configurable stuff...
+                   // Some configurable stuff... more below!
 HCN.appHost        = HCN.isLocal ? "127.0.0.1" : "nequals1.io"; // Hostname of node.js / webserver (See README.md)
 HCN.MasterAccount  = "MASTER_ACCOUNT";            // Master UI login account, and Label to assign to "" account(s).
 HCN.MasterAddress  = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
@@ -118,7 +121,7 @@ app.use(function(req, res, next) {
 });
 
 // TODO: Change to 'production' in production.
-//app.set('env', 'development');
+app.set('env', 'development');
 
 // development error handler will print stacktrace
 if (app.get('env') === 'development') {
@@ -129,7 +132,7 @@ if (app.get('env') === 'development') {
             error: JSON.stringify(err)
         });
     });
-}// else {
+} else {
     // production error handler no stacktraces leaked to user
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
@@ -138,7 +141,7 @@ if (app.get('env') === 'development') {
             error: {}
         });
     });
-//}
+}
 
 // Healthcoin handler for indirect calls to daemon
 function callHealthcoin(command, res, handler){
@@ -374,7 +377,7 @@ app.get('/', function(req, res){
 // Start it up!
 function startHealthcoin(app) {
     // Start the Healthcoin Express server
-    var protocol = HCN.isLocal ? require('http') : require('https');
+    var protocol = HCN.isLocal ? http : https;
     console.log("Healthcoin Express " + (HCN.isLocal ? "" : "Secure ") + "Server starting...");
     var server = protocol.createServer(app).listen(app.get('port'), function(){
         var io = require('socket.io')(server);
