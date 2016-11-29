@@ -26,8 +26,6 @@ var btoa = require('btoa');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var http = require('http');
-var https = require('https');
 var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
 var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
 var credentials = {key: privateKey, cert: certificate};
@@ -377,9 +375,13 @@ app.get('/', function(req, res){
 // Start it up!
 function startHealthcoin(app) {
     // Start the Healthcoin Express server
-    var protocol = HCN.isLocal ? http : https;
+    var protocol = HCN.isLocal ? require('http') : require('https');
     console.log("Healthcoin Express " + (HCN.isLocal ? "" : "Secure ") + "Server starting...");
-    var server = protocol.createServer(app).listen(app.get('port'), function(){
+    var server = protocol.createServer(app);
+    if (!HCN.isLocal){
+        server.setSecure(credentials);
+    }
+    server.listen(app.get('port'), function(){
         var io = require('socket.io')(server);
         io.on('connection', function (socket) {
             socket.emit('news', { news: 'Socket.io connected!' });
