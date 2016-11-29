@@ -375,12 +375,9 @@ app.get('/', function(req, res){
 // Start it up!
 function startHealthcoin(app) {
     // Start the Healthcoin Express server
-    var protocol = HCN.isLocal ? require('http') : require('https');
     console.log("Healthcoin Express " + (HCN.isLocal ? "" : "Secure ") + "Server starting...");
-    var server = protocol.createServer(app);
-    if (!HCN.isLocal){
-        server.setSecure(credentials);
-    }
+    var protocol = HCN.isLocal ? require('http') : require('https');
+    var server = HCN.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
     server.listen(app.get('port'), function(){
         var io = require('socket.io')(server);
         io.on('connection', function (socket) {
