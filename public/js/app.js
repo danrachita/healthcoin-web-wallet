@@ -11,11 +11,12 @@ define( [
         "knockout-x-editable",
         "common/dialog",
         "viewmodels/healthcoin-wallet",
+        "socket.io",
         "bindinghandlers/modal",
         "bindinghandlers/slider",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        ], function(jQuery, Sammy, moment, bootstrap, bse, slider, ko, koah, kov, koxe, dialog, Wallet){
+        ], function(jQuery, Sammy, moment, bootstrap, bse, slider, ko, koah, kov, koxe, dialog, Wallet, io){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
@@ -25,6 +26,15 @@ define( [
 
     App.prototype.init = function() {
         var wallet = new Wallet();
+
+        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/');
+        socket.on('news', function (data) {
+          console.log(data);
+        });
+        socket.on('connect_error', function(err) {
+          // handle server error
+          console.log('Error connecting to Healthcoin server. Try again later. Error: ' + err);
+        });
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
 

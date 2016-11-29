@@ -375,14 +375,38 @@ app.get('/', function(req, res){
 function startHealthcoin(app) {
     // Start the Healthcoin Express server
     if (HCN.isLocal){
-        console.log('Healthcoin Express server starting');
+        console.log('Healthcoin Express Server starting...');
         var httpServer = http.createServer(app).listen(app.get('port'), function(){
-            console.log('Express server listening on port ' + app.get('port'));
+            var io = require('socket.io')(httpServer);
+            io.on('connection', function (socket) {
+                socket.emit('news', { news: 'Socket.io connected!' });
+                socket.on('connect_error', function (err) {
+                    socket.emit('news', { news: 'Healthcoin connection error.' });
+                    console.log("Socket.io Error: " + err);
+                });
+                process.on('uncaughtException', function (err) {
+                  socket.emit('news', { news: 'Healthcoin connection error.' });
+                  console.log('Caught exception: ' + err);
+                });
+            });
+            console.log('  Server listening on port ' + app.get('port'));
         });
     } else {
-        console.log('Healthcoin Express secure server starting');
+        console.log('Healthcoin Express Secure Server starting...');
         var httpsServer = https.createServer(credentials, app).listen(app.get('sslport'), function(){
-            console.log('Express secure server listening on port ' + app.get('sslport'));
+            var io = require('socket.io')(httpsServer);
+            io.on('connection', function (socket) {
+                socket.emit('news', { news: 'Socket.io connected!' });
+                socket.on('connect_error', function (err) {
+                    socket.emit('news', { news: 'Healthcoin connection error.' });
+                    console.log("Socket.io Error: " + err);
+                });
+                process.on('uncaughtException', function (err) {
+                  socket.emit('news', { news: 'Healthcoin connection error.' });
+                  console.log('Caught exception: ' + err);
+                });
+            });
+            console.log('  Server listening on port ' + app.get('sslport'));
         });
     }
 }
