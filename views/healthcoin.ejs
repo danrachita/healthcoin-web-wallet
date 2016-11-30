@@ -76,7 +76,9 @@
                 <li class="small">Block Height: <span data-bind="text: walletStatus.blocks"></span></li>
                 <li class="small">Wallet Encrypted: <span data-bind="text: walletStatus.isEncrypted"></span></li>
                 <li class="small">Staking Enabled: <span data-bind="text: walletStatus.isEnabled"></span></li>
+	    <!-- ko if: walletStatus.isEnabled() === 'Yes' -->
                 <li class="small">Currently Staking: <span data-bind="text: walletStatus.isStaking"></span></li>
+	    <!-- /ko -->
     <!-- /ko -->
             </ul>
         </div>
