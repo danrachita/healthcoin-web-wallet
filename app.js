@@ -380,8 +380,7 @@ function startHealthcoin(app) {
     var server = HCN.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
 
     server.listen(app.get('port'), function(){
-        var io = require('socket.io')();
-        io.attach(server, {
+        var io = require('socket.io')(server, {
                 port: app.get('port') // Not used any more in socket.io 1.7.1?
             });
         io.on('connection', function (socket) {
