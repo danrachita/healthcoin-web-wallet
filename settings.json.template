@@ -1,0 +1,59 @@
+/*
+  This file must be valid JSON. But comments are allowed
+
+  Please copy this file to settings.json to make your changes.
+  Do not modify settings.json.template!
+
+*/
+{
+  // The name of your app
+  "title": "Healthcoin Web Wallet",
+
+  // Logo
+  "logo": "./public/images/Icon.png",
+
+  // favicon
+  "favicon": "./public/favicon.ico",
+
+  // The host your application / web server runs on. isLocal overrides this if true. (See README.md)
+  "appHost": "127.0.0.1",
+
+  // Unsecure port to listen on
+  "port": 8181,
+
+  // Secure port to listen on
+  "sslport": 8383,
+
+  // SSL certs key
+  "sslKey": "./sslcert/server.key",
+
+  // SSL certs crt
+  "sslCrt": "./sslcert/server.crt",
+
+  // Database settings (MongoDB)
+  "mdbSettings": {
+    "user": "healthcoin",
+    "password": "password",
+    "database": "healthcoin",
+    "host": "127.0.0.1",
+    "port": 27017
+  },
+
+  // Master UI login account, and Label to assign to "" wallet accounts.
+  "masterAccount": "MASTER_ACCOUNT",
+
+  // Master email account.
+  "masterEmail": "healthcoin@localhost",
+
+  // Amount to send new users at sign-up
+  "newUserAmount": 1.0,
+
+  // Some control over how much can be sent at one time
+  "maxSendAmount": 1000.0,
+
+  // Coin name
+  "coin": "Healthcoin",
+
+  // Coin symbol
+  "symbol": "HCN"
+}

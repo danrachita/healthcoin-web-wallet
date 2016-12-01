@@ -8,8 +8,6 @@ define(['knockout',
         self.stake = ko.observable(0.0);
         self.isLoadingStatus = ko.observable(false);
         self.blocks = ko.observable(0);
-        self.isEnabled = ko.observable("No");
-        self.isStaking = ko.observable("No");
         self.isEncrypted = ko.observable("No");
         self.isUnlocked = ko.observable("No");
         self.unlockedUntil = ko.observable(-1);
@@ -24,10 +22,6 @@ define(['knockout',
         this.available = ko.pureComputed(function(){
             var total = self.total(), stake = self.stake();
             return (total - stake);
-        }).extend({ rateLimit: 500 });
- 
-        this.encryptionStatus = ko.pureComputed(function(){
-            return (self.isEncrypted() === "Yes");
         }).extend({ rateLimit: 500 });
     };
 
@@ -49,14 +43,13 @@ define(['knockout',
         var self = this;
         self.account(account !== "" ? account : "*");
         var getInfoCommand = new Command('getinfo',[]),
-            getBalanceCommand = new Command('getbalance',[self.account()]),
-            getStakingInfoCommand = new Command('getstakinginfo',[]);
+            getBalanceCommand = new Command('getbalance',[self.account()]);
         self.isLoadingStatus(true);
-        var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute(), getStakingInfoCommand.execute())
-            .done(function(getInfoData, getBalanceData, getStakingInfoData){
+        var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute())
+            .done(function(getInfoData, getBalanceData){
                 if (typeof getInfoData.unlocked_until !== 'undefined'){
-                    self.unlockedUntil(getInfoData.unlocked_until);
                     self.isEncrypted("Yes");
+                    self.unlockedUntil(getInfoData.unlocked_until);
                     if (self.unlockedUntil() > 0){
                         self.isUnlocked("Yes");
                     } else {
@@ -72,8 +65,6 @@ define(['knockout',
                     self.total((!isNaN(getBalanceData) ? getBalanceData : 0));
                 }
                 self.blocks(getInfoData.blocks);
-                self.isEnabled(getStakingInfoData.Enabled ? "Yes" : "No");
-                self.isStaking(getStakingInfoData.Staking ? "Yes" : "No");
                 self.isLoadingStatus(false); 
             });
         return statusPromise;

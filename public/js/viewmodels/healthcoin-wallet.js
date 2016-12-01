@@ -118,7 +118,7 @@ define(['knockout',
 
     walletType.prototype.unlockWallet = function(){
         var self = this;
-        if (self.walletStatus.isLocalWallet()){
+        if (self.walletStatus.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
             new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'This action will unlock the wallet for sending or staking','OK')
             .done(function(result){
                 //console.log(result);
@@ -135,7 +135,7 @@ define(['knockout',
 
     walletType.prototype.lockWallet = function(){
         var self = this;
-        if (self.walletStatus.isLocalWallet()){
+        if (self.walletStatus.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
             var walletLockCommand = new Command('walletlock',[]).execute()
             .done(function(){
                 dialog.notification("Wallet is now locked. To send transactions or stake you must unlock the wallet.");
@@ -150,8 +150,8 @@ define(['knockout',
 
     walletType.prototype.checkEncryptionStatus = function(){
         var self = this;
-        // DO NOT allow non-local wallets to be encrypted! (See README.md)
-        if (self.walletStatus.isLocalWallet()){
+        // DO NOT allow non-local wallets to be encrypted except by MASTER_ACCOUNT!
+        if (self.walletStatus.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
             switch(self.walletStatus.unlockedUntil()){
             case -1: // wallet is unencrypted
                 self.promptToEncrypt();

@@ -18,6 +18,24 @@ Object.defineProperty(Error.prototype, 'toJSON', {
     configurable: true
 });
 
+// Get the user defined app settings
+var settings = require('./healthcoin/settings');
+
+// HCN Object //
+var HCN = require('./healthcoin/healthcoinapi');  // healthcoin opts and api calls
+HCN.appHost        = HCN.isLocal ? "127.0.0.1" : settings.appHost; // Hostname of node.js / webserver (See README.md)
+HCN.masterAccount  = settings.masterAccount;      // Master UI login account, and Label to assign to "" account(s).
+HCN.masterAddress  = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
+HCN.masterEmail    = settings.masterEmail;        // Master email account.
+HCN.masterPassword = "password";                  // Master UI password (not encryption password). (DO NOT CHANGE HERE!)
+HCN.newUserAmount  = settings.newUserAmount;      // Amount to send new users at sign-up.
+HCN.maxSendAmount  = settings.maxSendAmount;      // Normal send amounts from masterAccount should be small.
+module.exports     = HCN;
+// End HCN Object //
+
+// Mongoose schema for biomarkers
+var Biomarkers = require('./healthcoin/biomarkers');
+
 var fs = require('fs');
 var path = require('path');
 var atob = require('atob');
@@ -26,9 +44,10 @@ var btoa = require('btoa');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
-var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+var privateKey  = fs.readFileSync(settings.sslKey, 'utf8');
+var certificate = fs.readFileSync(settings.sslCrt, 'utf8');
 var credentials = {key: privateKey, cert: certificate};
+
 var app = express();
 
 var cookieParser = require('cookie-parser');
@@ -39,22 +58,9 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-// HCN Object //
-var HCN = require('./healthcoin/healthcoinapi');  // healthcoin opts and api calls
-                   // Some configurable stuff... more below!
-HCN.appHost        = HCN.isLocal ? "127.0.0.1" : "nequals1.io"; // Hostname of node.js / webserver (See README.md)
-HCN.MasterAccount  = "MASTER_ACCOUNT";            // Master UI login account, and Label to assign to "" account(s).
-HCN.MasterAddress  = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
-HCN.MasterEmail    = "healthcoin@" + HCN.appHost; // Master email account.
-HCN.MasterPassword = "password";                  // Master UI password (not encryption password). (FORCED TO CHANGE IF 'password'.)
-HCN.NewUserAmount  = 1.0;                         // Amount to send new users at sign-up.
-HCN.MaxSendAmount  = 1000.0;                      // Normal send amounts from MasterAccount should be small.
-module.exports     = HCN;
-// End HCN Object //
-
 // All environments
 app.use(cors());
-app.set('port', HCN.isLocal ? 8181 : 8383);
+app.set('port', HCN.isLocal ? settings.port : settings.sslport);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -63,11 +69,11 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({name: 'healthcoin',
-                secret: 'nequals1 describes unity', // FYI: This is the ssl csr request password, too.
+                secret: 'nequals1 describes unity',
                 genid: function(req) {
                     return uuid.v4(); // use UUIDs
                 },
-                // TODO: Set 'secure: true' when https is implemnted. Expires in 30 days
+                // Cookie expires in 30 days
                 cookie: {secure: HCN.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: HCN.appHost},
                 saveUninitialized: false,
                 resave: true}));
@@ -75,7 +81,7 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash());            // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 
-app.use(express.favicon());
+app.use(express.favicon(path.join(__dirname, settings.favicon)));
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
@@ -84,14 +90,29 @@ app.use(bodyParser.json());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// DB/Auth Functions
-mongoose.connect('mongodb://' + HCN.mdbHost + ':' + HCN.mdbPort + '/healthcoin');
+// Localizations
+app.set('title', settings.title);
+app.set('symbol', settings.symbol);
+app.set('coin', settings.coin);
+app.set('logo', settings.logo);
+
+// DB Functions
+var mdb = require('./healthcoin/database');
+var dbString = 'mongodb://' + settings.mdbSettings.user;
+dbString = dbString + ':' + settings.mdbSettings.password;
+dbString = dbString + '@' + settings.mdbSettings.host;
+dbString = dbString + ':' + settings.mdbSettings.port;
+dbString = dbString + '/' + settings.mdbSettings.database;
+
+// Connects or exits
+mdb.connect(dbString, function() {
+    console.log('Connected to database.');
+});
+
+// Auth Functions
 require('./healthcoin/init-wallet')();      // Requires HCN
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./healthcoin/passport')(passport); // Requires HCN
-
-var MDB = require('./healthcoin/database');
-var Biomarkers = require('./healthcoin/biomarkers');
 
 // Add CORS headers to all requests
 app.all('*', function(req, res, next) {
@@ -181,7 +202,7 @@ app.get('/saveuserprofile/:profile', function(req,res){
         result = null;
     if (profile && profile.login_type){
         req.session.User.profile = profile;
-        result = MDB.saveUserProfile(req.session.User._id, profile);
+        result = mdb.saveUserProfile(req.session.User._id, profile);
     }
     var response = {
         error: null,
@@ -217,7 +238,7 @@ app.get('/listtransactions/:account/:page', function(req, res){
     if (page < 1) page = 1;
     from = count * page - count;
     if (account.length > 1){
-        if (account === HCN.MasterAccount) account = "*";
+        if (account === HCN.masterAccount) account = "*";
         callHealthcoin('listTransactions', res, healthcoinHandler, account, count, from);
     }
     else
@@ -245,7 +266,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
     var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
-    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount <= HCN.MaxSendAmount){
+    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount <= HCN.maxSendAmount){
         if (comment === "HCBM" && txcomment !== ''){
             // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
             var txcommentObj = JSON.parse(txcomment) || {};
@@ -256,8 +277,8 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
             callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount);
         }
     } else {
-        if (amount > HCN.MaxSendAmount)
-            res.send(JSON.stringify("Error: Amount is greater than the maximum of " + HCN.MaxSendAmount + "."));
+        if (amount > HCN.maxSendAmount)
+            res.send(JSON.stringify("Error: Amount is greater than the maximum of " + HCN.maxSendAmount + "."));
         else
             res.send(JSON.stringify("Error: Invalid sendfrom parameters."));
     }
@@ -275,7 +296,7 @@ app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(re
     var amount = parseFloat(req.params.amount) || 0.0;
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || ''; // Not txcomment
-    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < HCN.MaxSendAmount)
+    if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount < HCN.maxSendAmount)
         callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, minconf, comment);
     else
         res.send(JSON.stringify("Error: Invalid move."));
@@ -372,6 +393,14 @@ app.get('/', function(req, res){
     res.render('index');
 });
 
+function tryReconnect(){
+    setTimeout(function(){
+        mdb.connect(dbString, function(){
+            console.log('Reconnected to database.');
+        });
+    },5000);
+}
+
 // Start it up!
 function startHealthcoin(app) {
     // Start the Healthcoin Express server
@@ -395,6 +424,7 @@ function startHealthcoin(app) {
             process.on('uncaughtException', function (err) {
               socket.emit('news', { news: 'Healthcoin node connection error.' });
               console.log('Caught exception: ' + err);
+              tryReconnect();
             });
         });
         console.log('  Server listening on port ' + app.get('port'));
