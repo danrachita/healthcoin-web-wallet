@@ -85,7 +85,7 @@ if (rpcHost === "localhost" || rpcHost === "127.0.0.1" || rpcHost.indexOf("192.1
     isLocal = true;
 }
 
-var api = require('node-healthcoin')();
+var api = require('healthcoin-node')();
 api.set('host', rpcHost);
 api.set('port', rpcPort);
 api.set('user', rpcUser);

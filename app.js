@@ -1,10 +1,9 @@
 /**
- * Module dependencies.
- * 
- * Creating SSL Certificate in /sslcert
- * openssl req -new > server.csr
- * openssl rsa -in privkey.pem -out server.key
- * openssl x509 -in server.csr -out server.crt -req -signkey server.key -days 9999
+ *  Healthcoin Web Wallet - Application
+ *  Author: Steve Woods OnsightIT@gmail.com
+ *          https://github.com/onsightit
+ *
+ *  (Pending Open Source GNU License)
  */
 
 Object.defineProperty(Error.prototype, 'toJSON', {
@@ -18,19 +17,20 @@ Object.defineProperty(Error.prototype, 'toJSON', {
     configurable: true
 });
 
-// Get the user defined app settings
+// Get the user defined application settings.
 var settings = require('./healthcoin/settings');
 
 // HCN Object //
 var HCN = require('./healthcoin/healthcoinapi');  // healthcoin opts and api calls
-HCN.appHost        = HCN.isLocal ? "127.0.0.1" : settings.appHost; // Hostname of node.js / webserver (See README.md)
-HCN.masterAccount  = settings.masterAccount;      // Master UI login account, and Label to assign to "" account(s).
-HCN.masterAddress  = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
-HCN.masterEmail    = settings.masterEmail;        // Master email account.
-HCN.masterPassword = "password";                  // Master UI password (not encryption password). (DO NOT CHANGE HERE!)
-HCN.newUserAmount  = settings.newUserAmount;      // Amount to send new users at sign-up.
-HCN.maxSendAmount  = settings.maxSendAmount;      // Normal send amounts from masterAccount should be small.
-module.exports     = HCN;
+HCN.appHost          = HCN.isLocal ? "127.0.0.1" : settings.appHost; // Hostname of node.js / webserver (See README.md)
+HCN.masterAccount    = settings.masterAccount;      // Master UI login account, and Label to assign to "" account(s).
+HCN.masterAddress    = "";                          // Master Wallet Address to move coin from (assigned in init-wallet)
+HCN.masterEmail      = settings.masterEmail;        // Master email account.
+HCN.masterCanEncrypt = settings.masterCanEncrypt; // Master can encrypt the wallet (this should be false in production env)
+HCN.masterPassword   = "password";                  // Master UI password (not encryption password). (DO NOT CHANGE HERE!)
+HCN.newUserAmount    = settings.newUserAmount;      // Amount to send new users at sign-up.
+HCN.maxSendAmount    = settings.maxSendAmount;      // Normal send amounts from masterAccount should be small.
+module.exports = HCN;
 // End HCN Object //
 
 // Mongoose schema for biomarkers
@@ -54,7 +54,6 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var uuid = require('uuid');
 var morgan = require('morgan');
-var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 

@@ -39,6 +39,7 @@ exports.mdbSettings = {
 // MASTER_ACCOUNT settings. DO NOT CHANGE ATER FIRST RUN!
 exports.masterAccount  = "MASTER_ACCOUNT";            // Master UI login account, and Label to assign to "" wallet accounts.
 exports.masterEmail    = "healthcoin@localhost";      // Master email account.
+exports.masterCanEncrypt = false;                     // Allow wallet encryption by MASTER_ACCOUNT
 
 // Amount to send new users at sign-up
 exports.newUserAmount  = 1.0;

@@ -45,6 +45,9 @@
   // Master email account.
   "masterEmail": "healthcoin@localhost",
 
+  // Master can encrypt the wallet
+  "masterCanEncrypt": true,
+
   // Amount to send new users at sign-up
   "newUserAmount": 1.0,
 
