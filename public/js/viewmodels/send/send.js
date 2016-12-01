@@ -44,7 +44,7 @@ define(['knockout',
         });
 
         self.isEncrypted = ko.computed(function(){
-            return self.wallet.walletStatus.encryptionStatus();
+            return (self.wallet.walletStatus.isEncrypted() === 'Yes');
         });
     };
 

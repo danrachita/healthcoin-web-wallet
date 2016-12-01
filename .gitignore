@@ -1,3 +1,9 @@
+# Live settings file
+settings.json
+
+# SSL certs
+sslcert/*.*
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -46,6 +52,3 @@ Temporary Items
 *.log
 
 *.komodoproject
-
-sslcert
-sslcert/*
