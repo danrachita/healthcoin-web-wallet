@@ -44,6 +44,7 @@ var btoa = require('btoa');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
+var favicon = require('serve-favicon');
 var privateKey  = fs.readFileSync(settings.sslKey, 'utf8');
 var certificate = fs.readFileSync(settings.sslCrt, 'utf8');
 var credentials = {key: privateKey, cert: certificate};
@@ -63,6 +64,12 @@ app.set('port', HCN.isLocal ? settings.port : settings.sslport);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Localizations
+app.set('title', settings.title);
+app.set('symbol', settings.symbol);
+app.set('coin', settings.coin);
+app.set('logo', settings.logo);
+
 // Auth modules
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -80,20 +87,18 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash());            // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 
-app.use(express.favicon(path.join(__dirname, settings.favicon)));
-app.use(express.logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
+app.use(favicon(path.join(__dirname, settings.favicon)));
 app.use(bodyParser.json());
-app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Localizations
-app.set('title', settings.title);
-app.set('symbol', settings.symbol);
-app.set('coin', settings.coin);
-app.set('logo', settings.logo);
+// Add CORS headers to all requests
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-AUTHENTICATION, X-IP, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 // DB Functions
 var mdb = require('./healthcoin/database');
@@ -112,31 +117,6 @@ mdb.connect(dbString, function() {
 require('./healthcoin/init-wallet')();      // Requires HCN
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./healthcoin/passport')(passport); // Requires HCN
-
-// Add CORS headers to all requests
-app.all('*', function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-AUTHENTICATION, X-IP, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
-
-// catch session timeout
-app.use(function(req, res, next) {
-    if (req.session && Date.now() <= req.session.cookie.expires){
-        next();
-    } else {
-   		res.redirect('/');
-    }
-});
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
 
 // TODO: Change to 'production' in production.
 app.set('env', 'development');
@@ -392,6 +372,26 @@ app.get('/', function(req, res){
     res.render('index');
 });
 
+// *** Express 4.x requires these app.use calls to be after any app.get or app.post routes.
+// *** "Your code should move any calls to app.use that came after app.use(app.router) after any routes (HTTP verbs)."
+
+// catch session timeout
+app.use(function(req, res, next) {
+    if (req.session && Date.now() <= req.session.cookie.expires){
+        next();
+    } else {
+   		res.redirect('/');
+    }
+});
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// TODO: Needs testing
 function tryReconnect(){
     setTimeout(function(){
         mdb.connect(dbString, function(){

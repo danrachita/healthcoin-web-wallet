@@ -6,6 +6,9 @@
 
 */
 {
+  // Runtime environment: 'development' or 'production'
+  "env": "development",
+
   // The name of your app
   "title": "Healthcoin Web Wallet",
 

@@ -40,6 +40,7 @@
     "passport-oauth2": "~1.0.0",
     "passport-twitter": "^1.0.4",
     "request": "~2.75.0",
+    "serve-favicon": "2.3.2",
     "socket.io": "1.7.1",
     "uuid": "2.0.3",
     "validator": "~6.0.0",

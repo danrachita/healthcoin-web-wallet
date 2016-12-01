@@ -6,6 +6,9 @@
 var fs = require("fs");
 var jsonminify = require("jsonminify");
 
+// Runtime environment: 'development' or 'production'
+exports.env = "development";
+
 // The app title, visible in browser window
 exports.title = "Healthcoin Web Wallet";
 
