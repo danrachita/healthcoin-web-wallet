@@ -20,7 +20,7 @@ Object.defineProperty(Error.prototype, 'toJSON', {
 // Get the user defined application settings.
 var settings = require('./healthcoin/settings');
 
-// APP Object - options and api calls for the client.
+// APP Object - Localization options and api calls for the client.
 var APP = require('./healthcoin/healthcoinapi');
 APP.settings =  {                                             // A sub-set of settings.json for the client
                 title: settings.title,
@@ -70,13 +70,6 @@ app.set('port', APP.isLocal ? settings.port : settings.sslport);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Localizations
-app.set('title', settings.title);
-app.set('coinname', settings.coinname);
-app.set('coinsymbol', settings.coinsymbol);
-app.set('logo', settings.logo);
-app.set('env', settings.env);
-
 // Auth modules
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -106,6 +99,9 @@ app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Credentials', true);
   next();
 });
+
+// Localizations
+app.set('local', APP.settings);
 
 // DB Functions
 var mdb = require('./healthcoin/database');

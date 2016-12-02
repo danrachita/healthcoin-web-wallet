@@ -30,6 +30,9 @@ define(['knockout'],function(ko){
                 console.log(data);
             }
             if(data.error){
+                if (self.env() === 'development'){
+                    console.log("Command Error For:\n" + url);
+                }
                 deferred.reject(data.error.error);
             } else {
                 deferred.resolve(data.result);
