@@ -159,7 +159,7 @@ define(['knockout',
     walletType.prototype.unlockWallet = function(){
         var self = this;
         if (self.isLocalWallet() || self.account() === self.settings().masterAccount){
-            new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'This action will unlock the wallet for sending or staking','OK')
+            new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Unlock Wallet', 'This action will unlock the wallet for sending or staking','OK')
             .done(function(result){
                 //console.log(result);
                 self.walletStatus.refresh(self.account());
@@ -206,7 +206,7 @@ define(['knockout',
     };
 
     walletType.prototype.promptToEncrypt = function(){
-        new WalletPassphrase().userPrompt(true, 'Encrypt', 'Encrypt','OK')
+        new WalletPassphrase().userPrompt(true, 'Encrypt Wallet', 'Encrypt','OK')
             .done(function(result){
                 console.log(result);
                 dialog.notification("Wallet successfully encrypted. Restart your healthcoind daemon to continue.");
@@ -218,7 +218,7 @@ define(['knockout',
     };
 
     walletType.prototype.promptToUnlockForStaking = function(){
-        new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'Unlock the wallet','OK')
+        new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Unlock Wallet', 'Unlock the wallet','OK')
             .done(function(result){
                 result.passphrase = "XXXXXXXX"; // Clear password in memory
                 console.log(result);
