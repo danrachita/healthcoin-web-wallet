@@ -22,19 +22,19 @@ var settings = require('./healthcoin/settings');
 
 // APP Object - options and api calls for the client.
 var APP = require('./healthcoin/healthcoinapi');
-APP.appHost          = APP.isLocal ? "127.0.0.1" : settings.appHost; // Hostname of node.js / webserver (See README.md)
-APP.masterAccount    = settings.masterAccount;      // Master UI login account, and Label to assign to "" account(s).
-APP.masterEmail      = settings.masterEmail;        // Master email account.
-APP.masterCanEncrypt = settings.masterCanEncrypt;   // Master can encrypt the wallet
-APP.newUserAmount    = settings.newUserAmount;      // Amount to send new users at sign-up.
-APP.settings =  {                                   // A sub-set of settings.json for the client
+APP.settings =  {                                             // A sub-set of settings.json for the client
                 title: settings.title,
                 coinname: settings.coinname,
                 coinsymbol: settings.coinsymbol,
                 logo: settings.logo,
-                newUserAmount: settings.newUserAmount,
-                maxSendAmount: settings.maxSendAmount,
-                env: settings.env
+                historyRowsPP: settings.historyRowsPP,        // History rows per page.
+                newUserAmount: settings.newUserAmount,        // Amount to send new users at sign-up.
+                maxSendAmount: settings.maxSendAmount,        // Max ammount thatcan be sent at once.
+                appHost: (APP.isLocal ? "127.0.0.1" : settings.appHost), // Hostname of webserver (See README.md).
+                masterAccount: settings.masterAccount,        // Master UI login account, and Label to assign to "" account(s).
+                masterEmail: settings.masterEmail,            // Master email address.
+                masterCanEncrypt: settings.masterCanEncrypt,  // Master can encrypt the wallet.
+                env: settings.env                             // Env 'development' produces console output for debugging.
                 };
 module.exports = APP;
 // End APP Object
@@ -75,8 +75,6 @@ app.set('title', settings.title);
 app.set('coinname', settings.coinname);
 app.set('coinsymbol', settings.coinsymbol);
 app.set('logo', settings.logo);
-app.set('newUserAmount', settings.newUserAmount);
-app.set('maxSendAmount', settings.maxSendAmount);
 app.set('env', settings.env);
 
 // Auth modules
@@ -89,7 +87,7 @@ app.use(session({name: 'healthcoin',
                     return uuid.v4(); // use UUIDs
                 },
                 // Cookie expires in 30 days
-                cookie: {secure: APP.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: APP.appHost},
+                cookie: {secure: APP.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: APP.settings.appHost},
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
@@ -220,7 +218,7 @@ app.get('/getstakinginfo', function(req,res) { callHealthcoin('getStakingInfo', 
 app.get('/listtransactions/:account/:page', function(req, res){
     var account = (req.params.account || '*'),
         page = (req.params.page || 1),
-        count = 10,     // TODO: Parameterize this.
+        count = APP.settings.historyRowsPP,
         from = 0;
     if (page < 1) page = 1;
     from = count * page - count;
@@ -249,7 +247,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var fromaccount = req.params.fromaccount || '*';
     var toaddress = req.params.toaddress || '';
     var amount = parseFloat(req.params.amount) || 0.0;
-    var maxSendAmount = parseFloat(app.get('maxSendAmount')) || 0.0001; // Haha
+    var maxSendAmount = parseFloat(APP.settings.maxSendAmount) || 0.0001; // Haha
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
@@ -282,7 +280,7 @@ app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(re
     var fromaccount = req.params.fromaccount || '*';
     var toaccount = req.params.toaccount || '*';
     var amount = parseFloat(req.params.amount) || 0.0;
-    var maxSendAmount = parseFloat(app.get('maxSendAmount')) || 0.0001; // Haha
+    var maxSendAmount = parseFloat(APP.settings.maxSendAmount) || 0.0001; // Haha
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || ''; // Not txcomment
     if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount <= maxSendAmount)

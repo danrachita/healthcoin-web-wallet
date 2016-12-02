@@ -21,6 +21,9 @@ exports.coinsymbol = "HCN";
 // Logo
 exports.logo = "./public/images/Icon.png";
 
+// History rows per page
+exports.historyRowsPP = 10;
+
 // The app favicon fully specified url, visible e.g. in the browser window
 exports.favicon = "./public/favicon.ico";
 
@@ -51,7 +54,7 @@ exports.mdbSettings = {
   "port" : 27017
 };
 
-// MASTER_ACCOUNT settings. DO NOT CHANGE ATER FIRST RUN!
+// MASTER_ACCOUNT settings. *** DO NOT CHANGE ACCOUNT AFTER FIRST RUN! ***
 exports.masterAccount  = "MASTER_ACCOUNT";            // Master UI login account, and Label to assign to "" wallet accounts.
 exports.masterEmail    = "healthcoin@localhost";      // Master email account.
 exports.masterCanEncrypt = false;                     // Allow wallet encryption by MASTER_ACCOUNT

@@ -21,6 +21,9 @@
   // Logo
   "logo": "./public/images/Icon.png",
 
+  // History rows per page
+  "historyRowsPP": 10,
+
   // favicon
   "favicon": "./public/favicon.ico",
 

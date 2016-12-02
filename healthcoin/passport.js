@@ -5,7 +5,7 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 
 var APP = require('../app.js');
 var User = require('./user');
-var configAuth = require('./auth')(APP.appHost);
+var configAuth = require('./auth')(APP.settings.appHost);
 var bcrypt = require("bcryptjs");
 var validator = require('validator');
 

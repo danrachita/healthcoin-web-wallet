@@ -40,7 +40,7 @@ define(['knockout',
                         self.isUnlocked("No");
                     }
                 }
-                if (self.wallet.account() === "MASTER_ACCOUNT"){
+                if (self.wallet.account() === self.wallet.settings().masterAccount){
                     self.total(getInfoData.balance + self.stake());
                     self.stake(getInfoData.stake);
                 } else {
