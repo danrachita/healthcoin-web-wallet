@@ -12,11 +12,23 @@
   // The name of your app
   "title": "Healthcoin Web Wallet",
 
+  // Coin name / page heading
+  "coinname": "healthcoin",
+
+  // Coin symbol
+  "coinsymbol": "HCN",
+
   // Logo
   "logo": "./public/images/Icon.png",
 
   // favicon
   "favicon": "./public/favicon.ico",
+
+  // Amount to send new users at sign-up
+  "newUserAmount": 1.0,
+
+  // Some control over how much can be sent at one time
+  "maxSendAmount": 1000.0,
 
   // The host your application / web server runs on. isLocal overrides this if true. (See README.md)
   "appHost": "127.0.0.1",
@@ -49,17 +61,5 @@
   "masterEmail": "healthcoin@localhost",
 
   // Master can encrypt the wallet
-  "masterCanEncrypt": true,
-
-  // Amount to send new users at sign-up
-  "newUserAmount": 1.0,
-
-  // Some control over how much can be sent at one time
-  "maxSendAmount": 1000.0,
-
-  // Coin name
-  "coin": "Healthcoin",
-
-  // Coin symbol
-  "symbol": "HCN"
+  "masterCanEncrypt": true
 }

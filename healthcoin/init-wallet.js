@@ -3,38 +3,34 @@ var validator = require('validator');
 
 function Init() {
 
-	var HCN = require('../app.js');
+	var APP = require('../app.js');
 	var foundNode_ID = false;
+	var masterAddress = "";
 
-	User.findOne({'local.id': HCN.masterAccount, 'wallet.node_id': HCN.rpcHost}, function(err, user){
+	User.findOne({'local.id': APP.masterAccount, 'wallet.node_id': APP.rpcHost}, function(err, user){
 		if (user)
 			foundNode_ID = true;
 	});
 
 
-	User.findOne({'local.id': HCN.masterAccount}, function(err, user){
+	User.findOne({'local.id': APP.masterAccount}, function(err, user){
 		if(err)
 			return err;
 		if(user && !foundNode_ID){
-            var found = false;
 			// Get the address for the node_id
 			var wallet = user.wallet.filter(function(wal){
-				if(!found && wal.node_id === HCN.rpcHost){
-                    found = true;
-                    HCN.masterAddress = wal.address;
+				if(wal.node_id && wal.node_id === APP.rpcHost){
+                    masterAddress = wal.address;
 					return wal;
 				}
 			});
-			if (!found)
-                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + HCN.rpcHost);
-
-			HCN.masterPassword = "XXXXXXXX";
+			if (!wallet)
+                console.log("Error: wallet not found: " + JSON.stringify(wallet));
 		} else {
 			// Lots of synchronous stuff needs to be done at first startup.
 			var done1 = 10, done2 = 20, done3 = 30;
 			var hcn_addresses = [];
-			HCN.api.exec('getaddressesbyaccount', HCN.masterAccount, function(err, res){
-				//console.log("DEBUG: err:" + err + " res:" + res);
+			APP.api.exec('getaddressesbyaccount', APP.masterAccount, function(err, res){
 				hcn_addresses = res;
 				done1 = 0;
 				});
@@ -44,8 +40,7 @@ function Init() {
 
 					if (!hcn_addresses || !hcn_addresses.length){
 						// masterAccount has not been labeled in wallet. Get all un-labeled addresses.
-						HCN.api.exec('getaddressesbyaccount', "", function(err, res){
-							//console.log("DEBUG: err:" + err + " res:" + res);
+						APP.api.exec('getaddressesbyaccount', "", function(err, res){
 							hcn_addresses = res;
 							done2 = 0;
 							});
@@ -61,10 +56,10 @@ function Init() {
 										// NOTE: The rpc command setaccount has a "bug" that creates an unlabeled address after executing.
 										//       You have to go into the Qt wallet to label it. TODO: Fix rpc command.
 										if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
-											HCN.api.exec('setaccount', hcn_addresses[k], HCN.masterAccount, function(err, res){
+											APP.api.exec('setaccount', hcn_addresses[k], APP.masterAccount, function(err, res){
 												if (err) console.log("Error: err:" + err + " res:" + res);
 												if (done3){
-													HCN.masterAddress = hcn_addresses[0]; // Use first address
+													masterAddress = hcn_addresses[0]; // Use first address
 													done3 = 0;
 												}
 												});
@@ -78,26 +73,26 @@ function Init() {
 						},1000); // end timeout
 					} else {
 						// Make sure we have a Healthcoin address.
-						HCN.masterAddress = hcn_addresses[0].substring(0,1) === 'H' ? hcn_addresses[0] : ""; // Use first address
+						masterAddress = hcn_addresses[0].substring(0,1) === 'H' ? hcn_addresses[0] : ""; // Use first address
 						done3 = 0;
 					}
 				} else { done1--; }
 			},1000); // end timeout
 
 			var interval3 = setInterval(function(){
-				//console.log("DEBUG: done1,2,3:" + done1 + "," + done2 + "," + done3 + " masterAddress:" + HCN.masterAddress);
+				//console.log("DEBUG: done1,done2,done3: " + done1 + "," + done2 + "," + done3 + " masterAddress: " + masterAddress);
 				if (!done3 && !user){
 					clearInterval(interval3);
 					// Create the masterAccount
 					var newUser = new User();
-					newUser.local.id = HCN.masterAccount;
-					newUser.local.password = newUser.local.generateHash(HCN.masterPassword);
-					newUser.local.changeme = HCN.masterPassword === "password" ? true : false;
+					newUser.local.id = APP.masterAccount;
+					newUser.local.password = newUser.local.generateHash("password");
+					newUser.local.changeme = true;
 					newUser.profile.login_type = "local";
 					newUser.profile.last_login = Date.now();
 					newUser.profile.role = "Admin";
 					newUser.profile.name = "Healthcoin Admin";
-					newUser.profile.email = HCN.masterEmail;
+					newUser.profile.email = APP.masterEmail;
 					newUser.profile.description = "Keeper of Coins";
 					newUser.profile.age = "";
 					newUser.profile.weight = "";
@@ -106,13 +101,11 @@ function Init() {
 					newUser.profile.ethnicity = "";
 					newUser.profile.country = "";
                     newUser.profile.credit = 0;
-					newUser.wallet.push( { node_id: HCN.rpcHost, account: HCN.masterAccount, address: HCN.masterAddress });
+					newUser.wallet.push( { node_id: APP.rpcHost, account: APP.masterAccount, address: masterAddress });
 	
 					newUser.save(function(err){
 						if(err)
 							throw err;
-						// Set globally
-						HCN.masterPassword = "XXXXXXXX";
 						return;
 					});
 				} else {

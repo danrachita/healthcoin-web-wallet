@@ -38,12 +38,12 @@ window.onload = function() {
 	function timeout() {
 		setTimeout(function () {
 			count += 1;
-			console.log('CHECKED HCN RPC FOR: ' + count);
+			console.log('CHECKED RPC FOR: ' + count);
 			check_healthcoinrpc_connection();
 			if (count <= 29) {
 				timeout();
 			} else {
-				console.log ('HCN RPC CONNECTED!!!!....');
+				console.log ('RPC CONNECTED!!!!....');
 				setTimeout(function () { window.location.replace("http://127.0.0.1:8181"); }, 8000);
 			}
 		}, 3000);
@@ -56,11 +56,11 @@ window.onload = function() {
 		healthcoin.getinfo(function(err,result) {
 			if(err) {
 				//handle the error
-				console.log('ERROR CONNECTING HCN RPC');
+				console.log('ERROR CONNECTING RPC');
 			}
 			else {
 				//success!
-				console.log('HCN RPC CONNECTED!');
+				console.log('RPC CONNECTED!');
 				count = 30;
 			}
 		});

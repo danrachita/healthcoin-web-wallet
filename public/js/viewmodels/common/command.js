@@ -1,13 +1,14 @@
 define(['knockout'],function(ko){
 
-    var commandType = function(commandName, args){
+    var commandType = function(commandName, args, env){
         this.commandName = ko.observable(commandName);
         this.args = ko.observableArray(args);
+        this.env = ko.observable(env || '');
     };
 
     function parseCommand(commandName, args){
-        //var url = 'http://127.0.0.1:8181/';
-        var url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/'; // Allow CORS
+        var port = (window.location.port === '' ? '' : ":" + window.location.port);
+        var url = window.location.protocol + '//' + window.location.hostname + port + '/'; // Allow CORS
         url = url.concat(commandName.concat('/'));
         if(args && args.length > 0){
             url = url.concat(args.join('/'));
@@ -17,13 +18,17 @@ define(['knockout'],function(ko){
 
     commandType.prototype.execute = function(){
         var self = this, deferred = $.Deferred();
+        var url = parseCommand(self.commandName(), self.args());
         $.ajax({
             async: true,
             method: 'GET',
-            url: parseCommand(self.commandName(), self.args()),
+            url: url,
             dataType: 'json'
         }).done(function(data){
-            console.log(data);
+            if (self.env() === 'development'){
+                console.log("Command Data For:\n" + url);
+                console.log(data);
+            }
             if(data.error){
                 deferred.reject(data.error.error);
             } else {

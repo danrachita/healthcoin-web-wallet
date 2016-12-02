@@ -1,20 +1,21 @@
-define(['knockout',
-        'viewmodels/common/transaction',
-        'viewmodels/wallet-status',
-        'viewmodels/common/command'], function(ko,Transaction,WalletStatus,Command){
+define(['knockout'], function(ko){
     var exploreType = function(options){
-        var self = this, opts = options || {};
-        self.wallet = opts.parent;
+        var self = this;
+        self.wallet = options.parent || {};
 
         self.role = ko.observable("");
+
         self.statusMessage = ko.observable("");
     };
 
-    exploreType.prototype.load = function(User, node_id){
+    exploreType.prototype.refresh = function(){
         var self = this;
-        if (User && node_id){
-            self.role(User.profile.role);
-        }
+        // Add short delay to healthcoin-wallet's initial short timeout
+        setTimeout(function(){
+            if (self.wallet.User().profile){
+                self.role(self.wallet.User().profile.role);
+            }
+        },2000);
     };
 
     return exploreType;

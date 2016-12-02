@@ -4,12 +4,8 @@ define(['knockout',
     'viewmodels/common/command'], function(ko,Transaction,WalletStatus,Command){
     var historyType = function(options){
         var self = this;
-        self.wallet = options.parent;
+        self.wallet = options.parent || {};
 
-        self.statusMessage = ko.observable("");
-
-        self.account = ko.observable("");
-        self.address = ko.observable("");
         self.page = ko.observable(1);
         self.pageFirst = ko.observable(-1);
         self.pagePrev = ko.observable(0);
@@ -22,55 +18,40 @@ define(['knockout',
             var trans = self.isLoadingTransactions();
             return trans;
         });
-    };
 
-    historyType.prototype.load = function(User, node_id){
-        var self = this;
-        if (self.account() === ""){
-            var found = false;
-            // Get the account for the node_id
-            var wallet = User.wallet.filter(function(wal){
-                if(!found && wal.node_id === node_id){
-                    found = true;
-                    self.account(wal.account);
-                    self.address(wal.address);
-                    return wal;
-                }
-            });
-            if (!found)
-                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
-            else
-                this.getTransactions(self.account(), self.page());
-        } else {
-            this.getTransactions(self.account(), self.page());
-        }
+        self.statusMessage = ko.observable("");
     };
 
     historyType.prototype.refresh = function(){
         var self = this;
-        this.getTransactions(self.account(), self.page());
+        // Add short delay to healthcoin-wallet's initial short timeout
+        setTimeout(function(){
+            if (self.wallet.account() !== ""){
+                self.getTransactions(self.wallet.account(), self.page());
+            }
+        },2000);
     };
 
     historyType.prototype.firstPage = function(){
         var self = this;
-        this.getTransactions(self.account(), self.pageFirst());
+        this.getTransactions(self.wallet.account(), self.pageFirst());
     };
     historyType.prototype.prevPage = function(){
         var self = this;
-        this.getTransactions(self.account(), self.pagePrev());
+        this.getTransactions(self.wallet.account(), self.pagePrev());
     };
     historyType.prototype.nextPage = function(){
         var self = this;
-        this.getTransactions(self.account(), self.pageNext());
+        this.getTransactions(self.wallet.account(), self.pageNext());
     };
     historyType.prototype.lastPage = function(){
         var self = this;
-        this.getTransactions(self.account(), self.pageLast());
+        this.getTransactions(self.wallet.account(), self.pageLast());
     };
 
     historyType.prototype.getTransactions = function(account, page){
         var self = this,
-            getTransactionsCommand = new Command('listtransactions', [account, page]); // For pagination
+            getTransactionsCommand = new Command('listtransactions', [account, page], self.wallet.settings().env); // For pagination
         self.isLoadingTransactions(true);
         var historyPromise = getTransactionsCommand.execute()
             .done(function(data){

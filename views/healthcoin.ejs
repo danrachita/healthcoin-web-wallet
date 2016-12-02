@@ -2,11 +2,11 @@
 <!doctype html>
 <html lang="en">
     <head>
-    <title>Healthcoin Web Wallet</title>
+    <title><%= settings.title %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="pragma" content="no-cache"/> 
-    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/> 
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no" />
     <meta name="apple-mobile-web-app-status-bar-style" content="white" />
@@ -36,7 +36,7 @@
 					<div class="row">
 						<div class="button-settings"><span data-bind="click: toggleSidebar" class="glyphicon glyphicon-menu-hamburger"></span></div>
 						<div class="button-refresh"><span data-bind="click: refresh" class="glyphicon glyphicon-refresh"></span></div>
-						<div class="top-content text"><span>healthcoin</span></div>
+						<div class="top-content text"><span><%= settings.coinname %></span></div>
 					</div>
 				</div>
 			</div>
@@ -54,7 +54,7 @@
                 <li><a href="#explore"><div data-bind="css: { selected: $data.currentView() === 'explore' }" class="sidebar-nav-button-content"><div class="fa fa-search" aria-hidden="true"><span class="sidebar-nav-button-content">Explore</span></div></div></a></li>
                 <li><a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="fa fa-terminal" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a></li>
     <!-- /ko -->
-    <!-- ko if: walletStatus.isEncrypted() === 'Yes' && (walletStatus.isLocalWallet() || role() === 'Admin') -->
+    <!-- ko if: walletStatus.isEncrypted() === 'Yes' && (isLocalWallet() || role() === 'Admin') -->
         <!-- ko if: walletStatus.isUnlocked() === 'Yes' -->
                 <li><a href="#"><div data-bind="click:lockWallet" class="sidebar-nav-button-content"><div class="fa fa-unlock" aria-hidden="true"><span class="sidebar-nav-button-content">Lock Wallet</span></div></div></a></li>
         <!-- /ko -->
@@ -67,12 +67,12 @@
 				<li><span>&nbsp;</span</li>
 				<li><h4>Healthcoin Stats</h4></li>
                 <li class="small">Balance: <span data-bind='text: walletStatus.totalFmt'></span></li>
-    <!-- ko if: walletStatus.isEncrypted() === 'Yes' && (walletStatus.isLocalWallet() || role() === 'Admin') -->
+    <!-- ko if: walletStatus.isEncrypted() === 'Yes' && (isLocalWallet() || role() === 'Admin') -->
                 <li class="small">Available: <span data-bind='text: walletStatus.availableFmt'></span></li>
                 <li class="small">Staking: <span data-bind='text: walletStatus.stakeFmt'></span></li>
     <!-- /ko -->
 
-    <!-- ko if: walletStatus.isLocalWallet() || role() === 'Admin' -->
+    <!-- ko if: isLocalWallet() || role() === 'Admin' -->
                 <li class="small">Block Height: <span data-bind="text: walletStatus.blocks"></span></li>
                 <li class="small">Wallet Encrypted: <span data-bind="text: walletStatus.isEncrypted"></span></li>
 	    <!-- ko if: walletStatus.isEncrypted() === 'Yes' -->

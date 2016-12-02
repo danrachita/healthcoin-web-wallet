@@ -5,12 +5,8 @@ define(['knockout',
     'viewmodels/receive/new-address-dialog'], function(ko,dialog,ReceiveAddress,Command,NewAddressDialog){
     var receiveType = function(options){
         var self = this;
-        self.wallet = options.parent;
+        self.wallet = options.parent || {};
 
-        self.statusMessage = ko.observable("");
-
-        self.account = ko.observable("");
-        self.address = ko.observable("");
         self.addresses = ko.observableArray([]);
         self.isLoadingReceiveAddresses = ko.observable(false);
         self.isLoading = ko.computed(function(){
@@ -19,34 +15,18 @@ define(['knockout',
         });
         self.newAddressDialog = new NewAddressDialog({parent: self});
         self.showNewAddressDialog = ko.observable(false);
-    };
 
-    receiveType.prototype.load = function(User, node_id){
-        var self = this;
-        var found = false;
-        // Get the account/address for the node_id
-        if (User && node_id){
-            var wallet = User.wallet.filter(function(wal){
-                if(!found && wal.node_id === node_id){
-                    found = true;
-                    self.account(wal.account);
-                    self.address(wal.address);
-                    return wal;
-                }
-            });
-            if (!found){
-                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
-            } else {
-                this.getReceiveAddresses();
-            }
-        }
+        self.statusMessage = ko.observable("");
     };
 
     receiveType.prototype.refresh = function(){
         var self = this;
-        if (self.account() !== ""){
-            this.getReceiveAddresses();
-        }
+        // Add short delay to healthcoin-wallet's initial short timeout
+        setTimeout(function(){
+            if (self.wallet.account() !== ""){
+                self.getReceiveAddresses();
+            }
+        },2000);
     };
 
     receiveType.prototype.newAddress = function(){
@@ -54,10 +34,10 @@ define(['knockout',
     };
 
     receiveType.prototype.newAddressConfirm = function(account, address){
-        var self = this, getNewAddressCommand = new Command('getnewaddress',[self.account()]); // Use self.account() to be safe.
+        var self = this, getNewAddressCommand = new Command('getnewaddress', [self.wallet.account()], self.wallet.settings().env);
         getNewAddressCommand.execute()
             .done(function(address){
-                self.addresses.push(new ReceiveAddress({addressObj:{address: address, account: self.account()}}));
+                self.addresses.push(new ReceiveAddress({addressObj:{address: address, account: self.wallet.account()}}));
             })
             .fail(function(){
             })
@@ -72,13 +52,13 @@ define(['knockout',
     };
 
     receiveType.prototype.getReceiveAddresses = function(){
-        var self = this, listReceivedByAddressesCommand = new Command('listreceivedbyaddress',['1','true']);
+        var self = this, listReceivedByAddressesCommand = new Command('listreceivedbyaddress', ['1','true'], self.wallet.settings().env);
         self.isLoadingReceiveAddresses(true);
         var receivePromise = listReceivedByAddressesCommand.execute()
             .done(function(data){
                 for (var k in data){
                     //console.log("data[k]:" + JSON.stringify(data[k]));
-                    if (data[k].account !== self.account()){
+                    if (data[k].account !== self.wallet.account()){
                         delete data[k];
                     }
                 }

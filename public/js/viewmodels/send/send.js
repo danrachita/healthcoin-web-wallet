@@ -6,11 +6,7 @@ define(['knockout',
         'patterns'], function(ko,dialog,ConfirmationDialog,WalletPassphrase,Command,patterns){
     var sendType = function(options){
         var self = this;
-        self.wallet = options.parent;
-
-        self.statusMessage = ko.observable("");
-
-        self.account = ko.observable("");
+        self.wallet = options.parent || {};
 
         self.recipientAddress = ko.observable("").extend( 
             { 
@@ -20,59 +16,50 @@ define(['knockout',
 
         self.label = ko.observable("");
 
-        self.available = ko.observable(0.0);
-        self.amount = ko.observable(0.0).extend(
+        self.amount = ko.observable(0.00).extend(
             { 
                 number: true,
                 required: true
             });
+        self.available = ko.observable(0.00);
+        self.maxSendAmount = ko.observable(0.00);
+        self.coinsymbol = ko.observable("");
 
         self.minerFee = ko.observable(0.0001);
-        self.canSend = ko.computed(function(){
-            var amount = self.amount(),
-                isNumber = !isNaN(amount),
-                address = self.recipientAddress(),
-                addressValid = self.recipientAddress.isValid(),
-                //label = self.label,
-                amountValid = self.amount.isValid(),
-                available = self.available(),
-                canSend;
 
-            canSend = isNumber && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
-            self.wallet.sessionExpires(Date.now() + self.wallet.sessionTimeout());
-            return canSend;
+        self.canSend = ko.computed(function(){
+            var address = self.recipientAddress(),
+                addressValid = self.recipientAddress.isValid() && address.length > 0,
+                //label = self.label,
+                amount = self.amount(),
+                available = self.available(),
+                amountValid = !isNaN(amount) && amount > 0.00 && self.amount.isValid() && amount <= available && amount <= self.maxSendAmount();
+
+            return addressValid && amountValid;
         });
 
         self.isEncrypted = ko.computed(function(){
             return (self.wallet.walletStatus.isEncrypted() === 'Yes');
         });
-    };
 
-    sendType.prototype.load = function(User, node_id){
-        var self = this;
-        var found = false;
-        // Get the address/account for the node_id
-        if (User && node_id){
-            var wallet = User.wallet.filter(function(wal){
-                if(!found && wal.node_id === node_id){
-                    found = true;
-                    self.account(wal.account);
-                    return wal;
-                }
-            });
-            if (!found)
-                console.log("Error: wallet not found for this node:" + JSON.stringify(wallet) + " node_id:" + node_id);
-        }
-        self.available(self.wallet.walletStatus.total() - self.wallet.walletStatus.stake());
+        self.statusMessage = ko.observable("");
     };
 
     sendType.prototype.refresh = function(){
         var self = this;
-        self.available(self.wallet.walletStatus.total() - self.wallet.walletStatus.stake());
+        // Add short delay to healthcoin-wallet's initial short timeout
+        setTimeout(function(){
+            self.available(self.wallet.walletStatus.available());
+            self.maxSendAmount(self.wallet.settings().maxSendAmount);
+            self.coinsymbol(self.wallet.settings().coinsymbol);
+
+            self.statusMessage("Available: " + self.available() + " " + self.wallet.settings().coinsymbol + " ( Maximum send allowed: " + self.maxSendAmount() + " )");
+        },2000);
     };
 
-    function lockWallet(){
-        var sendCommand = new Command('walletlock').execute()
+    sendType.prototype.lockWallet = function(){
+        var self = this;
+        var sendCommand = new Command('walletlock', [], self.wallet.settings().env).execute()
             .done(function(){
                 console.log('Wallet relocked');
             })
@@ -80,9 +67,9 @@ define(['knockout',
                 dialog.notification(error.message, "Failed to re-lock wallet");
             });
         return sendCommand;
-    }
+    };
 
-    sendType.prototype.unlockWallet= function(){
+    sendType.prototype.unlockWallet = function(){
         var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
             passphraseDialogPromise = $.Deferred();
 
@@ -102,7 +89,7 @@ define(['knockout',
         if(self.canSend()){
             if (self.isEncrypted()){
                 console.log("Unlocking wallet for sending.");
-                lockWallet().done(function(){
+                self.lockWallet().done(function(){
                     console.log('Wallet locked. Prompting for confirmation...');
                     self.sendConfirm(self.amount())
                         .done(function(){
@@ -148,7 +135,9 @@ define(['knockout',
     
     sendType.prototype.sendToAddress = function(auth) { 
         var self = this;
-        sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount()]).execute()
+        var sendCommand = new Command('sendfrom',
+                                      [self.wallet.account(), self.recipientAddress(), self.amount()],
+                                      self.wallet.settings().env).execute()
             .done(function(txid){
                 console.log("TxId: " + JSON.stringify(txid));
                 if (typeof txid !== 'undefined') {
@@ -156,11 +145,10 @@ define(['knockout',
                 } else {
                     self.statusMessage("HCN Was Not Sent. Try a smaller ammount.");
                 }
-                //self.recipientAddress('');
                 self.amount(0); // Resets Send button
 
                 if (self.isEncrypted()){
-                    lockWallet()
+                    self.lockWallet()
                         .done(function(){
                             var walletPassphrase = new WalletPassphrase({
                                 walletPassphrase: auth,
@@ -183,7 +171,7 @@ define(['knockout',
                 console.log(error);
                 dialog.notification(error.message);
             });
-   
+        return sendCommand;
     };   
 
     return sendType; 

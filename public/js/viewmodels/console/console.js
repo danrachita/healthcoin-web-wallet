@@ -1,30 +1,34 @@
 define(['knockout'], function(ko){
     var consoleType = function(options){
         var self = this;
-        self.wallet = options.parent;
+        self.wallet = options.parent || {};
 
         self.role = ko.observable("");
 
-        self.isLoading = ko.observable(false);
         self.commandText = ko.observable('help');
         self.commandOutput = ko.observable('');
         self.decodeText = ko.observable('');
         self.decodeOutput = ko.observable('');
+
+        self.isLoading = ko.observable(false);
     };
 
     function parseCommand(commandText){
-        //var url = 'http://127.0.0.1:8181/';
-        var url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/'; // Allow CORS
+        var port = (window.location.port === '' ? '' : ":" + window.location.port);
+        var url = window.location.protocol + '//' + window.location.hostname + port + '/'; // Allow CORS
         commandText.replace(new RegExp(' ','g') );
         url = url.concat(commandText.replace(new RegExp(' ','g'), '/'));
         return url;
     }
 
-    consoleType.prototype.load = function(User, node_id){
+    consoleType.prototype.refresh = function(){
         var self = this;
-        if (User && node_id){
-            self.role(User.profile.role);
-        }
+        // Add short delay to healthcoin-wallet's initial short timeout
+        setTimeout(function(){
+            if (self.wallet.User().profile){
+                self.role(self.wallet.User().profile.role);
+            }
+        },2000);
     };
 
     consoleType.prototype.runCommand = function(){

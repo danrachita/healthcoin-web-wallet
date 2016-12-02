@@ -1,38 +1,28 @@
 define(['knockout'], function(ko){
     var healthcoinType = function(options){
-        var self = this, opts = options || {};
-        self.wallet = opts.parent;
+        var self = this;
+        self.wallet = options.parent || {};
 
-        self.User = ko.observable({});
         self.name = ko.observable("");
         self.role = ko.observable("");
+
         self.statusMessage = ko.observable("");
     };
 
-    healthcoinType.prototype.profileComplete = function(){
+    healthcoinType.prototype.refresh = function(){
         var self = this;
-        var isComplete = false;
-        if (self.User().profile) {
-            isComplete = self.User().profile.age > 0 &&
-                         self.User().profile.weight > 0 &&
-                         self.User().profile.waist > 0 &&
-                         self.User().profile.gender !== "" &&
-                         self.User().profile.ethnicity !== "" &&
-                         self.User().profile.country !== "";
-        }
-        return isComplete;
-    };
-
-    healthcoinType.prototype.load = function(User, node_id){
-        var self = this;
-        if (User && node_id){
-            self.User(User);
-            self.name(User.profile.name);
-            self.role(User.profile.role);
-        }
-        if (!this.profileComplete()){
+        // Add short delay to healthcoin-wallet's initial short timeout
+        setTimeout(function(){
+            if (self.wallet.User().profile){
+                self.name(self.wallet.User().profile.name);
+                self.role(self.wallet.User().profile.role);
+            }
+            if (!self.wallet.profileComplete()){
                 self.statusMessage("Please complete your profile before continuing.");
-        }
+            } else {
+                self.statusMessage("You have " + self.wallet.walletStatus.totalFmt() + " " + self.wallet.settings().coinsymbol + " in your wallet!");
+            }
+        },2000);
     };
 
     return healthcoinType;

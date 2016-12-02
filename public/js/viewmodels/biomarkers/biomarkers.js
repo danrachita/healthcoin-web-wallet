@@ -7,13 +7,7 @@ define(['knockout',
     'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Dateformat, patterns){
     var biomarkersType = function(options){
         var self = this;
-        self.wallet = options.parent;
-
-        self.User = ko.observable({});
-        self.node_id = ko.observable("");
-        self.account = ko.observable("");
-
-        self.statusMessage = ko.observable("");
+        self.wallet = options.parent || {};
 
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source = ko.observable("");
@@ -48,7 +42,7 @@ define(['knockout',
                                     "Meditech",
                                     "Nextgen"
                                     ]);
-        self.hcbmA1c = ko.observable(0.0);
+        self.hcbmA1c = ko.observable(0.00);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
         self.hcbmBPS = ko.observable(0);
@@ -62,7 +56,7 @@ define(['knockout',
         self.hcbmEthnicity = ko.observable("");
         self.hcbmCountry = ko.observable("");
 
-        self.hcbmDevice_Source = ko.observable("None");
+        self.hcbmDevice_Source = ko.observable("");
         self.hcbmDevice_SourceValues =   ko.observableArray(["",
                                     "Adidas",
                                     "Apple",
@@ -122,7 +116,6 @@ define(['knockout',
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
-            self.wallet.sessionExpires(Date.now() + self.wallet.sessionTimeout());
             return self.dirtyFlag();
         });
 
@@ -200,65 +193,64 @@ define(['knockout',
         self.isEncrypted = ko.computed(function(){
             return (self.wallet.walletStatus.isEncrypted() === 'Yes');
         });
+
+        self.statusMessage = ko.observable("");
     };
 
-    biomarkersType.prototype.profileComplete = function(){
+    biomarkersType.prototype.refresh = function(){
         var self = this;
-        var isComplete = self.hcbmAge() > 0 &&
-                         self.hcbmWeight() > 0 &&
-                         self.hcbmWaist() > 0 &&
-                         self.hcbmGender() !== "" &&
-                         self.hcbmEthnicity() !== "" &&
-                         self.hcbmCountry() !== "";
-        return isComplete;
-    };
-
-    biomarkersType.prototype.load = function(User, node_id){
-        var self = this;
-        if (User && node_id){
-            self.User(User);
-            self.node_id(node_id);
-            self.hcbmAge(User.profile.age);
-            self.hcbmWeight(User.profile.weight);
-            self.hcbmWaist(User.profile.waist);
-            self.hcbmGender(User.profile.gender);
-            self.hcbmEthnicity(User.profile.ethnicity);
-            self.hcbmCountry(User.profile.country);
-            var found = false;
-			// Get the address/account for the node_id
-			var wallet = User.wallet.filter(function(wal){
-				if(!found && wal.node_id === node_id){
-                    found = true;
-                    self.account(wal.account);
-                    self.recipientAddress(wal.address); // Send to self
-					return wal;
-				}
-			});
-			if (!found)
-                console.log("Error: wallet not found for self node:" + JSON.stringify(wallet) + " node_id:" + node_id);
-        }
-        if (!this.profileComplete()){
-                self.statusMessage("Please complete your profile before continuing.");
-        }
-        self.dirtyFlag(false);
+        // Add short delay to healthcoin-wallet's initial short timeout
+        setTimeout(function(){
+            if (!self.isDirty() && self.wallet.User().profile){
+                self.hcbmAge(self.wallet.User().profile.age);
+                self.hcbmWeight(self.wallet.User().profile.weight);
+                self.hcbmWaist(self.wallet.User().profile.waist);
+                self.hcbmGender(self.wallet.User().profile.gender);
+                self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
+                self.hcbmCountry(self.wallet.User().profile.country);
+                // Get the address of the user
+                self.recipientAddress(self.wallet.address()); // Send to self
+                if (!self.wallet.profileComplete()){
+                    self.statusMessage("Please complete your profile before continuing.");
+                } else {
+                    var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
+                    self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinsymbol + " credit so far!");
+                }
+                self.dirtyFlag(false);
+            }
+        },2000);
     };
 
     biomarkersType.prototype.Reset = function(){
         var self = this;
-        this.load(self.User(), self.node_id());
+        self.hcbmDate(Dateformat(Date.now(), "yyyy-mm-dd"));
+        self.hcbmEHR_Source("");
+        self.hcbmEHR_Type("");
+        self.hcbmA1c(0.00);
+        self.hcbmTriglycerides(0);
+        self.hcbmHDL(0);
+        self.hcbmBPS(0);
+        self.hcbmBPD(0);
+        self.hcbmDevice_Source("");
+        self.hcbmDevice_Steps(0);
+
+        self.dirtyFlag(false);
+        this.refresh();
     };
 
     biomarkersType.prototype.Submit = function(){
         var self = this;
         // Build and validate the biomarker.
         self.txcommentBiomarker(self.buildBiomarker());
-        //console.log("DEBUG: txcommentBiomarker: " + self.txcommentBiomarker());
+        if (self.wallet.settings().env !== 'production'){
+            console.log("Biomarker: " + self.txcommentBiomarker());
+        }
 
         this.sendSubmit();
     };
 
     function lockWallet(){
-        var walletlockCommand = new Command('walletlock').execute()
+        var walletlockCommand = new Command('walletlock', [], self.wallet.settings().env).execute()
             .done(function(){
                 console.log('Wallet relocked');
             })
@@ -272,7 +264,7 @@ define(['knockout',
         var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
             passphraseDialogPromise = $.Deferred();
 
-        walletPassphrase.userPrompt(false, 'Wallet unlock', 'Unlock the wallet for sending','OK')
+        walletPassphrase.userPrompt(false, 'Wallet Unlock', 'Unlock the wallet for sending','OK')
             .done(function(){
                 passphraseDialogPromise.resolve(walletPassphrase.walletPassphrase());                            
             })
@@ -335,14 +327,19 @@ define(['knockout',
         var self = this;
         // Add biomarker to schema server-side then encode base64 before sending.
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
-        sendCommand = new Command('sendfrom', [self.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm]).execute()
+        var sendCommand = new Command('sendfrom',
+                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm],
+                                      self.wallet.settings().env).execute()
             .done(function(txid){
-                //console.log("DEBUG: TxId: " + txid);
+                if (self.wallet.settings().env !== 'production'){
+                    console.log("TxId: " + txid);
+                }
                 self.statusMessage("Success! You've earned " + self.amount() + " credits.");
                 self.Reset();
-                self.User().profile.credit = self.User().profile.credit + self.amount();
+                self.wallet.User().profile.credit = self.wallet.User().profile.credit + self.amount();
                 var saveUserProfileCommand = new Command('saveuserprofile',
-                    [encodeURIComponent(btoa(JSON.stringify(self.User().profile)))]).execute()
+                                                        [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
+                                                        self.wallet.settings().env).execute()
                     .done(function(){
                         console.log("User Profile credited!");
                     });
@@ -364,6 +361,7 @@ define(['knockout',
                                 });
                         });
                 }
+                return saveUserProfileCommand;
             })
             .fail(function(error){
                 self.statusMessage("Sorry, there was a problem sending.");
@@ -371,7 +369,7 @@ define(['knockout',
                 console.log(error);
                 dialog.notification(error.message);
             });
-   
+        return sendCommand;
     };
 
     biomarkersType.prototype.buildBiomarker = function(){

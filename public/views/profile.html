@@ -59,14 +59,12 @@
 	</div>
 
 	<div class="floatleft">
-	<!-- ko if: active_wallet -->
 		<h3 class="text-primary"><span class="fa fa-money"></span> Wallet Info</h3>
 		<table width="100%">
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span data-bind="text: active_wallet().account"></span></td></tr>
-			<tr><td width="15%"><strong>Address</strong>: </td><td><span data-bind="text: active_wallet().address"></span></td></tr>
-			<tr><td width="15%"><strong>Node_ID</strong>: </td><td><span data-bind="text: active_wallet().node_id"></span></td></tr>
+			<tr><td width="15%"><strong>Node_ID</strong>: </td><td><span data-bind="text: node_id"></span></td></tr>
+			<tr><td width="15%"><strong>Account</strong>: </td><td><span data-bind="text: account"></span></td></tr>
+			<tr><td width="15%"><strong>Address</strong>: </td><td><span data-bind="text: address"></span></td></tr>
 		</table>
-	<!-- /ko -->
 	</div>
 	<div class="floatright">
 	<!-- LOCAL -->

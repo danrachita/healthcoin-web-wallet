@@ -3,9 +3,9 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 
-var HCN = require('../app.js');
+var APP = require('../app.js');
 var User = require('./user');
-var configAuth = require('./auth')(HCN.appHost);
+var configAuth = require('./auth')(APP.appHost);
 var bcrypt = require("bcryptjs");
 var validator = require('validator');
 
@@ -48,11 +48,11 @@ module.exports = function(passport) {
 		email = validator.normalizeEmail(email);
 
 		var account = email, address = "", new_address = false;
-		HCN.api.exec('getaccountaddress', account, function(err, res){
+		APP.api.exec('getaccountaddress', account, function(err, res){
 			address = res;
 			if (address === ""){
 				// TODO: Future, use makekeypair and assign address to account
-				HCN.api.exec('getnewaddress', account, function(err, res){
+				APP.api.exec('getnewaddress', account, function(err, res){
 					address = res;
 					new_address = true;
 					});
@@ -70,9 +70,9 @@ module.exports = function(passport) {
 				if(user){
 					// If we created a new address. Capture it.
 					if (new_address){
-						user.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+						user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 						// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-						HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+						APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 							if (err) console.log("Error: err:" + err + " res:" + res);
 							});
 					}
@@ -105,7 +105,7 @@ module.exports = function(passport) {
 					newUser.profile.ethnicity = "";
 					newUser.profile.country = "";
                     newUser.profile.credit = 0;
-					newUser.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+					newUser.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 
 					newUser.save(function(err){
 						if(err)
@@ -115,7 +115,7 @@ module.exports = function(passport) {
 					// Set globally
 					req.session.User = newUser;
 					// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-					HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+					APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 						if (err) console.log("Error: err:" + err + " res:" + res);
 						});
 					return done(null, newUser);
@@ -147,16 +147,16 @@ module.exports = function(passport) {
 					var account = email, address = "", new_address = true;
 					// If user.wallet does not have this node, create new wallet node_id/account/address.
 					user.wallet.filter(function(wal){
-						if(wal.node_id === HCN.rpcHost){
+						if(wal.node_id === APP.rpcHost){
 							new_address = false; // Found one
 						}
 					});
 					if (new_address){
 						// TODO: Future, use makekeypair and assign address to account
-						HCN.api.exec('getnewaddress', account, function(err, res){
+						APP.api.exec('getnewaddress', account, function(err, res){
 							address = res;
 							// push new wallet node/account/address
-							user.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+							user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 							});
 					}
 
@@ -168,7 +168,7 @@ module.exports = function(passport) {
 					setTimeout(function(){
 						if (new_address){
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -259,12 +259,12 @@ module.exports = function(passport) {
 			}
 
 			var account = profile.id, address = "", new_address = false;
-			HCN.api.exec('getaccountaddress', account, function(err, res){
+			APP.api.exec('getaccountaddress', account, function(err, res){
 				if (err) console.log("Error: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
 					// TODO: Future, use makekeypair and assign address to account
-					HCN.api.exec('getnewaddress', account, function(err, res){
+					APP.api.exec('getnewaddress', account, function(err, res){
 						if (err) console.log("Error: err:" + err + " res:" + res);
 						address = res;
 						new_address = true;
@@ -283,9 +283,9 @@ module.exports = function(passport) {
 	    			if(user){
 						// If we created a new address. Capture it.
 						if (new_address){
-							user.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+							user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -318,7 +318,7 @@ module.exports = function(passport) {
 						newUser.profile.ethnicity = "";
 						newUser.profile.country = "";
 	                    newUser.profile.credit = 0;
-						newUser.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+						newUser.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -326,7 +326,7 @@ module.exports = function(passport) {
 							// Set globally
 							req.session.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
@@ -351,12 +351,12 @@ module.exports = function(passport) {
 			}
 
 			var account = profile.id, address = "", new_address = false;
-			HCN.api.exec('getaccountaddress', account, function(err, res){
+			APP.api.exec('getaccountaddress', account, function(err, res){
 				if (err) console.log("Error: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
 					// TODO: Future, use makekeypair and assign address to account
-					HCN.api.exec('getnewaddress', account, function(err, res){
+					APP.api.exec('getnewaddress', account, function(err, res){
 						if (err) console.log("Error: err:" + err + " res:" + res);
 						address = res;
 						new_address = true;
@@ -375,9 +375,9 @@ module.exports = function(passport) {
 	    			if(user){
 						// If we created a new address. Capture it.
 						if (new_address){
-							user.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+							user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -410,7 +410,7 @@ module.exports = function(passport) {
 						newUser.profile.ethnicity = "";
 						newUser.profile.country = "";
 	                    newUser.profile.credit = 0;
-						newUser.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+						newUser.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 
 	    				newUser.save(function(err){
 	    					if(err)
@@ -418,7 +418,7 @@ module.exports = function(passport) {
 							// Set globally
 							req.session.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
@@ -443,12 +443,12 @@ module.exports = function(passport) {
 			}
 
 			var account = profile.id, address = "", new_address = false;
-			HCN.api.exec('getaccountaddress', account, function(err, res){
+			APP.api.exec('getaccountaddress', account, function(err, res){
 				if (err) console.log("Error: err:" + err + " res:" + res);
 				address = res;
 				if (address === ""){
 					// TODO: Future, use makekeypair and assign address to account
-					HCN.api.exec('getnewaddress', account, function(err, res){
+					APP.api.exec('getnewaddress', account, function(err, res){
 						if (err) console.log("Error: err:" + err + " res:" + res);
 						address = res;
 						new_address = true;
@@ -467,9 +467,9 @@ module.exports = function(passport) {
 	    			if(user){
 						// If we created a new address. Capture it.
 						if (new_address){
-							user.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+							user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -502,7 +502,7 @@ module.exports = function(passport) {
 						newUser.profile.ethnicity = "";
 						newUser.profile.country = "";
 	                    newUser.profile.credit = 0;
-						newUser.wallet.push( { node_id: HCN.rpcHost, account: account, address: address });
+						newUser.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 
 	    				newUser.save(function(err){
 							if(err)
@@ -510,7 +510,7 @@ module.exports = function(passport) {
 							// Set globally
 							req.session.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							HCN.api.exec('sendfrom', HCN.masterAccount, address, HCN.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);

@@ -12,11 +12,23 @@ exports.env = "development";
 // The app title, visible in browser window
 exports.title = "Healthcoin Web Wallet";
 
+// Coin name / page heading
+exports.coinname = "healthcoin";
+
+// Coin symbol, e.g. BTC, VRC, SLR, HCN, ...
+exports.coinsymbol = "HCN";
+
 // Logo
 exports.logo = "./public/images/Icon.png";
 
 // The app favicon fully specified url, visible e.g. in the browser window
 exports.favicon = "./public/favicon.ico";
+
+// Amount to send new users at sign-up
+exports.newUserAmount  = 1.0;
+
+// Some control over how much can be sent at one time
+exports.maxSendAmount  = 1000.0;                      
 
 // The url accessing the app. If the web wallet is running on a localhost, this will be ignored.
 // e.g. myhost.homelan.net
@@ -44,17 +56,6 @@ exports.masterAccount  = "MASTER_ACCOUNT";            // Master UI login account
 exports.masterEmail    = "healthcoin@localhost";      // Master email account.
 exports.masterCanEncrypt = false;                     // Allow wallet encryption by MASTER_ACCOUNT
 
-// Amount to send new users at sign-up
-exports.newUserAmount  = 1.0;
-
-// Some control over how much can be sent at one time
-exports.maxSendAmount  = 1000.0;                      
-
-// Coin symbol, visible e.g. BTC, VRC, SLR, HCN, ...
-exports.symbol = "HCN";
-
-// Coin name, visible e.g. in the browser window
-exports.coin = "Healthcoin";
 
 exports.reloadSettings = function reloadSettings() {
     // Discover where the settings file lives

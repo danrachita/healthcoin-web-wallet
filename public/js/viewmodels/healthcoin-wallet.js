@@ -30,28 +30,49 @@ define(['knockout',
         self.sessionTimeout = ko.observable(2 * 60 * 60 * 1000); // Application session timeout = 2 Hours between change of views.
         self.sessionExpires = ko.observable(Date.now() + self.sessionTimeout());
 
-        self.currentView = ko.observable('healthcoin');
-        self.sidebarToggled = ko.observable(true);
-
         self.User = ko.observable({});
-        self.account = ko.observable("");
         self.role = ko.observable("");
+        self.node_id = ko.observable("127.0.0.1");  // Wallet node host/IP
+        self.account = ko.observable("*");
+        self.address = ko.observable("");
+
+        self.isLocalWallet = ko.observable(false);  // Is the node local?
+        self.settings = ko.observable({});          // Some settings from settings.json
+
+        self.getNodeInfo();
+
         self.getUserAccount();
 
         self.walletStatus = new WalletStatus({parent: self});
-        self.walletStatus.getNodeInfo();
 
-        self.healthcoin = new Healthcoin({parent: self});
-        self.biomarkers = new Biomarkers({parent: self});
-        self.send = new Send({parent: self});
-        self.receive = new Receive({parent: self});
-        self.history = new History({parent: self});
-        self.explore = new Explore({parent: self});
-        self.console = new Console({parent: self});
-        self.profile = new Profile({parent: self});
+        self.currentView = ko.observable('healthcoin');
+        self.sidebarToggled = ko.observable(true);
+
+        this.healthcoin = new Healthcoin({parent: self});
+        this.biomarkers = new Biomarkers({parent: self});
+        this.send = new Send({parent: self});
+        this.receive = new Receive({parent: self});
+        this.history = new History({parent: self});
+        this.explore = new Explore({parent: self});
+        this.console = new Console({parent: self});
+        this.profile = new Profile({parent: self});
 
         self.currentView.subscribe(function (){
             self.sessionExpires(Date.now() + self.sessionTimeout());
+        });
+
+        self.profileComplete = ko.computed(function(){
+            var isComplete = false;
+            if (self.User().profile && self.User().profile.name !== 'undefined') {
+                isComplete = self.User().profile.name !== "" &&
+                             self.User().profile.age > 0 &&
+                             self.User().profile.weight > 0 &&
+                             self.User().profile.waist > 0 &&
+                             self.User().profile.gender !== "" &&
+                             self.User().profile.ethnicity !== "" &&
+                             self.User().profile.country !== "";
+            }
+            return isComplete;
         });
 
         self.timeout = 1000;
@@ -60,39 +81,58 @@ define(['knockout',
     };
 
     // Called once at startup.
+    walletType.prototype.getNodeInfo = function(){
+        var self = this,
+            getNodeInfoCommand = new Command('getnodeinfo', [], 'production'); // Gets the wallet info and settings quietly
+        var statusPromise = $.when(getNodeInfoCommand.execute())
+            .done(function(getNodeInfoData){
+                if (typeof getNodeInfoData.node_id !== 'undefined'){
+                    self.node_id(getNodeInfoData.node_id);
+                    self.isLocalWallet(getNodeInfoData.isLocal);
+                    self.settings(getNodeInfoData.settings);
+                    if (self.settings().env !== 'production'){
+                        console.log("WARNING: Not running in production mode!\n  (settings.env=" + self.settings().env + ")");
+                    }
+                }
+            });
+        return statusPromise;
+    };
+
+    // Called once at startup.
     walletType.prototype.getUserAccount = function(){
         var self = this,
-            getUserAccountCommand = new Command('getuseraccount',[]); // Get the User from the session
+            getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
         var userPromise = $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined'){
                     self.User(getUserAccountData.User);
-                    self.account(self.User().wallet[0].account);
                     self.role(self.User().profile.role);
+                    // Get the user's wallet account info for this node_id
+                    var wallet = self.User().wallet.filter(function(wal){
+                        if(wal.node_id && wal.node_id === self.node_id()){
+                            self.account(wal.account || "*");
+                            self.address(wal.address || "");
+			    return wal;
+                        }
+		    });
+		    if (!wallet)
+                        console.log("Error: wallet not found: " + JSON.stringify(wallet));
                 }
-                //console.log('DEBUG: User: ' + JSON.stringify(self.User()));
             });
         return userPromise;
     };
 
     walletType.prototype.refresh = function(){
         var self = this, refreshPromise = "";
-        if (self.timeout < 60000){ // First timeout
-            refreshPromise = $.when(self.walletStatus.refresh(self.account()),
-                                    self.healthcoin.load(self.User(), self.walletStatus.node_id()),
-                                    self.biomarkers.load(self.User(), self.walletStatus.node_id()),
-                                    self.send.load(self.User(), self.walletStatus.node_id()),
-                                    self.receive.load(self.User(), self.walletStatus.node_id()),
-                                    self.history.load(self.User(), self.walletStatus.node_id()),
-                                    self.explore.load(self.User(), self.walletStatus.node_id()),
-                                    self.console.load(self.User(), self.walletStatus.node_id()),
-                                    self.profile.load(self.User(), self.walletStatus.node_id()));
-        } else {
-            refreshPromise = $.when(self.walletStatus.refresh(self.account()),
-                                    self.send.refresh(),
-                                    self.receive.refresh(),
-                                    self.history.refresh());
-        }
+        refreshPromise = $.when(self.walletStatus.refresh()).then(
+                                self.healthcoin.refresh(),
+                                self.biomarkers.refresh(),
+                                self.send.refresh(),
+                                self.receive.refresh(),
+                                self.history.refresh(),
+                                self.explore.refresh(),
+                                self.console.refresh(),
+                                self.profile.refresh());
         return refreshPromise;
     };
 
@@ -118,7 +158,7 @@ define(['knockout',
 
     walletType.prototype.unlockWallet = function(){
         var self = this;
-        if (self.walletStatus.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
+        if (self.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
             new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'This action will unlock the wallet for sending or staking','OK')
             .done(function(result){
                 //console.log(result);
@@ -135,8 +175,8 @@ define(['knockout',
 
     walletType.prototype.lockWallet = function(){
         var self = this;
-        if (self.walletStatus.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
-            var walletLockCommand = new Command('walletlock',[]).execute()
+        if (self.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
+            var walletLockCommand = new Command('walletlock', [], self.settings().env).execute()
             .done(function(){
                 dialog.notification("Wallet is now locked. To send transactions or stake you must unlock the wallet.");
                 self.walletStatus.refresh(self.account());
@@ -151,7 +191,7 @@ define(['knockout',
     walletType.prototype.checkEncryptionStatus = function(){
         var self = this;
         // DO NOT allow non-local wallets to be encrypted except by MASTER_ACCOUNT!
-        if (self.walletStatus.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
+        if (self.isLocalWallet() || self.account() === "MASTER_ACCOUNT"){
             switch(self.walletStatus.unlockedUntil()){
             case -1: // wallet is unencrypted
                 self.promptToEncrypt();
@@ -180,7 +220,7 @@ define(['knockout',
     walletType.prototype.promptToUnlockForStaking = function(){
         new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Wallet unlock', 'Unlock the wallet','OK')
             .done(function(result){
-                result.passphrase = "XXXXXXXX";
+                result.passphrase = "XXXXXXXX"; // Clear password in memory
                 console.log(result);
             })
             .fail(function(error){

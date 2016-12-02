@@ -1,7 +1,7 @@
 define(['knockout'],function(ko){
     var newAddressDialogType = function(options){
         this.parent = options.parent;
-        this.account = ko.observable(this.parent.account());
+        this.account = ko.observable(this.parent.wallet.account());
         this.address = ko.observable('');
     };
 
