@@ -219,7 +219,7 @@ app.get('/listtransactions/:account/:page', function(req, res){
     if (page < 1) page = 1;
     from = count * page - count;
     if (account.length > 1){
-        if (account === APP.masterAccount) account = "*";
+        if (account === APP.settings.masterAccount) account = "*";
         callHealthcoin('listTransactions', res, healthcoinHandler, account, count, from);
     }
     else

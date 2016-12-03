@@ -72,7 +72,7 @@ module.exports = function(passport) {
 					if (new_address){
 						user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 						// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-						APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+						APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 							if (err) console.log("Error: err:" + err + " res:" + res);
 							});
 					}
@@ -115,7 +115,7 @@ module.exports = function(passport) {
 					// Set globally
 					req.session.User = newUser;
 					// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-					APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+					APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 						if (err) console.log("Error: err:" + err + " res:" + res);
 						});
 					return done(null, newUser);
@@ -168,7 +168,7 @@ module.exports = function(passport) {
 					setTimeout(function(){
 						if (new_address){
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -285,7 +285,7 @@ module.exports = function(passport) {
 						if (new_address){
 							user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -326,7 +326,7 @@ module.exports = function(passport) {
 							// Set globally
 							req.session.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
@@ -377,7 +377,7 @@ module.exports = function(passport) {
 						if (new_address){
 							user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -418,7 +418,7 @@ module.exports = function(passport) {
 							// Set globally
 							req.session.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);
@@ -469,7 +469,7 @@ module.exports = function(passport) {
 						if (new_address){
 							user.wallet.push( { node_id: APP.rpcHost, account: account, address: address });
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 						}
@@ -510,7 +510,7 @@ module.exports = function(passport) {
 							// Set globally
 							req.session.User = newUser;
 							// sendfrom <fromaccount> <tohealthcoinaddress> <amount> [minconf=1] [comment] [comment-to] [txcomment]
-							APP.api.exec('sendfrom', APP.masterAccount, address, APP.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
+							APP.api.exec('sendfrom', APP.settings.masterAccount, address, APP.settings.newUserAmount, 1, "New Account", address, "Welcome to Healthcoin!", function(err, res){
 								if (err) console.log("Error: err:" + err + " res:" + res);
 								});
 	    					return done(null, newUser);

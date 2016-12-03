@@ -7,13 +7,13 @@ function Init() {
 	var foundNode_ID = false;
 	var masterAddress = "";
 
-	User.findOne({'local.id': APP.masterAccount, 'wallet.node_id': APP.rpcHost}, function(err, user){
+	User.findOne({'local.id': APP.settings.masterAccount, 'wallet.node_id': APP.rpcHost}, function(err, user){
 		if (user)
 			foundNode_ID = true;
 	});
 
 
-	User.findOne({'local.id': APP.masterAccount}, function(err, user){
+	User.findOne({'local.id': APP.settings.masterAccount}, function(err, user){
 		if(err)
 			return err;
 		if(user && !foundNode_ID){
@@ -30,7 +30,7 @@ function Init() {
 			// Lots of synchronous stuff needs to be done at first startup.
 			var done1 = 10, done2 = 20, done3 = 30;
 			var hcn_addresses = [];
-			APP.api.exec('getaddressesbyaccount', APP.masterAccount, function(err, res){
+			APP.api.exec('getaddressesbyaccount', APP.settings.masterAccount, function(err, res){
 				hcn_addresses = res;
 				done1 = 0;
 				});
@@ -56,7 +56,7 @@ function Init() {
 										// NOTE: The rpc command setaccount has a "bug" that creates an unlabeled address after executing.
 										//       You have to go into the Qt wallet to label it. TODO: Fix rpc command.
 										if (hcn_addresses.hasOwnProperty(k) && hcn_addresses[k].substring(0,1) === 'H'){
-											APP.api.exec('setaccount', hcn_addresses[k], APP.masterAccount, function(err, res){
+											APP.api.exec('setaccount', hcn_addresses[k], APP.settings.masterAccount, function(err, res){
 												if (err) console.log("Error: err:" + err + " res:" + res);
 												if (done3){
 													masterAddress = hcn_addresses[0]; // Use first address
@@ -85,14 +85,14 @@ function Init() {
 					clearInterval(interval3);
 					// Create the masterAccount
 					var newUser = new User();
-					newUser.local.id = APP.masterAccount;
+					newUser.local.id = APP.settings.masterAccount;
 					newUser.local.password = newUser.local.generateHash("password");
 					newUser.local.changeme = true;
 					newUser.profile.login_type = "local";
 					newUser.profile.last_login = Date.now();
 					newUser.profile.role = "Admin";
 					newUser.profile.name = "Healthcoin Admin";
-					newUser.profile.email = APP.masterEmail;
+					newUser.profile.email = APP.settings.masterEmail;
 					newUser.profile.description = "Keeper of Coins";
 					newUser.profile.age = "";
 					newUser.profile.weight = "";
@@ -101,7 +101,7 @@ function Init() {
 					newUser.profile.ethnicity = "";
 					newUser.profile.country = "";
                     newUser.profile.credit = 0;
-					newUser.wallet.push( { node_id: APP.rpcHost, account: APP.masterAccount, address: masterAddress });
+					newUser.wallet.push( { node_id: APP.rpcHost, account: APP.settings.masterAccount, address: masterAddress });
 	
 					newUser.save(function(err){
 						if(err)
