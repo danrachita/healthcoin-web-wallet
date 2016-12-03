@@ -21,12 +21,9 @@ define(['knockout',
 
     receiveType.prototype.refresh = function(){
         var self = this;
-        // Add short delay to healthcoin-wallet's initial short timeout
-        setTimeout(function(){
-            if (self.wallet.account() !== ""){
-                self.getReceiveAddresses();
-            }
-        },2000);
+        if (self.wallet.account() !== ""){
+            self.getReceiveAddresses();
+        }
     };
 
     receiveType.prototype.newAddress = function(){

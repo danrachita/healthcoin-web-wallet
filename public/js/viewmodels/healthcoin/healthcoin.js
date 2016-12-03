@@ -11,18 +11,15 @@ define(['knockout'], function(ko){
 
     healthcoinType.prototype.refresh = function(){
         var self = this;
-        // Add short delay to healthcoin-wallet's initial short timeout
-        setTimeout(function(){
-            if (self.wallet.User().profile){
-                self.name(self.wallet.User().profile.name);
-                self.role(self.wallet.User().profile.role);
-            }
-            if (!self.wallet.profileComplete()){
-                self.statusMessage("Please complete your profile before continuing.");
-            } else {
-                self.statusMessage("You have " + self.wallet.walletStatus.totalFmt() + " " + self.wallet.settings().coinsymbol + " in your wallet!");
-            }
-        },2000);
+        if (self.wallet.User().profile){
+            self.name(self.wallet.User().profile.name);
+            self.role(self.wallet.User().profile.role);
+        }
+        if (!self.wallet.profileComplete()){
+            self.statusMessage("Please complete your profile before continuing.");
+        } else {
+            self.statusMessage("You have " + self.wallet.walletStatus.totalFmt() + " " + self.wallet.settings().coinsymbol + " in your wallet!");
+        }
     };
 
     return healthcoinType;

@@ -199,26 +199,23 @@ define(['knockout',
 
     biomarkersType.prototype.refresh = function(){
         var self = this;
-        // Add short delay to healthcoin-wallet's initial short timeout
-        setTimeout(function(){
-            if (!self.isDirty() && self.wallet.User().profile){
-                self.hcbmAge(self.wallet.User().profile.age);
-                self.hcbmWeight(self.wallet.User().profile.weight);
-                self.hcbmWaist(self.wallet.User().profile.waist);
-                self.hcbmGender(self.wallet.User().profile.gender);
-                self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
-                self.hcbmCountry(self.wallet.User().profile.country);
-                // Get the address of the user
-                self.recipientAddress(self.wallet.address()); // Send to self
-                if (!self.wallet.profileComplete()){
-                    self.statusMessage("Please complete your profile before continuing.");
-                } else {
-                    var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
-                    self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinsymbol + " credit so far!");
-                }
-                self.dirtyFlag(false);
+        if (!self.isDirty() && self.wallet.User().profile){
+            self.hcbmAge(self.wallet.User().profile.age);
+            self.hcbmWeight(self.wallet.User().profile.weight);
+            self.hcbmWaist(self.wallet.User().profile.waist);
+            self.hcbmGender(self.wallet.User().profile.gender);
+            self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
+            self.hcbmCountry(self.wallet.User().profile.country);
+            // Get the address of the user
+            self.recipientAddress(self.wallet.address()); // Send to self
+            if (!self.wallet.profileComplete()){
+                self.statusMessage("Please complete your profile before continuing.");
+            } else {
+                var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
+                self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinsymbol + " credit so far!");
             }
-        },2000);
+            self.dirtyFlag(false);
+        }
     };
 
     biomarkersType.prototype.Reset = function(){

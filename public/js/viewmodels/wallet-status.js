@@ -19,14 +19,11 @@ define(['knockout',
         self.total.subscribe(function (){self.totalFmt(self.wallet.formatNumber(self.total(), 2, '.', ','));});
         self.stake.subscribe(function (){self.stakeFmt(self.wallet.formatNumber(self.stake(), 2, '.', ','));});
         self.available.subscribe(function (){self.availableFmt(self.wallet.formatNumber(self.available(), 2, '.', ','));});
-
-        self.isLoadingStatus = ko.observable(false);
     };
 
     walletStatusType.prototype.refresh = function(){
         var self = this;
         var env = self.wallet.settings().env;
-        self.isLoadingStatus(true);
         var getInfoCommand = new Command('getinfo', [], env),
             getBalanceCommand = new Command('getbalance', [self.wallet.account()], env);
         var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute())
@@ -50,7 +47,6 @@ define(['knockout',
                 }
                 self.available(self.total() - self.stake());
                 self.blocks(getInfoData.blocks);
-                self.isLoadingStatus(false); 
             });
         return statusPromise;
     };

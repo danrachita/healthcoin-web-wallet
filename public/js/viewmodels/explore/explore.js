@@ -10,12 +10,9 @@ define(['knockout'], function(ko){
 
     exploreType.prototype.refresh = function(){
         var self = this;
-        // Add short delay to healthcoin-wallet's initial short timeout
-        setTimeout(function(){
-            if (self.wallet.User().profile){
-                self.role(self.wallet.User().profile.role);
-            }
-        },2000);
+        if (self.wallet.User().profile){
+            self.role(self.wallet.User().profile.role);
+        }
     };
 
     return exploreType;

@@ -24,12 +24,9 @@ define(['knockout',
 
     historyType.prototype.refresh = function(){
         var self = this;
-        // Add short delay to healthcoin-wallet's initial short timeout
-        setTimeout(function(){
-            if (self.wallet.account() !== ""){
-                self.getTransactions(self.wallet.account(), self.page());
-            }
-        },2000);
+        if (self.wallet.account() !== ""){
+            self.getTransactions(self.wallet.account(), self.page());
+        }
     };
 
     historyType.prototype.firstPage = function(){

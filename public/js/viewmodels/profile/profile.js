@@ -81,48 +81,45 @@ define(['knockout',
 
     profileType.prototype.refresh = function(){
         var self = this;
-        // Add short delay to healthcoin-wallet's initial short timeout
-        setTimeout(function(){
-            if (!self.isDirty() && self.wallet.User().profile){
-                self.login_type(self.wallet.User().profile.login_type);
-                switch(self.login_type()){
-                    case ("local"):
-                        self.login_id(self.wallet.User().local.id);
-                        break;
-                    case ("facebook"):
-                        self.login_id(self.wallet.User().facebook.id);
-                        break;
-                    case ("google"):
-                        self.login_id(self.wallet.User().google.id);
-                        break;
-                    case ("twitter"):
-                        self.login_id(self.wallet.User().twitter.id);
-                        break;
-                    default:
-                        break;
-                }
-                self.node_id(self.wallet.node_id());
-                self.account(self.wallet.account());
-                self.address(self.wallet.address());
-
-                self.role(self.wallet.User().profile.role);
-                self.name(self.wallet.User().profile.name);
-                self.email(self.wallet.User().profile.email);
-                self.description(self.wallet.User().profile.description);
-                self.age(self.wallet.User().profile.age);
-                self.weight(self.wallet.User().profile.weight);
-                self.waist(self.wallet.User().profile.waist);
-                self.gender(self.wallet.User().profile.gender);
-                self.ethnicity(self.wallet.User().profile.ethnicity);
-                self.country(self.wallet.User().profile.country);
-                self.credit(self.wallet.User().profile.credit);
-    
-                if (!self.wallet.profileComplete()){
-                    self.statusMessage("Please complete your profile before continuing.");
-                }
-                self.dirtyFlag(false);
+        if (!self.isDirty() && self.wallet.User().profile){
+            self.login_type(self.wallet.User().profile.login_type);
+            switch(self.login_type()){
+                case ("local"):
+                    self.login_id(self.wallet.User().local.id);
+                    break;
+                case ("facebook"):
+                    self.login_id(self.wallet.User().facebook.id);
+                    break;
+                case ("google"):
+                    self.login_id(self.wallet.User().google.id);
+                    break;
+                case ("twitter"):
+                    self.login_id(self.wallet.User().twitter.id);
+                    break;
+                default:
+                    break;
             }
-        },2000);
+            self.node_id(self.wallet.node_id());
+            self.account(self.wallet.account());
+            self.address(self.wallet.address());
+
+            self.role(self.wallet.User().profile.role);
+            self.name(self.wallet.User().profile.name);
+            self.email(self.wallet.User().profile.email);
+            self.description(self.wallet.User().profile.description);
+            self.age(self.wallet.User().profile.age);
+            self.weight(self.wallet.User().profile.weight);
+            self.waist(self.wallet.User().profile.waist);
+            self.gender(self.wallet.User().profile.gender);
+            self.ethnicity(self.wallet.User().profile.ethnicity);
+            self.country(self.wallet.User().profile.country);
+            self.credit(self.wallet.User().profile.credit);
+
+            if (!self.wallet.profileComplete()){
+                self.statusMessage("Please complete your profile before continuing.");
+            }
+            self.dirtyFlag(false);
+        }
     };
 
     profileType.prototype.Reset = function(){

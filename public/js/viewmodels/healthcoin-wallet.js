@@ -75,6 +75,8 @@ define(['knockout',
             return isComplete;
         });
 
+        self.isLoadingStatus = ko.observable(true);
+
         self.timeout = 1000;
 
         self.pollWalletStatus();
@@ -124,15 +126,17 @@ define(['knockout',
 
     walletType.prototype.refresh = function(){
         var self = this, refreshPromise = "";
-        refreshPromise = $.when(self.walletStatus.refresh()).then(
-                                self.healthcoin.refresh(),
-                                self.biomarkers.refresh(),
-                                self.send.refresh(),
-                                self.receive.refresh(),
-                                self.history.refresh(),
-                                self.explore.refresh(),
-                                self.console.refresh(),
-                                self.profile.refresh());
+        refreshPromise = $.when(self.walletStatus.refresh())
+            .done(function(){
+                self.healthcoin.refresh();
+                self.biomarkers.refresh();
+                self.send.refresh();
+                self.receive.refresh();
+                self.history.refresh();
+                self.explore.refresh();
+                self.console.refresh();
+                self.profile.refresh();
+	    });
         return refreshPromise;
     };
 
@@ -143,6 +147,8 @@ define(['knockout',
                 self.refresh().then(function(){
                     if (self.timeout < 60000){ // First timeout
                         self.timeout = 60000;
+                        // Turn off initial loading icon
+                        self.isLoadingStatus(false);
                         // One-time call after first refresh
                         self.checkEncryptionStatus();
                     }
@@ -154,6 +160,23 @@ define(['knockout',
                 window.location = '/logout';
             }
         },self.timeout);
+    };
+
+    walletType.prototype.checkEncryptionStatus = function(){
+        var self = this;
+        // Do not allow non-local wallets to be encrypted except by MASTER_ACCOUNT!
+        if (self.isLocalWallet() || (self.account() === self.settings().masterAccount && self.settings().masterCanEncrypt === true)){
+            switch(self.walletStatus.unlockedUntil()){
+            case -1: // wallet is unencrypted
+                self.promptToEncrypt();
+                break;
+            case 0:  // wallet is locked
+                self.promptToUnlockForStaking();
+                break;
+            default: // 999999 - wallet is already unlocked for staking
+                break;
+            }
+        }
     };
 
     walletType.prototype.unlockWallet = function(){
@@ -185,23 +208,7 @@ define(['knockout',
                 dialog.notification("Wallet is already locked.");
                 self.walletStatus.refresh(self.account());
             });
-        }
-    };
-
-    walletType.prototype.checkEncryptionStatus = function(){
-        var self = this;
-        // Do not allow non-local wallets to be encrypted except by MASTER_ACCOUNT!
-        if (self.isLocalWallet() || (self.account() === self.settings().masterAccount && self.settings().masterCanEncrypt === true)){
-            switch(self.walletStatus.unlockedUntil()){
-            case -1: // wallet is unencrypted
-                self.promptToEncrypt();
-                break;
-            case 0:  // wallet is locked
-                self.promptToUnlockForStaking();
-                break;
-            default: // 999999 - wallet is already unlocked for staking
-                break;
-            }
+            return walletLockCommand;
         }
     };
 

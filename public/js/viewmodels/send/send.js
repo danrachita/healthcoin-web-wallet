@@ -47,14 +47,11 @@ define(['knockout',
 
     sendType.prototype.refresh = function(){
         var self = this;
-        // Add short delay to healthcoin-wallet's initial short timeout
-        setTimeout(function(){
-            self.available(self.wallet.walletStatus.available());
-            self.maxSendAmount(self.wallet.settings().maxSendAmount);
-            self.coinsymbol(self.wallet.settings().coinsymbol);
+        self.available(self.wallet.walletStatus.available());
+        self.maxSendAmount(self.wallet.settings().maxSendAmount);
+        self.coinsymbol(self.wallet.settings().coinsymbol);
 
-            self.statusMessage("Available: " + self.available() + " " + self.wallet.settings().coinsymbol + " ( Maximum send allowed: " + self.maxSendAmount() + " )");
-        },2000);
+        self.statusMessage("Available: " + self.available() + " " + self.wallet.settings().coinsymbol + " ( Maximum send allowed: " + self.maxSendAmount() + " )");
     };
 
     sendType.prototype.lockWallet = function(){
