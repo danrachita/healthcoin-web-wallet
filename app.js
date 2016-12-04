@@ -98,6 +98,15 @@ mdb.connect(dbString, function() {
     console.log('Connected to database.');
 });
 
+// Localizations for the client [MUST COME AFTER DB FUNCTIONS] (i.e. EJS rendered settings)
+for (var s in coin.settings){
+    if (coin.settings.hasOwnProperty(s)){
+        // Don't overwrite!
+        if (app.get(s) === undefined)
+            app.set(s, coin.settings[s]);
+    }
+}
+
 // Auth Functions
 require('./lib/init-wallet')();             // Requires exported 'coin'
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
@@ -137,15 +146,6 @@ function coinHandler(err, result){
     };
     if (typeof this.res.send !== 'undefined' && this.res.send){
         this.res.send(JSON.stringify(response));
-    }
-}
-
-// Localizations for the client (i.e. EJS rendered settings)
-for (var s in coin.settings){
-    if (coin.settings.hasOwnProperty(s)){
-        // Don't overwrite!
-        if (app.get(s) === undefined)
-            app.set(s, coin.settings[s]);
     }
 }
 
