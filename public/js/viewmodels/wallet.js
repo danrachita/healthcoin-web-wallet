@@ -39,10 +39,6 @@ define(['knockout',
         self.isLocalWallet = ko.observable(false);  // Is the node local?
         self.settings = ko.observable({});          // Some settings from settings.json
 
-        self.getNodeInfo();
-
-        self.getUserAccount();
-
         self.walletStatus = new WalletStatus({parent: self});
 
         self.currentView = ko.observable('home');
@@ -77,16 +73,16 @@ define(['knockout',
 
         self.isLoadingStatus = ko.observable(true);
 
-        self.timeout = 2000;
+        self.timeout = 1000;
 
-        self.pollWalletStatus();
+        self.init();
     };
 
     // Called once at startup.
-    walletType.prototype.getNodeInfo = function(){
-        var self = this,
-            getNodeInfoCommand = new Command('getnodeinfo', [], 'production'); // Gets the wallet info and settings quietly
-        var statusPromise = $.when(getNodeInfoCommand.execute())
+    walletType.prototype.init = function(){
+        var self = this;
+        var getNodeInfoCommand = new Command('getnodeinfo', [], 'production'); // Gets the wallet info and settings quietly
+        $.when(getNodeInfoCommand.execute())
             .done(function(getNodeInfoData){
                 if (typeof getNodeInfoData.node_id !== 'undefined'){
                     self.node_id(getNodeInfoData.node_id);
@@ -95,33 +91,40 @@ define(['knockout',
                     if (self.settings().env !== 'production'){
                         console.log("WARNING: Not running in production mode!\n  (settings.env=" + self.settings().env + ")");
                     }
+                } else {
+                    // Bailing...
+                    window.location = '/logout';
+                    console.log("ERROR: Aborting! Node_ID not found.");
                 }
-            });
-        return statusPromise;
-    };
-
-    // Called once at startup.
-    walletType.prototype.getUserAccount = function(){
-        var self = this,
-            getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
-        var userPromise = $.when(getUserAccountCommand.execute())
-            .done(function(getUserAccountData){
-                if (typeof getUserAccountData.User !== 'undefined'){
-                    self.User(getUserAccountData.User);
-                    self.role(self.User().profile.role);
-                    // Get the user's wallet account info for this node_id
-                    var wallet = self.User().wallet.filter(function(wal){
-                        if(wal.node_id && wal.node_id === self.node_id()){
-                            self.account(wal.account || "*");
-                            self.address(wal.address || "");
-			    return wal;
+                var getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
+                $.when(getUserAccountCommand.execute())
+                    .done(function(getUserAccountData){
+                        if (typeof getUserAccountData.User !== 'undefined'){
+                            self.User(getUserAccountData.User);
+                            self.role(self.User().profile.role);
+                            // Get the user's wallet account info for this node_id
+                            var wallet = self.User().wallet.filter(function(wal){
+                                if(wal.node_id && wal.node_id === self.node_id()){
+                                    self.account(wal.account || "*");
+                                    self.address(wal.address || "");
+                                    return wal;
+                                }
+                            });
+                            if (!wallet) {
+                                // Bailing...
+                                window.location = '/logout';
+                                console.log("ERROR: Aborting! Wallet not found.");
+                            } else {
+                                // I think we're good...
+                                self.pollWalletStatus();
+                            }
+                        } else {
+                            // Bailing...
+                            window.location = '/logout';
+                            console.log("ERROR: Aborting! User not found.");
                         }
-		    });
-		    if (!wallet)
-                        console.log("Error: wallet not found: " + JSON.stringify(wallet));
-                }
+                    });
             });
-        return userPromise;
     };
 
     walletType.prototype.refresh = function(){
