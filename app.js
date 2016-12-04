@@ -144,7 +144,7 @@ function coinHandler(err, result){
 for (var s in coin.settings){
     if (coin.settings.hasOwnProperty(s)){
         // Don't overwrite!
-        if (app.get(s) === 'undefined')
+        if (app.get(s) === undefined)
             app.set(s, coin.settings[s]);
     }
 }
