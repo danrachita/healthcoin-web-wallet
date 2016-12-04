@@ -142,7 +142,9 @@ function coinHandler(err, result){
 // Localizations for the client (i.e. EJS rendered settings)
 for (var s in coin.settings){
     if (coin.settings.hasOwnProperty(s)){
-        app.set(s, coin.settings[s]);
+        // Don't overwrite!
+        if (!app.get(s))
+            app.set(s, coin.settings[s]);
     }
 }
 
@@ -398,10 +400,11 @@ function startApp(app) {
     console.log("Express " + (coin.isLocal ? "" : "Secure ") + "Server starting...");
     var protocol = coin.isLocal ? require('http') : require('https');
     var server = coin.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
+    var port = coin.isLocal ? coin.settings.port : coin.settings.sslPort;
 
-    server.listen(app.get('port'), function(){
+    server.listen(port, function(){
         var io = require('socket.io')(server, {
-                port: app.get('port')
+                port: port
             });
         io.on('connection', function (socket) {
             socket.emit('news', { news: 'Socket.io connected!' });
@@ -418,7 +421,7 @@ function startApp(app) {
               tryReconnect();
             });
         });
-        console.log('  Server listening on port ' + app.get('port'));
+        console.log('  Server listening on port ' + port);
     });
 }
 startApp(app);
