@@ -117,7 +117,6 @@ if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
-            settings: coin.settings,
             message: err.message,
             error: JSON.stringify(err)
         });
@@ -127,7 +126,6 @@ if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
-            settings: coin.settings,
             message: err.message,
             error: {}
         });
