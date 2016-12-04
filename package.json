@@ -1,12 +1,12 @@
 {
-  "name": "Healthcoin",
+  "name": "Web Wallet",
   "version": "1.0.0",
   "private": true,
   "node-main": "./app.js",
   "main": "loading.html",
   "window": {
     "show": true,
-    "title": "Healthcoin Web Wallet",
+    "title": "Web Wallet",
     "icon": "./public/images/Icon.png",
     "toolbar": false,
     "frame": true,
@@ -28,7 +28,7 @@
     "ejs": "latest",
     "express": "latest",
     "express-session": "latest",
-    "healthcoin-node": "1.0.0",
+    "coin-node": "1.0.0",
     "jsonminify": "0.4.1",
     "mongode": "0.1.6",
     "mongoose": "latest",

@@ -10,7 +10,7 @@ define( [
         "knockout-validation",
         "knockout-x-editable",
         "common/dialog",
-        "viewmodels/healthcoin-wallet",
+        "viewmodels/wallet",
         "socket.io",
         "bindinghandlers/modal",
         "bindinghandlers/slider",
@@ -35,7 +35,7 @@ define( [
         });
         socket.on('connect_error', function(err) {
           // handle server error
-          console.log('Error connecting to Healthcoin server. Try again later. ' + err);
+          console.log('Error connecting to server. Try again later. ' + err);
         });
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
@@ -44,8 +44,8 @@ define( [
         dialog.init($('#defaultModal')[0]);
 
         Sammy(function() {
-            this.get('#healthcoin', function() {
-                wallet.currentView('healthcoin');
+            this.get('#home', function() {
+                wallet.currentView('home');
             });
             this.get('#biomarkers', function() {
                 wallet.currentView('biomarkers');
@@ -73,7 +73,7 @@ define( [
             this.get('#profile', function() {
                 wallet.currentView('profile');
             });
-        }).run('#healthcoin');
+        }).run('#home');
     };
     return new App();
 });

@@ -1,70 +1,49 @@
 <!-- views/login.ejs -->
 <!doctype html>
-<html>
-<head>
-	<title>Healthcoin - Login</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="pragma" content="no-cache"/> 
-    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/> 
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="white" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Healthcoin App">
-    <meta name="author" content="OnsightIT">
-    <link rel="apple-touch-icon" href="images/Icon.png" />
-    <link rel="shortcut icon" href="images/Icon.png">
-    <link rel="icon" href="/favicon.ico">
-
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
-    <!-- Bootstrap Font Awesome -->
-    <link rel="stylesheet" href="/css/font-awesome.min.css">
-    <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="/css/theme.css">
-</head>
-<body role="document" class="intro">
-    <div id='wrapper'>
-        <div id='page-content-wrapper'>
-            <div id="main" class="container" role="main">
-				<div class="well">
-					<h1 class="text-primary"><span class="fa fa-sign-in"></span> Healthcoin<sup>&reg;</sup> - Login</h1>
-					<!-- show any messages that come back with authentication -->
-					<% if (message.length > 0) { %>
-						<div class="alert alert-danger"><%= message %></div>
-					<% } %>
-		
-					<!-- LOGIN FORM -->
-					<form class="form-horizontal" role="form" action="/login" method="post">
-						<div class="form-group">
-							<label class="control-label col-sm-2" for="email">Email</label>
-			                <div class="col-sm-10">
-								<input class="form-control" type="text" name="email">
+<html lang="en">
+	<head>
+		<title><%= settings.coinName %> - Login</title>
+		<% include partials/meta %>
+	</head>
+	<body role="document" class="intro">
+		<div id='wrapper'>
+			<div id='page-content-wrapper'>
+				<div id="main" class="container" role="main">
+					<div class="well">
+						<h1 class="text-primary"><span class="fa fa-sign-in"></span> <%= settings.coinName %> - Login</h1>
+						<!-- show any messages that come back with authentication -->
+						<% if (message.length > 0) { %>
+							<div class="alert alert-danger"><%= message %></div>
+						<% } %>
+						<!-- LOGIN FORM -->
+						<form class="form-horizontal" role="form" action="/login" method="post">
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="email">Email</label>
+								<div class="col-sm-10">
+									<input class="form-control" type="text" name="email">
+								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<label class="control-label col-sm-2" for="password">Password</label>
-			                <div class="col-sm-10">
-								<input class="form-control" type="password" name="password">
+							<div class="form-group">
+								<label class="control-label col-sm-2" for="password">Password</label>
+								<div class="col-sm-10">
+									<input class="form-control" type="password" name="password">
+								</div>
 							</div>
-						</div>
-		
-						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
-								<button class="btn btn-primary btn-lg" type="submit">Login</button>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-10">
+									<button class="btn btn-primary btn-lg" type="submit">Login</button>
+								</div>
 							</div>
+						</form>
+						<div>
+							<hr>
+							<p>Need an account? <a href="/signup">Signup here</a>.</p>
+							<p>Or, go back to the <a href="/">Home</a> page.</p>
 						</div>
-					</form>
-					<div>
-						<hr>
-						<p>Need an account? <a href="/signup">Signup here</a>.</p>
-						<p>Or, go back to the <a href="/">Home</a> page.</p>
+						<% include partials/footer %>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-</body>
+	</body>
 </html>

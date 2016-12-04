@@ -12,7 +12,7 @@ Number.prototype.formatNumber = function(p, d, c){
 define(['knockout',
     'common/dialog',
     'viewmodels/wallet-status',
-    'viewmodels/healthcoin/healthcoin',
+    'viewmodels/home/home',
     'viewmodels/biomarkers/biomarkers',
     'viewmodels/send/send',
     'viewmodels/receive/receive',
@@ -22,7 +22,7 @@ define(['knockout',
     'viewmodels/profile/profile',
     'bindinghandlers/modal',
     'viewmodels/common/wallet-passphrase',
-    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Healthcoin, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
+    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Home, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
         var self = this;
@@ -32,8 +32,8 @@ define(['knockout',
 
         self.User = ko.observable({});
         self.role = ko.observable("");
-        self.node_id = ko.observable("127.0.0.1");  // Wallet node host/IP
-        self.account = ko.observable("*");
+        self.node_id = ko.observable("");
+        self.account = ko.observable("");
         self.address = ko.observable("");
 
         self.isLocalWallet = ko.observable(false);  // Is the node local?
@@ -45,11 +45,11 @@ define(['knockout',
 
         self.walletStatus = new WalletStatus({parent: self});
 
-        self.currentView = ko.observable('healthcoin');
+        self.currentView = ko.observable('home');
         self.sidebarToggled = ko.observable(true);
 
-        this.healthcoin = new Healthcoin({parent: self});
-        this.biomarkers = new Biomarkers({parent: self});
+        this.home = new Home({parent: self});
+        this.biomarkers = new Biomarkers({parent: self}); // Unique to Healthcoin
         this.send = new Send({parent: self});
         this.receive = new Receive({parent: self});
         this.history = new History({parent: self});
@@ -125,10 +125,10 @@ define(['knockout',
     };
 
     walletType.prototype.refresh = function(){
-        var self = this, refreshPromise = "";
-        refreshPromise = $.when(self.walletStatus.refresh())
+        var self = this;
+        var refreshPromise = $.when(self.walletStatus.refresh())
             .done(function(){
-                self.healthcoin.refresh();
+                self.home.refresh();
                 self.biomarkers.refresh();
                 self.send.refresh();
                 self.receive.refresh();
@@ -216,7 +216,7 @@ define(['knockout',
         new WalletPassphrase().userPrompt(true, 'Encrypt Wallet', 'Encrypt','OK')
             .done(function(result){
                 console.log(result);
-                dialog.notification("Wallet successfully encrypted. Restart your healthcoind daemon to continue.");
+                dialog.notification("Wallet successfully encrypted. Restart your coin daemon to continue.");
             })
             .fail(function(error){
                 console.log(error);

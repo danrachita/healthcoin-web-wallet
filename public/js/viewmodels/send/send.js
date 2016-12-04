@@ -10,7 +10,7 @@ define(['knockout',
 
         self.recipientAddress = ko.observable("").extend( 
             { 
-                pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
+                pattern: { params: patterns.coin, message: 'Not a valid address.' },
                 required: true
             });
 
@@ -23,9 +23,9 @@ define(['knockout',
             });
         self.available = ko.observable(0.00);
         self.maxSendAmount = ko.observable(0.00);
-        self.coinsymbol = ko.observable("");
+        self.coinSymbol = ko.observable("");
 
-        self.minerFee = ko.observable(0.0001);
+        self.minTxFee = ko.observable(0.0001);
 
         self.canSend = ko.computed(function(){
             var address = self.recipientAddress(),
@@ -49,9 +49,10 @@ define(['knockout',
         var self = this;
         self.available(self.wallet.walletStatus.available());
         self.maxSendAmount(self.wallet.settings().maxSendAmount);
-        self.coinsymbol(self.wallet.settings().coinsymbol);
+        self.coinSymbol(self.wallet.settings().coinSymbol);
+        self.minTxFee(self.wallet.settings().mintxfee);
 
-        self.statusMessage("Available: " + self.available() + " " + self.wallet.settings().coinsymbol + " ( Maximum send allowed: " + self.maxSendAmount() + " )");
+        self.statusMessage("Available: " + self.available() + " " + self.wallet.settings().coinSymbol + " ( Maximum send allowed: " + self.maxSendAmount() + " )");
     };
 
     sendType.prototype.lockWallet = function(){
@@ -70,7 +71,7 @@ define(['knockout',
         var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
             passphraseDialogPromise = $.Deferred();
 
-        walletPassphrase.userPrompt(false, 'Wallet unlock', 'Unlock the wallet for sending','OK')
+        walletPassphrase.userPrompt(false, 'Wallet Unlock', 'Unlock the wallet for sending','OK')
             .done(function(){
                 passphraseDialogPromise.resolve(walletPassphrase.walletPassphrase());                            
             })
@@ -120,7 +121,7 @@ define(['knockout',
                 title: 'Send Confirm',
                 context: self,
                 allowClose: false,
-                message: 'You are about to send ' + amount + ' HCN, in addition to any fees the transaction may incur (e.g. ' + self.minerFee() + ' HCN). Do you wish to continue?',
+                message: 'You are about to send ' + amount + ' ' + self.wallet.settings().coinSymbol + ', in addition to the minimum transaction fee (' + self.minTxFee() + '). Do you wish to continue?',
                 affirmativeButtonText: 'Yes',
                 negativeButtonText: 'No',
                 affirmativeHandler: function(){ sendConfirmDeferred.resolve(); },
@@ -138,9 +139,9 @@ define(['knockout',
             .done(function(txid){
                 console.log("TxId: " + JSON.stringify(txid));
                 if (typeof txid !== 'undefined') {
-                    self.statusMessage(self.amount() + " HCN Successfully Sent!");
+                    self.statusMessage(self.amount() + " " + self.wallet.settings().coinSymbol + " successfully sent!");
                 } else {
-                    self.statusMessage("HCN Was Not Sent. Try a smaller ammount.");
+                    self.statusMessage("Your transaction was not sent. Try a smaller ammount.");
                 }
                 self.amount(0); // Resets Send button
 
@@ -157,7 +158,6 @@ define(['knockout',
                                 .done(function() {
                                     auth = "";
                                     console.log("Wallet successfully re-opened for staking");
-                                    self.wallet.refresh();
                                 });
                         });
                 }

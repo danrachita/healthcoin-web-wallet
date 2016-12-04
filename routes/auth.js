@@ -1,11 +1,10 @@
-var User = require('../healthcoin/user');
 module.exports = function(app, passport){
 
 	app.get('/', isLoggedIn, function(req, res){
 		if (req.user.local.changeme){
 			res.redirect('/password');
 		}
-		res.render('healthcoin.ejs'); // If logged in, allow access to Healthcoin App
+		res.render('home.ejs'); // If logged in, allow access to the Web Wallet
 	});
 
 	app.get('/login', function(req, res){

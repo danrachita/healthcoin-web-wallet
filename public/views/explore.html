@@ -2,7 +2,7 @@
 
     <!-- EXPLORE -->
     <div class="well">
-        <h1 class="text-primary"><span class="fa fa-search"></span> Explore the Healthcoin<sup>&reg;</sup> Blockchain</h1>
+        <h1 class="text-primary"><span class="fa fa-search"></span> Explore the <span data-bind="text: wallet.settings().coinName"></span> Blockchain</h1>
 		<!-- ko if: role() === 'Admin' -->
 		<iframe name="explorer" src="http://explorer.nequals1.io" border="0" height=640 width=100%></iframe>
 		<!-- /ko -->

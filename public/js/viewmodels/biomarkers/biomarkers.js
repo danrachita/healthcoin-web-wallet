@@ -139,15 +139,12 @@ define(['knockout',
         self.hcbmOther.subscribe(function (){self.dirtyFlag(true);});
 
         // For Admin view only.
-        self.txcommentBiomarker = ko.observable("hcbm").extend(
-            {
-                pattern: { params: patterns.biomarker, message: 'Not a valid bio-marker' },
-                required: true
-            });
-        // Recipient address for biomarker submission is the User's HCN address. (Send to self.)
+        self.txcommentBiomarker = ko.observable("hcbm");
+
+        // Recipient address for biomarker submission is the User's wallet address. (Send to self.)
         self.recipientAddress = ko.observable("").extend(
             {
-                pattern: { params: patterns.healthcoin, message: 'Not a valid address' },
+                pattern: { params: patterns.coin, message: 'Not a valid address.' },
                 required: true
             });
         // This is passed as a credit in the biomarker header for future granting.
@@ -169,14 +166,12 @@ define(['knockout',
 
             var amount = self.amount(),
                 isNumber = !isNaN(amount),
-                biomarker = self.txcommentBiomarker(),
-                biomarkerValid = self.txcommentBiomarker.isValid(),
                 address = self.recipientAddress(),
                 addressValid = self.recipientAddress.isValid(),
                 amountValid = self.amount.isValid(),
                 available = self.wallet.walletStatus.available();
 
-            canSend = canSend && isNumber && biomarkerValid && biomarker.length > 0 && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
+            canSend = canSend && isNumber && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
             return canSend;
         });
 
@@ -212,7 +207,7 @@ define(['knockout',
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
                 var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
-                self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinsymbol + " credit so far!");
+                self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinSymbol + " credit so far!");
             }
             self.dirtyFlag(false);
         }
@@ -232,7 +227,6 @@ define(['knockout',
         self.hcbmDevice_Steps(0);
 
         self.dirtyFlag(false);
-        this.refresh();
     };
 
     biomarkersType.prototype.Submit = function(){
@@ -246,7 +240,8 @@ define(['knockout',
         this.sendSubmit();
     };
 
-    function lockWallet(){
+    biomarkersType.prototype.lockWallet= function(){
+        var self = this;
         var walletlockCommand = new Command('walletlock', [], self.wallet.settings().env).execute()
             .done(function(){
                 console.log('Wallet relocked');
@@ -255,7 +250,7 @@ define(['knockout',
                 dialog.notification(error.message, "Failed to re-lock wallet");
             });
         return walletlockCommand;
-    }
+    };
 
     biomarkersType.prototype.unlockWallet= function(){
         var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
@@ -277,7 +272,7 @@ define(['knockout',
         //if(self.canSend()){
             if (self.isEncrypted()){
                 console.log("Unlocking wallet for sending.");
-                lockWallet().done(function(){
+                self.lockWallet().done(function(){
                     console.log('Wallet locked. Prompting for confirmation...');
                     self.sendConfirm(self.amount())
                         .done(function(){
@@ -303,14 +298,14 @@ define(['knockout',
         //}
     };
 
-    biomarkersType.prototype.sendConfirm = function(amount){
-        var self = this, 
+    biomarkersType.prototype.sendConfirm = function(){
+        var self = this,
             sendConfirmDeferred = $.Deferred(),
             sendConfirmDialog = new ConfirmationDialog({
                 title: 'Send Confirm',
                 context: self,
                 allowClose: false,
-                message: 'You are about to send encrypted bio-marker data to the Healthcoin (HCN) network. Do you wish to continue?',
+                message: 'You are about to send encrypted bio-marker data to the blockchain. Do you wish to continue?',
                 affirmativeButtonText: 'Yes',
                 negativeButtonText: 'No',
                 affirmativeHandler: function(){ sendConfirmDeferred.resolve(); },
@@ -338,11 +333,11 @@ define(['knockout',
                                                         [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
                                                         self.wallet.settings().env).execute()
                     .done(function(){
-                        console.log("User Profile credited!");
+                        console.log("User credited!");
                     });
 
                 if (self.isEncrypted()){
-                    lockWallet()
+                    self.lockWallet()
                         .done(function(){
                             var walletPassphrase = new WalletPassphrase({
                                 walletPassphrase: auth,
@@ -354,7 +349,6 @@ define(['knockout',
                                 .done(function() {
                                     auth = "";
                                     console.log("Wallet successfully re-opened for staking");
-                                    self.wallet.refresh();
                                 });
                         });
                 }

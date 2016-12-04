@@ -20,18 +20,18 @@ RUN useradd --user-group --create-home --shell /bin/bash healthcoin \
     && echo 'healthcoin:healthcoin' | chpasswd && adduser healthcoin sudo
 RUN echo 'healthcoin ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-COPY run_healthcoin-web-wallet /home/healthcoin/
-RUN chmod a+rwx /home/healthcoin/run_healthcoin-web-wallet
-RUN chown healthcoin:healthcoin /home/healthcoin/run_healthcoin-web-wallet
+COPY web-wallet /home/healthcoin/
+RUN chmod a+rwx /home/healthcoin/web-wallet
+RUN chown healthcoin:healthcoin /home/healthcoin/web-wallet
 RUN mkdir /home/healthcoin/.healthcoin
-COPY healthcoin.conf /home/healthcoin/.healthcoin/
+COPY coin.conf /home/healthcoin/.healthcoin/
 RUN chown -R healthcoin:healthcoin /home/healthcoin/.healthcoin
 
 USER healthcoin
 
-# Install healthcoin-web-wallet
+# Install web-wallet
 RUN cd ~ \
-    && git clone https://github.com/onsightit/healthcoin-web-wallet.git
+    && git clone https://github.com/onsightit/web-wallet.git
 
 # Expose the nodejs port.
 EXPOSE 8181
@@ -42,4 +42,4 @@ VOLUME  ['/home/healthcoin']
 
 WORKDIR /home/healthcoin
 
-CMD ./run_healthcoin-web-wallet
+CMD ./web-wallet

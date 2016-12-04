@@ -1,5 +1,5 @@
 /**
- *  Healthcoin Web Wallet
+ *  Web Wallet
  *  Author: Steve Woods OnsightIT@gmail.com
  *          https://github.com/onsightit
  *
@@ -17,30 +17,12 @@ Object.defineProperty(Error.prototype, 'toJSON', {
     configurable: true
 });
 
-// Get the user defined application settings.
-var settings = require('./healthcoin/settings');
+// coin Object - Localization settings and Node api calls for the client.
+var coin = require('./lib/coinapi');
+module.exports = coin;
 
-// APP Object - Localization options and api calls for the client.
-var APP = require('./healthcoin/healthcoinapi');
-APP.settings =  {                                             // A sub-set of settings.json for the client
-                title: settings.title,
-                coinname: settings.coinname,
-                coinsymbol: settings.coinsymbol,
-                logo: settings.logo,
-                historyRowsPP: settings.historyRowsPP,        // History rows per page.
-                newUserAmount: settings.newUserAmount,        // Amount to send new users at sign-up.
-                maxSendAmount: settings.maxSendAmount,        // Max ammount thatcan be sent at once.
-                appHost: (APP.isLocal ? "127.0.0.1" : settings.appHost), // Hostname of webserver (See README.md).
-                masterAccount: settings.masterAccount,        // Master UI login account, and Label to assign to "" account(s).
-                masterEmail: settings.masterEmail,            // Master email address.
-                masterCanEncrypt: settings.masterCanEncrypt,  // Master can encrypt the wallet.
-                env: settings.env                             // Env 'development' produces console output for debugging.
-                };
-module.exports = APP;
-// End APP Object
-
-// Mongoose schema for biomarkers
-var Biomarkers = require('./healthcoin/biomarkers');
+// Mongoose schema for biomarkers (unique to healthcoin)
+var Biomarkers = require('./lib/biomarkers');
 
 var fs = require('fs');
 var path = require('path');
@@ -51,8 +33,8 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
-var privateKey  = fs.readFileSync(settings.sslKey, 'utf8');
-var certificate = fs.readFileSync(settings.sslCrt, 'utf8');
+var privateKey  = fs.readFileSync(coin.settings.sslKey, 'utf8');
+var certificate = fs.readFileSync(coin.settings.sslCrt, 'utf8');
 var credentials = {key: privateKey, cert: certificate};
 
 var app = express();
@@ -66,7 +48,7 @@ var flash = require('connect-flash');
 
 // All environments
 app.use(cors());
-app.set('port', APP.isLocal ? settings.port : settings.sslport);
+app.set('port', coin.isLocal ? coin.settings.port : coin.settings.sslPort);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -74,20 +56,20 @@ app.set('view engine', 'ejs');
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(session({name: 'healthcoin',
-                secret: 'nequals1 describes unity',
+app.use(session({name: coin.settings.coinName,
+                secret: coin.settings.coinName + ' is the best ' + coin.settings.coinTitle,
                 genid: function(req) {
                     return uuid.v4(); // use UUIDs
                 },
                 // Cookie expires in 30 days
-                cookie: {secure: APP.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: APP.settings.appHost},
+                cookie: {secure: coin.isLocal ? false : true, maxAge: 30 * 24 * 60 * 60 * 1000, domain: coin.settings.appHost},
                 saveUninitialized: false,
                 resave: true}));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash());            // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
 
-app.use(favicon(path.join(__dirname, settings.favicon)));
+app.use(favicon(path.join(__dirname, coin.settings.favicon)));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -100,16 +82,15 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-// Localizations
-app.set('local', APP.settings);
-
 // DB Functions
-var mdb = require('./healthcoin/database');
-var dbString = 'mongodb://' + settings.mdbSettings.user;
-dbString = dbString + ':' + settings.mdbSettings.password;
-dbString = dbString + '@' + settings.mdbSettings.host;
-dbString = dbString + ':' + settings.mdbSettings.port;
-dbString = dbString + '/' + settings.mdbSettings.database;
+var mdb = require('./lib/database');
+var dbString = 'mongodb://' + coin.settings.mdb.user;
+dbString = dbString + ':' + coin.settings.mdb.password;
+dbString = dbString + '@' + coin.settings.mdb.host;
+dbString = dbString + ':' + coin.settings.mdb.port;
+dbString = dbString + '/' + coin.settings.mdb.database;
+coin.settings.mdb.password = "XXXXXXXX";
+coin.settings.mdb = null; // garbage collection
 
 // Connects or exits
 mdb.connect(dbString, function() {
@@ -117,9 +98,9 @@ mdb.connect(dbString, function() {
 });
 
 // Auth Functions
-require('./healthcoin/init-wallet')();      // Requires APP
+require('./lib/init-wallet')();             // Requires exported 'coin'
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
-require('./healthcoin/passport')(passport); // Requires APP
+require('./lib/passport')(passport);        // Requires exported 'coin'
 
 if (app.get('env') === 'development') {
     // development error handler will print stacktrace
@@ -141,13 +122,14 @@ if (app.get('env') === 'development') {
     });
 }
 
-// Healthcoin handler for indirect calls to daemon
-function callHealthcoin(command, res, handler){
+// Handler for indirect calls to the coin daemon.
+function callCoin(command, res, handler){
     var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
     var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
-    return APP.api[command].apply(APP.api, callargs, APP.settings.env);
+    return coin.api[command].apply(coin.api, callargs, coin.settings.env);
 }
-function healthcoinHandler(err, result){
+
+function coinHandler(err, result){
     var response = {
         error: JSON.parse(err ? err.message : null),
         result: result
@@ -157,17 +139,24 @@ function healthcoinHandler(err, result){
     }
 }
 
+// Localizations for the client (i.e. EJS rendered settings)
+for (var s in coin.settings){
+    if (coin.settings.hasOwnProperty(s)){
+        app.set(s, coin.settings[s]);
+    }
+}
+
 
 // Non-RPC routes //
 
-// Returns this rpc wallet node info and some settings.
+// Returns this rpc wallet node info and some localized settings.
 app.get('/getnodeinfo', function(req,res){
     var response = {
         error: null,
         result: {
-            node_id: APP.rpcHost,
-            isLocal: APP.isLocal,
-            settings: APP.settings
+            node_id: coin.rpcHost,
+            isLocal: coin.isLocal,
+            settings: coin.settings
         }
     };
     res.send(JSON.stringify(response));
@@ -204,36 +193,36 @@ app.get('/saveuserprofile/:profile', function(req,res){
 
 // RPC routes //
 
-app.get('/getinfo', function(req,res){ callHealthcoin('getInfo', res, healthcoinHandler); } );
-app.get('/getinterestrate', function(req,res){ callHealthcoin('getInterestRate', res, healthcoinHandler); } );
-app.get('/getinflationrate', function(req,res){ callHealthcoin('getInflationRate', res, healthcoinHandler); } );
-app.get('/getblockcount', function(req,res){ callHealthcoin('getBlockCount', res, healthcoinHandler); } );
-app.get('/getstakinginfo', function(req,res) { callHealthcoin('getStakingInfo', res, healthcoinHandler); } );
+app.get('/getinfo', function(req,res){ callCoin('getInfo', res, coinHandler); } );
+app.get('/getinterestrate', function(req,res){ callCoin('getInterestRate', res, coinHandler); } );
+app.get('/getinflationrate', function(req,res){ callCoin('getInflationRate', res, coinHandler); } );
+app.get('/getblockcount', function(req,res){ callCoin('getBlockCount', res, coinHandler); } );
+app.get('/getstakinginfo', function(req,res) { callCoin('getStakingInfo', res, coinHandler); } );
 
 // pagination view
 app.get('/listtransactions/:account/:page', function(req, res){
     var account = (req.params.account || '*'),
         page = (req.params.page || 1),
-        count = APP.settings.historyRowsPP,
+        count = coin.settings.historyRowsPP,
         from = 0;
     if (page < 1) page = 1;
     from = count * page - count;
     if (account.length > 1){
-        if (account === APP.settings.masterAccount) account = "*";
-        callHealthcoin('listTransactions', res, healthcoinHandler, account, count, from);
+        if (account === coin.settings.masterAccount) account = "*";
+        callCoin('listTransactions', res, coinHandler, account, count, from);
     }
     else
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
 app.get('/makekeypair', function(req, res){
-    callHealthcoin('makekeypair', res, healthcoinHandler);
+    callCoin('makekeypair', res, coinHandler);
 });
 
 app.get('/getbalance/:account', function(req, res){
     var account = req.params.account || '*';
     if(account.length > 1)
-        callHealthcoin('getbalance', res, healthcoinHandler, account);
+        callCoin('getbalance', res, coinHandler, account);
     else
         res.send(JSON.stringify("Error: Invalid Account."));
 });
@@ -243,7 +232,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var fromaccount = req.params.fromaccount || '*';
     var toaddress = req.params.toaddress || '';
     var amount = parseFloat(req.params.amount) || 0.0;
-    var maxSendAmount = parseFloat(APP.settings.maxSendAmount) || 0.0001; // Haha
+    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
@@ -254,9 +243,9 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
             var txcommentObj = JSON.parse(txcomment) || {};
             var Biomarker = new Biomarkers().buildBiomarker(amount, req.session.User._id, txcommentObj);
             txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
-            callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
+            callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
         } else {
-            callHealthcoin('sendfrom', res, healthcoinHandler, fromaccount, toaddress, amount);
+            callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount);
         }
     } else {
         if (amount > maxSendAmount)
@@ -269,18 +258,18 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
 // Note: Use sendfrom instead as the wallet is account based
 app.get('/sendtoaddress/:toaddress/:amount/:comment?/commentto?/:txcomment?', function(req, res){
     var amount = parseFloat(req.params.amount);
-    callHealthcoin('sendtoaddress', res, healthcoinHandler, req.params.toaddress, amount);
+    callCoin('sendtoaddress', res, coinHandler, req.params.toaddress, amount);
 });
 
 app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(req, res){
     var fromaccount = req.params.fromaccount || '*';
     var toaccount = req.params.toaccount || '*';
     var amount = parseFloat(req.params.amount) || 0.0;
-    var maxSendAmount = parseFloat(APP.settings.maxSendAmount) || 0.0001; // Haha
+    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || ''; // Not txcomment
     if(fromaccount.length > 1 && toaccount.length > 1 && amount > 0 && amount <= maxSendAmount)
-        callHealthcoin('move', res, healthcoinHandler, fromaccount, toaccount, amount, minconf, comment);
+        callCoin('move', res, coinHandler, fromaccount, toaccount, amount, minconf, comment);
     else
         res.send(JSON.stringify("Error: Invalid move."));
 });
@@ -288,13 +277,13 @@ app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(re
 app.get('/getnewaddress/:account', function(req, res){
     var account = req.params.account || '*';
     if(account.length > 1)
-        callHealthcoin('getnewaddress', res, healthcoinHandler, account);
+        callCoin('getnewaddress', res, coinHandler, account);
     else
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
 app.get('/setaccount/:address/:account', function(req, res){
-    APP.api.setaccount(req.params.address, req.params.account, function(err, result){
+    coin.api.setaccount(req.params.address, req.params.account, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -305,13 +294,13 @@ app.get('/setaccount/:address/:account', function(req, res){
 
 app.get('/validateaddress/:address', function(req, res){
     var address = req.params.address || 'blah';
-    callHealthcoin('validateaddress', res, healthcoinHandler, address);
+    callCoin('validateaddress', res, coinHandler, address);
 });
 
 app.get('/encryptwallet/:passphrase', function(req,res){
     var passphrase = atob(req.params.passphrase); // TODO: Use encryption instead of base64
     if (passphrase){
-        callHealthcoin('encryptwallet', res, healthcoinHandler, passphrase);
+        callCoin('encryptwallet', res, coinHandler, passphrase);
     }
 });
 
@@ -320,27 +309,27 @@ app.get('/walletpassphrase/:passphrase/:timeout/:stakingonly', function(req,res)
         timeout = parseInt(req.params.timeout),
         passphrase = atob(req.params.passphrase); // TODO: Use encryption instead of base64
     if (passphrase){
-        callHealthcoin('walletpassphrase', res, healthcoinHandler, passphrase, timeout, stakingOnly);
+        callCoin('walletpassphrase', res, coinHandler, passphrase, timeout, stakingOnly);
     }
 });
 
-app.get('/walletlock', function(req,res){ callHealthcoin('walletlock', res, healthcoinHandler); });
+app.get('/walletlock', function(req,res){ callCoin('walletlock', res, coinHandler); });
 
 app.get('/help/:commandname?', function(req, res){
     if (req.params.commandname !== undefined)
-        callHealthcoin('help', res, healthcoinHandler, req.params.commandname);
+        callCoin('help', res, coinHandler, req.params.commandname);
     else
-        callHealthcoin('help', res, healthcoinHandler);
+        callCoin('help', res, coinHandler);
 });
 
 app.get('/listreceivedbyaddress/:minconf?/:includeempty?', function(req, res){
     var includeEmpty = (req.params.includeempty || false) === 'true', 
         minConf = parseInt(req.params.minconf || 1);
-    callHealthcoin('listreceivedbyaddress', res, healthcoinHandler, minConf, includeEmpty);
+    callCoin('listreceivedbyaddress', res, coinHandler, minConf, includeEmpty);
 });
 
 app.get('/getaccount/:address', function(req, res){
-    APP.api.getaccount(req.params.address, function(err, result){
+    coin.api.getaccount(req.params.address, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -350,7 +339,7 @@ app.get('/getaccount/:address', function(req, res){
 });
 
 app.get('/listaddressgroupings', function(req, res){
-    APP.api.listaddressgroupings(function(err, result){
+    coin.api.listaddressgroupings(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -360,7 +349,7 @@ app.get('/listaddressgroupings', function(req, res){
 });
 
 app.get('/setadressbookname/:address/:label', function(req, res){
-    APP.api.setadressbookname(req.params.address, req.params.label, function(err, result){
+    coin.api.setadressbookname(req.params.address, req.params.label, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
             res.send(err);
@@ -404,11 +393,11 @@ function tryReconnect(){
 }
 
 // Start it up!
-function startHealthcoin(app) {
-    // Start the Healthcoin Express server
-    console.log("Healthcoin Express " + (APP.isLocal ? "" : "Secure ") + "Server starting...");
-    var protocol = APP.isLocal ? require('http') : require('https');
-    var server = APP.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
+function startApp(app) {
+    // Start the Express server
+    console.log("Express " + (coin.isLocal ? "" : "Secure ") + "Server starting...");
+    var protocol = coin.isLocal ? require('http') : require('https');
+    var server = coin.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
 
     server.listen(app.get('port'), function(){
         var io = require('socket.io')(server, {
@@ -420,11 +409,11 @@ function startHealthcoin(app) {
               console.log(data);
             });
             socket.on('connect_error', function (err) {
-                socket.emit('news', { news: 'Healthcoin socket connection error.' });
+                socket.emit('news', { news: 'Node socket connection error.' });
                 console.log("Socket.io Error: " + err);
             });
             process.on('uncaughtException', function (err) {
-              socket.emit('news', { news: 'Healthcoin node connection error.' });
+              socket.emit('news', { news: 'Wallet connection error.' });
               console.log('Caught exception: ' + err);
               tryReconnect();
             });
@@ -432,4 +421,4 @@ function startHealthcoin(app) {
         console.log('  Server listening on port ' + app.get('port'));
     });
 }
-startHealthcoin(app);
+startApp(app);

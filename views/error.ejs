@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Healthcoin - Error</title>
+    <title><%= settings.coinName %> - Error</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="pragma" content="no-cache"/> 
-    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/> 
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no" />
     <meta name="apple-mobile-web-app-status-bar-style" content="white" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Healthcoin App">
+    <meta name="description" content="<%= settings.coinDescription %>">
     <meta name="author" content="OnsightIT">
     <link rel="apple-touch-icon" href="images/Icon.png" />
     <link rel="shortcut icon" href="images/Icon.png">
@@ -31,11 +31,11 @@
     </style>
   </head>
   <body role="document" class="intro">
-		<h2>Healthcoin - An Error Occurred</h2>
+		<h2><%= settings.coinName %> - An Error Occurred</h2>
 		<div>
 			<span class=tab>Error: <%= message %></span><br /><br />
 			<span class=tab>Status: <%= error.status %></span><br /><br />
 		</div>
-		<h4><a href="/">Back to Healthcoin</a></h4>
+		<h4><a href="/">Back to Home</a></h4>
   </body>
 </html>
