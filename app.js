@@ -51,6 +51,7 @@ app.use(cors());
 app.set('port', coin.isLocal ? coin.settings.port : coin.settings.sslPort);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('env', coin.settings.env || 'production');
 
 // Auth modules
 app.use(morgan('dev'));
@@ -143,7 +144,7 @@ function coinHandler(err, result){
 for (var s in coin.settings){
     if (coin.settings.hasOwnProperty(s)){
         // Don't overwrite!
-        if (!app.get(s))
+        if (app.get(s) === 'undefined')
             app.set(s, coin.settings[s]);
     }
 }
