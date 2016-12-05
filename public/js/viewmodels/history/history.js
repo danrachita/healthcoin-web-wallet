@@ -52,7 +52,7 @@ define(['knockout',
         self.isLoadingTransactions(true);
         var historyPromise = getTransactionsCommand.execute()
             .done(function(data){
-                var i = 0, maxRows = 10;   // TODO: 10 needs to be an option
+                var i = 0, maxRows = self.wallet.settings().historyRowsPP;
                 //var descendingTxns = data.reverse();
                 //self.transactions(ko.utils.arrayMap(descendingTxns,function(transaction){
                 self.transactions(ko.utils.arrayMap(data, function(transaction){
