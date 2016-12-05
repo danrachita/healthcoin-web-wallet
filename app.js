@@ -17,6 +17,10 @@ Object.defineProperty(Error.prototype, 'toJSON', {
     configurable: true
 });
 
+
+////////// Config //////////
+
+
 // coin Object - Localization settings and Node api calls for the client.
 var coin = require('./lib/coinapi');
 module.exports = coin;
@@ -29,34 +33,37 @@ var path = require('path');
 var atob = require('atob');
 var btoa = require('btoa');
 
-var express = require('express');
-var cors = require('cors');
-var bodyParser = require('body-parser');
-var favicon = require('serve-favicon');
 var privateKey  = fs.readFileSync(coin.settings.sslKey, 'utf8');
 var certificate = fs.readFileSync(coin.settings.sslCrt, 'utf8');
 var credentials = {key: privateKey, cert: certificate};
 
+var express = require('express');
 var app = express();
 
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var uuid = require('uuid');
+var cors = require('cors');
 var morgan = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var favicon = require('serve-favicon');
+var uuid = require('uuid');
+var session = require('express-session');
+
 var passport = require('passport');
 var flash = require('connect-flash');
 
 // All environments
-app.use(cors());
+app.set('env', coin.settings.env || 'production');
 app.set('port', coin.isLocal ? coin.settings.port : coin.settings.sslPort);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.set('env', coin.settings.env || 'production');
 
-// Auth modules
+app.use(cors());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(path.join(__dirname, coin.settings.favicon)));
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 app.use(session({name: coin.settings.coinName,
                 secret: coin.settings.coinName + ' is the best ' + coin.settings.coinTitle,
                 genid: function(req) {
@@ -69,19 +76,6 @@ app.use(session({name: coin.settings.coinName,
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash());            // use connect-flash for flash messages stored in session (Bug: Has to come after session and before router.)
-
-app.use(favicon(path.join(__dirname, coin.settings.favicon)));
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Add CORS headers to all requests
-app.all('*', function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-AUTHENTICATION, X-IP, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
 
 // DB Functions
 var mdb = require('./lib/database');
@@ -98,7 +92,14 @@ mdb.connect(dbString, function() {
     console.log('Connected to database.');
 });
 
-// Localizations for the client [MUST COME AFTER DB FUNCTIONS] (i.e. EJS rendered settings)
+// Init MASTER_ACCOUNT db functions (Requires exported 'coin')
+require('./lib/init-wallet')();
+
+// Auth routes / functions
+require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
+require('./lib/passport')(passport);        // Requires exported 'coin'
+
+// Localizations for the client [MUST COME AFTER DB FUNCTIONS] (i.e. for EJS rendered settings)
 for (var s in coin.settings){
     if (coin.settings.hasOwnProperty(s)){
         // Don't overwrite!
@@ -107,10 +108,18 @@ for (var s in coin.settings){
     }
 }
 
-// Auth Functions
-require('./lib/init-wallet')();             // Requires exported 'coin'
-require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
-require('./lib/passport')(passport);        // Requires exported 'coin'
+
+////////// Routes //////////
+
+
+// Add CORS headers to all requests
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-AUTHENTICATION, X-IP, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 // Handler for indirect calls to the coin daemon.
 function callCoin(command, res, handler){
@@ -128,7 +137,6 @@ function coinHandler(err, result){
         this.res.send(JSON.stringify(response));
     }
 }
-
 
 // Non-RPC routes //
 
@@ -352,17 +360,20 @@ app.get('/', function(req, res){
 // *** Express 4.x requires these app.use calls to be after any app.get or app.post routes.
 // *** "Your code should move any calls to app.use that came after app.use(app.router) after any routes (HTTP verbs)."
 
-// catch session timeout
+// Catch session timeout
 app.use(function(req, res, next) {
     if (req.session && Date.now() <= req.session.cookie.expires){
         next();
     } else {
+        console.log("DEBUG: No session found.");
    		res.redirect('/');
     }
 });
 
+// This goes last.
 app.use(function(err, req, res, next) {
     res.status(404);
+    console.log("DEBUG: 404 found.");
     if (req.accepts('html')) {
         if (app.get('env') === 'development') {
             // development error handler will print stacktrace
