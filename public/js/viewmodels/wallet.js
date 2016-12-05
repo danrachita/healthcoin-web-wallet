@@ -120,7 +120,6 @@ define(['knockout',
                 if (typeof getUserAccountData.User !== 'undefined'){
                     self.User(getUserAccountData.User);
                     self.role(self.User().profile.role);
-                    console.log("DEBUG: Wallet.User: " + JSON.stringify(self.User()));
                     // Get the user's wallet account info for this node_id
                     var wallet = self.User().wallet.filter(function(wal){
                         if(wal.node_id && wal.node_id === self.node_id()){

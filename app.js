@@ -160,10 +160,8 @@ app.get('/getuseraccount', function(req,res){
             error: null,
             result: { User: req.session.user }
         };
-        console.log("DEBUG: User: " + JSON.stringify(req.session.user));
         res.send(JSON.stringify(response));
     } else {
-        console.log("DEBUG: User not found.");
         res.redirect('/logout');
     }
 });
@@ -365,7 +363,6 @@ app.use(function(req, res, next) {
     if (req.session && Date.now() <= req.session.cookie.expires){
         next();
     } else {
-        console.log("DEBUG: No session found.");
    		res.redirect('/');
     }
 });
