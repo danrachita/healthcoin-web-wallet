@@ -207,7 +207,7 @@ define(['knockout',
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
                 var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
-                self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinSymbol + " credit so far!");
+                self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinSymbol + " credits so far!");
             }
             self.dirtyFlag(false);
         }
