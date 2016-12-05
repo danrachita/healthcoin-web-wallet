@@ -192,7 +192,7 @@ app.get('/getstakinginfo', function(req,res) { callCoin('getStakingInfo', res, c
 
 // pagination view
 app.get('/listtransactions/:account/:page', function(req, res){
-    var account = (req.params.account || '*'),
+    var account = (req.params.account || ''),
         page = (req.params.page || 1),
         count = coin.settings.historyRowsPP,
         from = 0;
@@ -211,9 +211,7 @@ app.get('/makekeypair', function(req, res){
 });
 
 app.get('/getbalance/:account', function(req, res){
-    var account = req.params.account || '*';
-        console.log("DEBUG: account: " + JSON.stringify(account));
-        console.log("DEBUG: user: " + JSON.stringify(req.user));
+    var account = req.params.account || '';
     if(account.length > 1)
         callCoin('getbalance', res, coinHandler, account);
     else
@@ -222,7 +220,7 @@ app.get('/getbalance/:account', function(req, res){
 
 // Note: The wallet is account based. Always use accounts!
 app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentto?/:txcomment?', function(req, res){
-    var fromaccount = req.params.fromaccount || '*';
+    var fromaccount = req.params.fromaccount || '';
     var toaddress = req.params.toaddress || '';
     var amount = parseFloat(req.params.amount) || 0.0;
     var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
@@ -255,8 +253,8 @@ app.get('/sendtoaddress/:toaddress/:amount/:comment?/commentto?/:txcomment?', fu
 });
 
 app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(req, res){
-    var fromaccount = req.params.fromaccount || '*';
-    var toaccount = req.params.toaccount || '*';
+    var fromaccount = req.params.fromaccount || '';
+    var toaccount = req.params.toaccount || '';
     var amount = parseFloat(req.params.amount) || 0.0;
     var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     var minconf = parseInt(req.params.minconf || 1);
@@ -268,7 +266,7 @@ app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(re
 });
 
 app.get('/getnewaddress/:account', function(req, res){
-    var account = req.params.account || '*';
+    var account = req.params.account || '';
     if(account.length > 1)
         callCoin('getnewaddress', res, coinHandler, account);
     else

@@ -39,8 +39,6 @@ define(['knockout',
         self.isLocalWallet = ko.observable(false);  // Is the node local?
         self.settings = ko.observable({});          // Some settings from settings.json
 
-        self.init();
-
         self.walletStatus = new WalletStatus({parent: self});
 
         self.currentView = ko.observable('home');
@@ -76,19 +74,19 @@ define(['knockout',
         self.isLoadingStatus = ko.observable(true);
 
         self.timeout = 1000;
+
+        self.init();
     };
 
     // Called once at startup.
     walletType.prototype.init = function(){
         var self = this;
         // Get node_id and settings
-        $.when(self.getNodeInfo()).done(function(){
-            // Get user account
-            $.when(self.getUserAccount()).done(function(){
-                // Start polling!
-                self.pollWalletStatus();
-            });
-        });
+        self.getNodeInfo();
+        // Get user account
+        self.getUserAccount();
+        // Start polling!
+        self.pollWalletStatus();
     };
 
     // Called once at startup.
@@ -147,7 +145,7 @@ define(['knockout',
         var self = this;
         setTimeout(function(){
             if (Date.now() <= self.sessionExpires()){
-                self.refresh().then(function(){
+                $.when(self.refresh()).done(function(){
                     if (self.timeout < 60000){ // First timeout
                         self.timeout = 60000;
                         // Turn off initial loading icon
