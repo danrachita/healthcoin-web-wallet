@@ -75,10 +75,7 @@ define(['knockout',
 
         self.isLoadingStatus = ko.observable(true);
 
-        self.timeout = 2000;
-
-        // Start polling!
-        self.pollWalletStatus();
+        self.timeout = 1000;
     };
 
     // Called once at startup.
@@ -86,7 +83,11 @@ define(['knockout',
         var self = this;
         $.when(self.getNodeInfo())
             .done(function(){
-                self.getUserAccount();
+                $.when(self.getUserAccount())
+                    .done(function(){
+                        // Start polling!
+                        self.pollWalletStatus();
+                    });
             });
     };
 
@@ -141,23 +142,6 @@ define(['knockout',
             });
     };
 
-    // Refresh the universe.
-    walletType.prototype.refresh = function(){
-        var self = this;
-        var refreshPromise = $.when(self.walletStatus.refresh())
-            .done(function(){
-                self.home.refresh();
-                self.biomarkers.refresh();
-                self.send.refresh();
-                self.receive.refresh();
-                self.history.refresh();
-                self.explore.refresh();
-                self.console.refresh();
-                self.profile.refresh();
-	    });
-        return refreshPromise;
-    };
-
     // Refresh the universe every 'self.timeout' miliseconds.
     walletType.prototype.pollWalletStatus = function(){
         var self = this;
@@ -179,6 +163,23 @@ define(['knockout',
                 window.location = '/logout';
             }
         },self.timeout);
+    };
+
+    // Refresh the universe.
+    walletType.prototype.refresh = function(){
+        var self = this;
+        var refreshPromise = $.when(self.walletStatus.refresh())
+            .done(function(){
+                self.home.refresh();
+                self.biomarkers.refresh();
+                self.send.refresh();
+                self.receive.refresh();
+                self.history.refresh();
+                self.explore.refresh();
+                self.console.refresh();
+                self.profile.refresh();
+	    });
+        return refreshPromise;
     };
 
     walletType.prototype.checkEncryptionStatus = function(){
