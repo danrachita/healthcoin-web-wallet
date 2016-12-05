@@ -96,8 +96,8 @@ mdb.connect(dbString, function() {
 require('./lib/init-wallet')();
 
 // Auth routes / functions
-require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./lib/passport')(passport);        // Requires exported 'coin'
+require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 
 // Localizations for the client [MUST COME AFTER DB FUNCTIONS] (i.e. for EJS rendered settings)
 for (var s in coin.settings){
