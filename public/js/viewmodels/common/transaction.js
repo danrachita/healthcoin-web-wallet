@@ -6,7 +6,7 @@ define(['knockout','common/utility'], function(ko,utils){
         this.category = txn.category || '';
         this.amount = txn.amount || 0.0;
         this.txcomment = '';
-        if (typeof txn.txcomment !== 'undefined' && txn.txcomment){
+        if (typeof txn.txcomment !== 'undefined' && txn.txcomment.length){
             this.txcomment = txn.txcomment.replace(/^text:/, '').replace(/^hcbm:[\w\W]+/, 'Biomarker'); // If Healthcoin Biomarker (hcbm:)
         }
         this.confirmations = txn.confirmations || 0;
