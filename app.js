@@ -359,34 +359,32 @@ app.use(function(req, res, next) {
     }
 });
 
-if (app.get('env') === 'development') {
-    // development error handler will print stacktrace
-    app.use(function(req, res, next) {
-        res.status(400);
-        res.render('error', {
-            message: err.message,
-            error: JSON.stringify(err)
-        });
-    });
-} else {
-    // production error handler no stacktraces leaked to user
-    app.use(function(req, res, next) {
-        res.status(404);
-        if (req.accepts('html')) {
+app.use(function(err, req, res, next) {
+    res.status(404);
+    if (req.accepts('html')) {
+        if (app.get('env') === 'development') {
+            // development error handler will print stacktrace
+            res.render('error', {
+                message: err.message,
+                error: JSON.stringify(err)
+            });
+            return;
+        } else {
+            // production error handler no stacktraces leaked to user
             res.render('error', {
                 message: err.message,
                 error: {}
             });
             return;
         }
-        if (req.accepts('json')) {
-            res.send({ error: 'Not found' });
-            return;
-        }
-        res.type('txt').send('Not found');
-        next();
-    });
-}
+    }
+    if (req.accepts('json')) {
+        res.send({ error: 'Not found' });
+        return;
+    }
+    res.type('txt').send('Not found');
+    next();
+});
 
 // TODO: Needs testing
 function tryReconnect(){
