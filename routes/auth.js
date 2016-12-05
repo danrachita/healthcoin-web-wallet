@@ -4,8 +4,8 @@ module.exports = function(app, passport){
 		if (req.user.local.changeme){
 			res.redirect('/password');
 		}
-		console.log("DEBUG: " + JSON.stringify(req.session));
-		console.log("DEBUG: " + JSON.stringify(req.user));
+		//console.log("DEBUG: req.session: " + JSON.stringify(req.session));
+		//console.log("DEBUG: req.user: " + JSON.stringify(req.user));
 		res.render('home.ejs'); // If logged in, allow access to the Web Wallet
 	});
 
