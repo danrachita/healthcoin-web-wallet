@@ -156,7 +156,7 @@ app.get('/getuseraccount', function(req,res){
         res.send(JSON.stringify(response));
     } else {
         console.log("DEBUG: User not found.");
-        res.redirect('/login');
+        res.redirect('/logout');
     }
 });
 
