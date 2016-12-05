@@ -212,6 +212,8 @@ app.get('/makekeypair', function(req, res){
 
 app.get('/getbalance/:account', function(req, res){
     var account = req.params.account || '*';
+        console.log("DEBUG: account: " + JSON.stringify(account));
+        console.log("DEBUG: user: " + JSON.stringify(req.user));
     if(account.length > 1)
         callCoin('getbalance', res, coinHandler, account);
     else
