@@ -160,7 +160,6 @@ app.get('/getuseraccount', function(req,res){
             error: null,
             result: { User: req.user }
         };
-        console.log("DEBUG: user: " + JSON.stringify(req.user));
         res.send(JSON.stringify(response));
     } else {
         res.redirect('/logout');
