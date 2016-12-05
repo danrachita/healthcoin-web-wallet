@@ -155,10 +155,10 @@ app.get('/getnodeinfo', function(req,res){
 
 // Returns user account and address.
 app.get('/getuseraccount', function(req,res){
-    if (req.session && req.session.user) {
+    if (req.user) {
         var response = {
             error: null,
-            result: { User: req.session.user }
+            result: { User: req.user }
         };
         res.send(JSON.stringify(response));
     } else {
@@ -168,11 +168,11 @@ app.get('/getuseraccount', function(req,res){
 
 // Saves user profile.
 app.get('/saveuserprofile/:profile', function(req,res){
-    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.session.user.profile,
+    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.user.profile,
         result = null;
     if (profile && profile.login_type){
-        req.session.user.profile = profile;
-        result = mdb.saveUserProfile(req.session.user._id, profile);
+        req.user.profile = profile;
+        result = mdb.saveUserProfile(req.user._id, profile);
     }
     var response = {
         error: null,
@@ -232,7 +232,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
         if (comment === "HCBM" && txcomment !== ''){
             // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
             var txcommentObj = JSON.parse(txcomment) || {};
-            var Biomarker = new Biomarkers().buildBiomarker(amount, req.session.user._id, txcommentObj);
+            var Biomarker = new Biomarkers().buildBiomarker(amount, req.user._id, txcommentObj);
             txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
             callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
         } else {

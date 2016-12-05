@@ -4,7 +4,7 @@ module.exports = function(app, passport){
 		if (req.user.local.changeme){
 			res.redirect('/password');
 		}
-		console.log("DEBUG: " + JSON.stringify(req.session.user));
+		console.log("DEBUG: " + JSON.stringify(req.session));
 		console.log("DEBUG: " + JSON.stringify(req.user));
 		res.render('home.ejs'); // If logged in, allow access to the Web Wallet
 	});
@@ -17,7 +17,6 @@ module.exports = function(app, passport){
 	app.post('/login',
 		passport.authenticate('local-login', { failureRedirect: '/login', failureFlash: true }),
 			function(req, res) {
-				req.session.user = req.user;
 				res.redirect('/');
 			}
 	);
@@ -50,7 +49,6 @@ module.exports = function(app, passport){
 	app.get('/auth/facebook/callback', 
 	    passport.authenticate('facebook', { failureRedirect: '/' }),
 			function(req, res) {
-				req.session.user = req.user;
 				res.redirect('/');
 			}
 	);
@@ -60,7 +58,6 @@ module.exports = function(app, passport){
 	app.get('/auth/google/callback', 
 	    passport.authenticate('google', { failureRedirect: '/' }),
 			function(req, res) {
-				req.session.user = req.user;
 				res.redirect('/');
 			}
 	);
@@ -70,7 +67,6 @@ module.exports = function(app, passport){
 	app.get('/auth/twitter/callback', 
 	    passport.authenticate('twitter', { failureRedirect: '/' }),
 			function(req, res) {
-				req.session.user = req.user;
 				res.redirect('/');
 			}
 	);
