@@ -112,26 +112,6 @@ require('./lib/init-wallet')();             // Requires exported 'coin'
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./lib/passport')(passport);        // Requires exported 'coin'
 
-if (app.get('env') === 'development') {
-    // development error handler will print stacktrace
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: JSON.stringify(err)
-        });
-    });
-} else {
-    // production error handler no stacktraces leaked to user
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: {}
-        });
-    });
-}
-
 // Handler for indirect calls to the coin daemon.
 function callCoin(command, res, handler){
     var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
@@ -379,12 +359,34 @@ app.use(function(req, res, next) {
     }
 });
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
+if (app.get('env') === 'development') {
+    // development error handler will print stacktrace
+    app.use(function(req, res, next) {
+        res.status(400);
+        res.render('error', {
+            message: err.message,
+            error: JSON.stringify(err)
+        });
+    });
+} else {
+    // production error handler no stacktraces leaked to user
+    app.use(function(req, res, next) {
+        res.status(404);
+        if (req.accepts('html')) {
+            res.render('error', {
+                message: err.message,
+                error: {}
+            });
+            return;
+        }
+        if (req.accepts('json')) {
+            res.send({ error: 'Not found' });
+            return;
+        }
+        res.type('txt').send('Not found');
+        next();
+    });
+}
 
 // TODO: Needs testing
 function tryReconnect(){
