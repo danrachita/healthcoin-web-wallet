@@ -4,6 +4,7 @@ module.exports = function(app, passport){
 		if (req.user.local.changeme){
 			res.redirect('/password');
 		}
+		console.log("DEBUG: " + req.session.user);
 		res.render('home.ejs'); // If logged in, allow access to the Web Wallet
 	});
 
@@ -48,7 +49,6 @@ module.exports = function(app, passport){
 	app.get('/auth/facebook/callback', 
 	    passport.authenticate('facebook', { failureRedirect: '/' }),
 			function(req, res) {
-				console.log(req.session.user);
 				req.session.user = req.user;
 				res.redirect('/');
 			}
