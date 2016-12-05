@@ -82,9 +82,9 @@ define(['knockout',
     walletType.prototype.init = function(){
         var self = this;
         // Get node_id and settings
-        self.getNodeInfo().then(function(){
+        $.when(self.getNodeInfo()).done(function(){
             // Get user account
-            self.getUserAccount().then(function(){
+            $.when(self.getUserAccount()).done(function(){
                 // Start polling!
                 self.pollWalletStatus();
             });
