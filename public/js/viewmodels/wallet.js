@@ -75,7 +75,7 @@ define(['knockout',
 
         self.isLoadingStatus = ko.observable(true);
 
-        self.timeout = 1000;
+        self.timeout = 100;
 
         // Start polling!
         self.pollWalletStatus();
@@ -141,6 +141,7 @@ define(['knockout',
             });
     };
 
+    // Refresh the universe.
     walletType.prototype.refresh = function(){
         var self = this;
         var refreshPromise = $.when(self.walletStatus.refresh())
@@ -157,6 +158,7 @@ define(['knockout',
         return refreshPromise;
     };
 
+    // Refresh the universe every 'self.timeout' miliseconds.
     walletType.prototype.pollWalletStatus = function(){
         var self = this;
         setTimeout(function(){
