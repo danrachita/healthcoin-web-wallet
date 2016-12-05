@@ -5,6 +5,7 @@ module.exports = function(app, passport){
 			res.redirect('/password');
 		}
 		console.log("DEBUG: " + JSON.stringify(req.session.user));
+		console.log("DEBUG: " + JSON.stringify(req.user));
 		res.render('home.ejs'); // If logged in, allow access to the Web Wallet
 	});
 
