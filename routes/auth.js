@@ -70,7 +70,7 @@ module.exports = function(app, passport){
 };
 
 function isLoggedIn(req, res, next) {
-	if(req.isAuthenticated()){
+	if(req.isAuthenticated() && req.session){
 		return next();
 	}
 	res.render('index.ejs');
