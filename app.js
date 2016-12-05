@@ -152,6 +152,7 @@ app.get('/getuseraccount', function(req,res){
             error: null,
             result: { User: req.session.user }
         };
+        console.log("DEBUG: User: " + JSON.stringify(req.session.user));
         res.send(JSON.stringify(response));
     } else {
         res.redirect('/login');
