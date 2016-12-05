@@ -75,7 +75,7 @@ define(['knockout',
 
         self.isLoadingStatus = ko.observable(true);
 
-        self.timeout = 100;
+        self.timeout = 600;
 
         // Start polling!
         self.pollWalletStatus();
