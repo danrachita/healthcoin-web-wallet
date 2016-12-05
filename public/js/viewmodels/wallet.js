@@ -75,7 +75,7 @@ define(['knockout',
 
         self.isLoadingStatus = ko.observable(true);
 
-        self.timeout = 2000;
+        self.timeout = 5000;
     };
 
     // Called once at startup.
