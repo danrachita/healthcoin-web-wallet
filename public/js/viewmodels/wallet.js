@@ -75,7 +75,9 @@ define(['knockout',
 
         self.timeout = 1000;
 
-        self.init();
+        setTimeout(function(){
+            self.init();
+        }, self.timeout);
     };
 
     // Called once at startup.
@@ -115,7 +117,7 @@ define(['knockout',
                                 window.location = '/logout';
                                 console.log("ERROR: Aborting! Wallet not found.");
                             } else {
-                                // I think we're good...
+                                // I think we're good... Start polling!
                                 self.pollWalletStatus();
                             }
                         } else {
