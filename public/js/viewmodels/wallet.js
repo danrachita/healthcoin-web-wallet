@@ -32,7 +32,7 @@ define(['knockout',
 
         self.User = ko.observable({});
         self.role = ko.observable("");
-        self.node_id = ko.observable("");
+        self.node_id = ko.observable("127.0.0.1");
         self.account = ko.observable("");
         self.address = ko.observable("");
 
