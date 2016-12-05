@@ -39,8 +39,7 @@ define(['knockout',
         self.isLocalWallet = ko.observable(false);  // Is the node local?
         self.settings = ko.observable({});          // Some settings from settings.json
 
-        self.getNodeInfo();
-        self.getUserAccount();
+        self.init();
 
         self.walletStatus = new WalletStatus({parent: self});
 
@@ -80,6 +79,15 @@ define(['knockout',
 
         // Start polling!
         self.pollWalletStatus();
+    };
+
+    // Called once at startup.
+    walletType.prototype.init = function(){
+        var self = this;
+        $.when(self.getNodeInfo())
+            .done(function(){
+                self.getUserAccount();
+            });
     };
 
     // Called once at startup.
