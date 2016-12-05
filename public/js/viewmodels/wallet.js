@@ -75,20 +75,20 @@ define(['knockout',
 
         self.isLoadingStatus = ko.observable(true);
 
-        self.timeout = 1000;
+        self.timeout = 2000;
     };
 
     // Called once at startup.
     walletType.prototype.init = function(){
         var self = this;
-        $.when(self.getNodeInfo())
-            .done(function(){
-                $.when(self.getUserAccount())
-                    .done(function(){
-                        // Start polling!
-                        self.pollWalletStatus();
-                    });
+        // Get node_id and settings
+        self.getNodeInfo().then(function(){
+            // Get user account
+            self.getUserAccount().then(function(){
+                // Start polling!
+                self.pollWalletStatus();
             });
+        });
     };
 
     // Called once at startup.
