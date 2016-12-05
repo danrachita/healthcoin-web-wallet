@@ -260,12 +260,12 @@ sup {
 
 .floatright {
     float: right !important;
-    padding: 10px;
+    padding: 20px;
 }
 
 .floatleft {
     float: left !important;
-    padding: 10px;
+    padding: 20px;
 }
 
 .copyright {
