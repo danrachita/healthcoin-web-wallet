@@ -117,6 +117,8 @@ define(['knockout',
 
             if (!self.wallet.profileComplete()){
                 self.statusMessage("Please complete your profile before continuing.");
+            } else {
+                self.statusMessage("");
             }
             self.dirtyFlag(false);
         }

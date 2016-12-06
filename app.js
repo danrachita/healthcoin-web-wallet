@@ -231,6 +231,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount <= maxSendAmount){
         if (txcomment !== ''){
             if (comment === 'HCBM'){
+                // TODO: encrypt/decrypt biomarker
                 // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
                 var txcommentObj = JSON.parse(txcomment) || {};
                 var Biomarker = new Biomarkers().buildBiomarker(amount, req.user._id, txcommentObj);

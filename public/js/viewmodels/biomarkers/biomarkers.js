@@ -9,6 +9,7 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.profileComplete = false;
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmEHR_SourceValues = ko.observableArray(["",
@@ -155,7 +156,8 @@ define(['knockout',
             });
 
         self.canSend = ko.computed(function(){
-            var canSend = self.hcbmDate() !== "" &&
+            var canSend = self.profileComplete === true &&
+                          self.hcbmDate() !== "" &&
                           self.hcbmEHR_Source() !== "" &&
                           self.hcbmEHR_Type() !== "" &&
                           self.hcbmA1c() >= 2.00 && self.hcbmA1c() <= 12.00 &&
@@ -204,8 +206,10 @@ define(['knockout',
             // Get the address of the user
             self.recipientAddress(self.wallet.address()); // Send to self
             if (!self.wallet.profileComplete()){
+                self.profileComplete = false;
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
+                self.profileComplete = true;
                 var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
                 self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinSymbol + " credits so far!");
             }
