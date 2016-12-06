@@ -40,7 +40,7 @@ define(['knockout',
         self.settings = ko.observable({});          // Some settings from settings.json
 
         // Get node_id and settings, and User account
-        self.getNodeUser();
+        self.initNodeUser();
 
         self.walletStatus = new WalletStatus({parent: self});
 
@@ -84,13 +84,12 @@ define(['knockout',
     };
 
     // Called once at startup.
-    walletType.prototype.getNodeUser = function(){
+    walletType.prototype.initNodeUser = function(){
         var self = this;
         var getNodeInfoCommand = new Command('getnodeinfo', [], 'production'); // Gets the wallet info and settings quietly
         $.when(getNodeInfoCommand.execute())
             .done(function(getNodeInfoData){
                 if (typeof getNodeInfoData.node_id !== 'undefined'){
-                    console.log("DEBUG: getNodeInfoData.node_id: " + JSON.stringify(getNodeInfoData.node_id));
                     self.node_id(getNodeInfoData.node_id);
                     self.isLocalWallet(getNodeInfoData.isLocal);
                     self.settings(getNodeInfoData.settings);
@@ -106,7 +105,6 @@ define(['knockout',
                 $.when(getUserAccountCommand.execute())
                     .done(function(getUserAccountData){
                         if (typeof getUserAccountData.User !== 'undefined'){
-                            console.log("DEBUG: getUserAccountData.User: " + JSON.stringify(getUserAccountData.User));
                             self.User(getUserAccountData.User);
                             self.role(self.User().profile.role);
                             // Get the user's wallet account info for this node_id
@@ -137,9 +135,15 @@ define(['knockout',
         var self = this;
         setTimeout(function(){
             if (!self.initComplete){
-                // TODO: Need to break out at some point!
-                self.pollWalletStatus();
+                // Prevent polling forever if init never finishes.
+                if (Date.now() <= self.sessionExpires()){
+                        self.pollWalletStatus();
+                } else {
+                    console.log("Session Expired. Polling stopped.");
+                    window.location = '/logout';
+                }
             } else {
+                // Normal polling
                 if (Date.now() <= self.sessionExpires()){
                     $.when(self.refresh()).done(function(){
                         if (self.timeout < 60000){ // First timeout
@@ -153,7 +157,6 @@ define(['knockout',
                     });
                 } else {
                     console.log("Session Expired. Polling stopped.");
-                    // TODO: Prompt for the user to continue, but timeout after 1 minute if no response.
                     window.location = '/logout';
                 }
             }
