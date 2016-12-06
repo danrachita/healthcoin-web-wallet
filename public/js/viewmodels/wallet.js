@@ -92,7 +92,7 @@ define(['knockout',
         $.when(getNodeInfoCommand.execute())
             .done(function(getNodeInfoData){
                 if (typeof getNodeInfoData.node_id !== 'undefined'){
-                    colsole.log("DEBUG: getNodeInfoData.node_id: " + JSON.stringify(getNodeInfoData.node_id));
+                    console.log("DEBUG: getNodeInfoData.node_id: " + JSON.stringify(getNodeInfoData.node_id));
                     self.node_id(getNodeInfoData.node_id);
                     self.isLocalWallet(getNodeInfoData.isLocal);
                     self.settings(getNodeInfoData.settings);
@@ -114,7 +114,7 @@ define(['knockout',
         $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined'){
-                    colsole.log("DEBUG: getUserAccountData.User: " + JSON.stringify(getUserAccountData.User));
+                    console.log("DEBUG: getUserAccountData.User: " + JSON.stringify(getUserAccountData.User));
                     self.User(getUserAccountData.User);
                     self.role(self.User().profile.role);
                     // Get the user's wallet account info for this node_id
