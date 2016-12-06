@@ -66,8 +66,7 @@ define(['knockout',
         self.country.subscribe(function (){self.dirtyFlag(true);});
 
         self.canSubmit = ko.computed(function(){
-            var canSubmit = self.profileComplete &&
-                            self.name() !== "" &&
+            var canSubmit = self.name() !== "" &&
                             self.email() !== "" &&
                             self.age() > 0 &&
                             self.weight() > 0 &&
