@@ -39,6 +39,12 @@ define(['knockout',
         self.isLocalWallet = ko.observable(false);  // Is the node local?
         self.settings = ko.observable({});          // Some settings from settings.json
 
+        // Get node_id and settings
+        self.getNodeInfo();
+
+        // Get user account
+        self.getUserAccount();
+
         self.walletStatus = new WalletStatus({parent: self});
 
         self.currentView = ko.observable('home');
@@ -75,16 +81,6 @@ define(['knockout',
 
         self.timeout = 1000;
 
-        self.init();
-    };
-
-    // Called once at startup.
-    walletType.prototype.init = function(){
-        var self = this;
-        // Get node_id and settings
-        self.getNodeInfo();
-        // Get user account
-        self.getUserAccount();
         // Start polling!
         self.pollWalletStatus();
     };
@@ -96,6 +92,7 @@ define(['knockout',
         $.when(getNodeInfoCommand.execute())
             .done(function(getNodeInfoData){
                 if (typeof getNodeInfoData.node_id !== 'undefined'){
+                    colsole.log("DEBUG: getNodeInfoData.node_id: " + JSON.stringify(getNodeInfoData.node_id));
                     self.node_id(getNodeInfoData.node_id);
                     self.isLocalWallet(getNodeInfoData.isLocal);
                     self.settings(getNodeInfoData.settings);
@@ -117,13 +114,14 @@ define(['knockout',
         $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined'){
+                    colsole.log("DEBUG: getUserAccountData.User: " + JSON.stringify(getUserAccountData.User));
                     self.User(getUserAccountData.User);
                     self.role(self.User().profile.role);
                     // Get the user's wallet account info for this node_id
                     var wallet = self.User().wallet.filter(function(wal){
                         if(wal.node_id && wal.node_id === self.node_id()){
-                            self.account(wal.account || "*");
-                            self.address(wal.address || "");
+                            self.account(wal.account);
+                            self.address(wal.address);
                             return wal;
                         }
                     });

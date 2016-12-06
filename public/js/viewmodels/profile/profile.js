@@ -6,7 +6,7 @@ define(['knockout',
         self.wallet = options.parent || {};
 
         self.node_id = ko.observable("");
-        self.account = ko.observable("*");
+        self.account = ko.observable("");
         self.address = ko.observable("");
 
         self.role = ko.observable("");
