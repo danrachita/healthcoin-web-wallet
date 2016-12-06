@@ -156,7 +156,7 @@ define(['knockout',
             });
 
         self.canSend = ko.computed(function(){
-            var canSend = self.profileComplete === true &&
+            var canSend = self.profileComplete &&
                           self.hcbmDate() !== "" &&
                           self.hcbmEHR_Source() !== "" &&
                           self.hcbmEHR_Type() !== "" &&
@@ -196,7 +196,7 @@ define(['knockout',
 
     biomarkersType.prototype.refresh = function(){
         var self = this;
-        if (!self.isDirty() && self.wallet.User().profile){
+        if (!self.isDirty() || !self.profileComplete){
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
             self.hcbmWaist(self.wallet.User().profile.waist);

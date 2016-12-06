@@ -9,6 +9,7 @@ define(['knockout',
         self.account = ko.observable("");
         self.address = ko.observable("");
 
+        self.profileComplete = true;
         self.role = ko.observable("");
         self.login_type = ko.observable("");
         self.login_id = ko.observable("");
@@ -65,14 +66,15 @@ define(['knockout',
         self.country.subscribe(function (){self.dirtyFlag(true);});
 
         self.canSubmit = ko.computed(function(){
-            var canSubmit = self.name() !== "" &&
-                          self.email() !== "" &&
-                          self.age() > 0 &&
-                          self.weight() > 0 &&
-                          self.waist() > 0 &&
-                          self.gender() !== "" &&
-                          self.ethnicity() !== "" &&
-                          self.country() !== "";
+            var canSubmit = self.profileComplete &&
+                            self.name() !== "" &&
+                            self.email() !== "" &&
+                            self.age() > 0 &&
+                            self.weight() > 0 &&
+                            self.waist() > 0 &&
+                            self.gender() !== "" &&
+                            self.ethnicity() !== "" &&
+                            self.country() !== "";
             return canSubmit;
         });
 
@@ -81,7 +83,7 @@ define(['knockout',
 
     profileType.prototype.refresh = function(){
         var self = this;
-        if (!self.isDirty() && self.wallet.User().profile){
+        if (!self.isDirty() || !self.profileComplete){
             self.login_type(self.wallet.User().profile.login_type);
             switch(self.login_type()){
                 case ("local"):
@@ -116,8 +118,10 @@ define(['knockout',
             self.credit(self.wallet.User().profile.credit);
 
             if (!self.wallet.profileComplete()){
+                self.profileComplete = false;
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
+                self.profileComplete = true;
                 self.statusMessage("");
             }
             self.dirtyFlag(false);
