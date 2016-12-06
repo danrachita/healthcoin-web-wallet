@@ -39,11 +39,8 @@ define(['knockout',
         self.isLocalWallet = ko.observable(false);  // Is the node local?
         self.settings = ko.observable({});          // Some settings from settings.json
 
-        // Get node_id and settings
-        self.getNodeInfo();
-
-        // Get user account
-        self.getUserAccount();
+        // Get node_id and settings, and User account
+        self.getNodeUser();
 
         self.walletStatus = new WalletStatus({parent: self});
 
@@ -77,6 +74,7 @@ define(['knockout',
             return isComplete;
         });
 
+        self.initComplete = false;
         self.isLoadingStatus = ko.observable(true);
 
         self.timeout = 1000;
@@ -86,7 +84,7 @@ define(['knockout',
     };
 
     // Called once at startup.
-    walletType.prototype.getNodeInfo = function(){
+    walletType.prototype.getNodeUser = function(){
         var self = this;
         var getNodeInfoCommand = new Command('getnodeinfo', [], 'production'); // Gets the wallet info and settings quietly
         $.when(getNodeInfoCommand.execute())
@@ -104,37 +102,33 @@ define(['knockout',
                     console.log("ERROR: Aborting! Node_ID not found.");
                     window.location = '/logout';
                 }
-            });
-    };
-
-    // Called once at startup.
-    walletType.prototype.getUserAccount = function(){
-        var self = this;
-        var getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
-        $.when(getUserAccountCommand.execute())
-            .done(function(getUserAccountData){
-                if (typeof getUserAccountData.User !== 'undefined'){
-                    console.log("DEBUG: getUserAccountData.User: " + JSON.stringify(getUserAccountData.User));
-                    self.User(getUserAccountData.User);
-                    self.role(self.User().profile.role);
-                    // Get the user's wallet account info for this node_id
-                    var wallet = self.User().wallet.filter(function(wal){
-                        if(wal.node_id && wal.node_id === self.node_id()){
-                            self.account(wal.account);
-                            self.address(wal.address);
-                            return wal;
+                var getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
+                $.when(getUserAccountCommand.execute())
+                    .done(function(getUserAccountData){
+                        if (typeof getUserAccountData.User !== 'undefined'){
+                            console.log("DEBUG: getUserAccountData.User: " + JSON.stringify(getUserAccountData.User));
+                            self.User(getUserAccountData.User);
+                            self.role(self.User().profile.role);
+                            // Get the user's wallet account info for this node_id
+                            var wallet = self.User().wallet.filter(function(wal){
+                                if(wal.node_id && wal.node_id === self.node_id()){
+                                    self.account(wal.account);
+                                    self.address(wal.address);
+                                    return wal;
+                                }
+                            });
+                            if (!wallet) {
+                                // Bailing...
+                                console.log("ERROR: Aborting! User wallet not found.");
+                                window.location = '/logout';
+                            }
+                        } else {
+                            // Bailing...
+                            console.log("ERROR: Aborting! User account not found.");
+                            window.location = '/logout';
                         }
+                        self.initComplete = true;
                     });
-                    if (!wallet) {
-                        // Bailing...
-                        console.log("ERROR: Aborting! User wallet not found.");
-                        window.location = '/logout';
-                    }
-                } else {
-                    // Bailing...
-                    console.log("ERROR: Aborting! User account not found.");
-                    window.location = '/logout';
-                }
             });
     };
 
@@ -142,21 +136,26 @@ define(['knockout',
     walletType.prototype.pollWalletStatus = function(){
         var self = this;
         setTimeout(function(){
-            if (Date.now() <= self.sessionExpires()){
-                $.when(self.refresh()).done(function(){
-                    if (self.timeout < 60000){ // First timeout
-                        self.timeout = 60000;
-                        // Turn off initial loading icon
-                        self.isLoadingStatus(false);
-                        // One-time call after first refresh
-                        self.checkEncryptionStatus();
-                    }
-                    self.pollWalletStatus();
-                });
+            if (!self.initComplete){
+                // TODO: Need to break out at some point!
+                self.pollWalletStatus();
             } else {
-                console.log("Session Expired. Polling stopped.");
-                // TODO: Prompt for the user to continue, but timeout after 1 minute if no response.
-                window.location = '/logout';
+                if (Date.now() <= self.sessionExpires()){
+                    $.when(self.refresh()).done(function(){
+                        if (self.timeout < 60000){ // First timeout
+                            self.timeout = 60000;
+                            // Turn off initial loading icon
+                            self.isLoadingStatus(false);
+                            // One-time call after first refresh
+                            self.checkEncryptionStatus();
+                        }
+                        self.pollWalletStatus();
+                    });
+                } else {
+                    console.log("Session Expired. Polling stopped.");
+                    // TODO: Prompt for the user to continue, but timeout after 1 minute if no response.
+                    window.location = '/logout';
+                }
             }
         },self.timeout);
     };
