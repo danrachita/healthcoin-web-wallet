@@ -40,7 +40,7 @@ define(['knockout',
         self.settings = ko.observable({});          // Some settings from settings.json
 
         // Get node_id and settings, and User account
-        self.initNodeUser();
+        self.initNode();
 
         self.walletStatus = new WalletStatus({parent: self});
 
@@ -84,7 +84,7 @@ define(['knockout',
     };
 
     // Called once at startup.
-    walletType.prototype.initNodeUser = function(){
+    walletType.prototype.initNode = function(){
         var self = this;
         var getNodeInfoCommand = new Command('getnodeinfo', [], 'production'); // Gets the wallet info and settings quietly
         $.when(getNodeInfoCommand.execute())
@@ -101,32 +101,38 @@ define(['knockout',
                     console.log("ERROR: Aborting! Node_ID not found.");
                     window.location = '/logout';
                 }
-                var getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
-                $.when(getUserAccountCommand.execute())
-                    .done(function(getUserAccountData){
-                        if (typeof getUserAccountData.User !== 'undefined'){
-                            self.User(getUserAccountData.User);
-                            self.role(self.User().profile.role);
-                            // Get the user's wallet account info for this node_id
-                            var wallet = self.User().wallet.filter(function(wal){
-                                if(wal.node_id && wal.node_id === self.node_id()){
-                                    self.account(wal.account);
-                                    self.address(wal.address);
-                                    return wal;
-                                }
-                            });
-                            if (!wallet) {
-                                // Bailing...
-                                console.log("ERROR: Aborting! User wallet not found.");
-                                window.location = '/logout';
-                            }
-                        } else {
-                            // Bailing...
-                            console.log("ERROR: Aborting! User account not found.");
-                            window.location = '/logout';
+                self.initUser();
+            });
+    };
+
+    // Called once at startup.
+    walletType.prototype.initUser = function(){
+        var self = this;
+        var getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
+        $.when(getUserAccountCommand.execute())
+            .done(function(getUserAccountData){
+                if (typeof getUserAccountData.User !== 'undefined'){
+                    self.User(getUserAccountData.User);
+                    self.role(self.User().profile.role);
+                    // Get the user's wallet account info for this node_id
+                    var wallet = self.User().wallet.filter(function(wal){
+                        if(wal.node_id && wal.node_id === self.node_id()){
+                            self.account(wal.account);
+                            self.address(wal.address);
+                            return wal;
                         }
-                        self.initComplete = true;
                     });
+                    if (!wallet) {
+                        // Bailing...
+                        console.log("ERROR: Aborting! User wallet not found.");
+                        window.location = '/logout';
+                    }
+                } else {
+                    // Bailing...
+                    console.log("ERROR: Aborting! User account not found.");
+                    window.location = '/logout';
+                }
+                self.initComplete = true;
             });
     };
 
@@ -152,6 +158,11 @@ define(['knockout',
                             self.isLoadingStatus(false);
                             // One-time call after first refresh
                             self.checkEncryptionStatus();
+                        }
+                        // This gets re-called until the user completes their profile.
+                        // TODO: Find a better way to do this!
+                        if (!profileComplete()){
+                            self.initUser();
                         }
                         self.pollWalletStatus();
                     });
