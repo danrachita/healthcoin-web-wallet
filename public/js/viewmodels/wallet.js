@@ -161,7 +161,7 @@ define(['knockout',
                         }
                         // This gets re-called until the user completes their profile.
                         // TODO: Find a better way to do this!
-                        if (!profileComplete()){
+                        if (!self.profileComplete()){
                             self.initUser();
                         }
                         self.pollWalletStatus();
