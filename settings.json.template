@@ -23,6 +23,9 @@
   // Coin symbol
   "coinSymbol": "HCN",
 
+  // Coin has transaction txcomment feature
+  "txComment": false,
+
   // Logo
   "logo": "./public/images/Icon.png",
 

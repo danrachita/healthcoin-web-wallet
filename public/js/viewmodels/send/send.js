@@ -8,6 +8,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.txcomment = ko.observable("");
+
         self.recipientAddress = ko.observable("").extend( 
             { 
                 pattern: { params: patterns.coin, message: 'Not a valid address.' },
@@ -50,7 +52,7 @@ define(['knockout',
         self.available(self.wallet.walletStatus.available());
         self.maxSendAmount(self.wallet.settings().maxSendAmount);
         self.coinSymbol(self.wallet.settings().coinSymbol);
-        self.minTxFee(self.wallet.settings().mintxfee);
+        self.minTxFee(self.wallet.settings().minTxFee);
 
         self.statusMessage("Available: " + self.available() + " " + self.wallet.settings().coinSymbol + " ( Maximum send allowed: " + self.maxSendAmount() + " )");
     };
@@ -134,7 +136,7 @@ define(['knockout',
     sendType.prototype.sendToAddress = function(auth) { 
         var self = this;
         var sendCommand = new Command('sendfrom',
-                                      [self.wallet.account(), self.recipientAddress(), self.amount()],
+                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, '', '', self.txcomment()],
                                       self.wallet.settings().env).execute()
             .done(function(txid){
                 console.log("TxId: " + JSON.stringify(txid));

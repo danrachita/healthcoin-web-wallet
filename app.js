@@ -229,15 +229,17 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var commentto = req.params.commentto || '';
     var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
     if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount <= maxSendAmount){
-        if (comment === "HCBM" && txcomment !== ''){
-            // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
-            var txcommentObj = JSON.parse(txcomment) || {};
-            var Biomarker = new Biomarkers().buildBiomarker(amount, req.user._id, txcommentObj);
-            txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
-            callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
-        } else {
-            callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount);
+        if (txcomment !== ''){
+            if (comment === 'HCBM'){
+                // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
+                var txcommentObj = JSON.parse(txcomment) || {};
+                var Biomarker = new Biomarkers().buildBiomarker(amount, req.user._id, txcommentObj);
+                txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
+            } else {
+                txcomment = "text:" + txcomment;
+            }
         }
+        callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
     } else {
         if (amount > maxSendAmount)
             res.send(JSON.stringify("Error: Amount is greater than the maximum of " + maxSendAmount + "."));

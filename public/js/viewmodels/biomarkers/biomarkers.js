@@ -139,7 +139,7 @@ define(['knockout',
         self.hcbmOther.subscribe(function (){self.dirtyFlag(true);});
 
         // For Admin view only.
-        self.txcommentBiomarker = ko.observable("hcbm");
+        self.txcommentBiomarker = ko.observable("hcbm:");
 
         // Recipient address for biomarker submission is the User's wallet address. (Send to self.)
         self.recipientAddress = ko.observable("").extend(
