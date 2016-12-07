@@ -24,8 +24,12 @@ define(['knockout',
 
     historyType.prototype.refresh = function(){
         var self = this;
-        if (self.wallet.account() !== ""){
-            self.getTransactions(self.wallet.account(), self.page());
+        var account = self.wallet.account();
+        if (account !== ""){
+            if (account === self.wallet.settings().masterAccount){
+                self.statusMessage("(Global History View)");
+            }
+            self.getTransactions(account, self.page());
         }
     };
 

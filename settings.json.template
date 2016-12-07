@@ -69,6 +69,7 @@
   },
 
   // Master UI login account, and Label to assign to "" wallet accounts.
+  // ***  DO NOT CHANGE THE ACCOUNT NAME AFTER FIRST RUN!  ***
   "masterAccount": "MASTER_ACCOUNT",
 
   // Master email account.
