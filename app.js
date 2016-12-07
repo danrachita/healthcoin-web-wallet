@@ -123,7 +123,7 @@ app.all('*', function(req, res, next) {
 
 // Handler for indirect calls to the coin daemon.
 function callCoin(command, res, handler){
-    var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd function parameter
+    var args = Array.prototype.slice.call(arguments, 3);   // Args are after the 3rd parameter
     var callargs = args.concat([handler.bind({res:res})]); // Add the handler function to args
     return coin.api[command].apply(coin.api, callargs, coin.settings.env);
 }
@@ -228,7 +228,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
     var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
-    if(fromaccount.length > 1 && toaddress.length > 1 && amount > 0 && amount <= maxSendAmount){
+    if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount){
         if (txcomment !== ''){
             if (comment === 'HCBM'){
                 // TODO: encrypt/decrypt biomarker
@@ -236,8 +236,6 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
                 var txcommentObj = JSON.parse(txcomment) || {};
                 var Biomarker = new Biomarkers().buildBiomarker(amount, req.user._id, txcommentObj);
                 txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker));
-            } else {
-                txcomment = "text:" + txcomment;
             }
         }
         callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
@@ -250,7 +248,7 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
 });
 
 // Note: Use sendfrom instead as the wallet is account based
-app.get('/sendtoaddress/:toaddress/:amount/:comment?/commentto?/:txcomment?', function(req, res){
+app.get('/sendtoaddress/:toaddress/:amount', function(req, res){
     var amount = parseFloat(req.params.amount);
     callCoin('sendtoaddress', res, coinHandler, req.params.toaddress, amount);
 });

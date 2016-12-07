@@ -12,8 +12,7 @@ define(['knockout',
 
         self.recipientAddress = ko.observable("").extend( 
             { 
-                pattern: { params: patterns.coin, message: 'Not a valid address.' },
-                required: true
+                pattern: { params: patterns.coin, message: 'Not a valid address.' }
             });
 
         self.label = ko.observable("");
@@ -31,13 +30,13 @@ define(['knockout',
 
         self.canSend = ko.computed(function(){
             var address = self.recipientAddress(),
-                addressValid = self.recipientAddress.isValid() && address.length > 0,
+                addressValid = address.length && self.recipientAddress.isValid(),
                 //label = self.label,
                 amount = self.amount(),
                 available = self.available(),
-                amountValid = !isNaN(amount) && amount > 0.00 && self.amount.isValid() && amount <= available && amount <= self.maxSendAmount();
+                amountValid = !isNaN(amount) && amount > 0.00 && amount < available && self.amount.isValid() && amount <= self.maxSendAmount();
 
-            return addressValid && amountValid;
+            return (addressValid && amountValid);
         });
 
         self.isEncrypted = ko.computed(function(){
@@ -135,8 +134,10 @@ define(['knockout',
     
     sendType.prototype.sendToAddress = function(auth) { 
         var self = this;
+        // Encode base64 before sending.
+        var txcomment = encodeURIComponent(btoa(self.txcomment()));
         var sendCommand = new Command('sendfrom',
-                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, '', '', self.txcomment()],
+                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, 'SEND', self.recipientAddress(), txcomment],
                                       self.wallet.settings().env).execute()
             .done(function(txid){
                 console.log("TxId: " + JSON.stringify(txid));
@@ -145,7 +146,10 @@ define(['knockout',
                 } else {
                     self.statusMessage("Your transaction was not sent. Try a smaller ammount.");
                 }
-                self.amount(0); // Resets Send button
+                // Reset Send button
+                self.recipientAddress("");
+                self.amount(0);
+                self.txcomment("");
 
                 if (self.isEncrypted()){
                     self.lockWallet()

@@ -9,7 +9,7 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
-        self.profileComplete = false;
+        self.profileComplete = ko.observable(false);
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmEHR_SourceValues = ko.observableArray(["",
@@ -140,7 +140,7 @@ define(['knockout',
         self.hcbmOther.subscribe(function (){self.dirtyFlag(true);});
 
         // For Admin view only.
-        self.txcommentBiomarker = ko.observable("hcbm:");
+        self.txcommentBiomarker = ko.observable("");
 
         // Recipient address for biomarker submission is the User's wallet address. (Send to self.)
         self.recipientAddress = ko.observable("").extend(
@@ -154,27 +154,26 @@ define(['knockout',
                 number: true,
                 required: true
             });
+        self.available = ko.observable(0.00);
 
         self.canSend = ko.computed(function(){
-            var canSend = self.profileComplete &&
-                          self.hcbmDate() !== "" &&
-                          self.hcbmEHR_Source() !== "" &&
-                          self.hcbmEHR_Type() !== "" &&
-                          self.hcbmA1c() >= 2.00 && self.hcbmA1c() <= 12.00 &&
-                          self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
-                          self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
-                          self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
-                          self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130;
+            var hcbmValid = self.profileComplete() &&
+                            self.hcbmDate() !== "" &&
+                            self.hcbmEHR_Source() !== "" &&
+                            self.hcbmEHR_Type() !== "" &&
+                            self.hcbmA1c() >= 2.00 && self.hcbmA1c() <= 12.00 &&
+                            self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
+                            self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
+                            self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
+                            self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130;
 
-            var amount = self.amount(),
-                isNumber = !isNaN(amount),
-                address = self.recipientAddress(),
-                addressValid = self.recipientAddress.isValid(),
-                amountValid = self.amount.isValid(),
-                available = self.wallet.walletStatus.available();
+            var address = self.recipientAddress(),
+                addressValid = address.length && self.recipientAddress.isValid(),
+                amount = self.amount(),
+                available = self.available(),
+                amountValid = !isNaN(amount) && amount > 0.00 && amount < available && self.amount.isValid();
 
-            canSend = canSend && isNumber && addressValid && amountValid && available > 0 && address.length > 0 && amount > 0;
-            return canSend;
+            return (hcbmValid && addressValid && amountValid);
         });
 
         self.tallyScore = ko.computed(function(){
@@ -196,7 +195,8 @@ define(['knockout',
 
     biomarkersType.prototype.refresh = function(){
         var self = this;
-        if (!self.isDirty() || !self.profileComplete){
+        self.available(self.wallet.walletStatus.available());
+        if (!self.isDirty() || !self.profileComplete()){
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
             self.hcbmWaist(self.wallet.User().profile.waist);
@@ -206,10 +206,10 @@ define(['knockout',
             // Get the address of the user
             self.recipientAddress(self.wallet.address()); // Send to self
             if (!self.wallet.profileComplete()){
-                self.profileComplete = false;
+                self.profileComplete(false);
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
-                self.profileComplete = true;
+                self.profileComplete(true);
                 var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
                 self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinSymbol + " credits so far!");
             }
@@ -229,6 +229,7 @@ define(['knockout',
         self.hcbmBPD(0);
         self.hcbmDevice_Source("");
         self.hcbmDevice_Steps(0);
+        self.txcommentBiomarker("");
 
         self.dirtyFlag(false);
     };
@@ -237,9 +238,7 @@ define(['knockout',
         var self = this;
         // Build and validate the biomarker.
         self.txcommentBiomarker(self.buildBiomarker());
-        if (self.wallet.settings().env !== 'production'){
-            console.log("Biomarker: " + self.txcommentBiomarker());
-        }
+        //console.log("Biomarker: " + self.txcommentBiomarker());
 
         this.sendSubmit();
     };
@@ -273,7 +272,7 @@ define(['knockout',
     biomarkersType.prototype.sendSubmit = function(){
         var self = this;
         console.log("Send request submitted.");
-        //if(self.canSend()){
+        if(self.canSend()){
             if (self.isEncrypted()){
                 console.log("Unlocking wallet for sending.");
                 self.lockWallet().done(function(){
@@ -297,9 +296,9 @@ define(['knockout',
                 console.log("Sending...");
                 self.sendToAddress(null);
             }
-        //} else {
-        //    console.log("Can't send. Form in invalid state.");
-        //}
+        } else {
+            console.log("Can't send. Form in invalid state.");
+        }
     };
 
     biomarkersType.prototype.sendConfirm = function(){
@@ -309,7 +308,7 @@ define(['knockout',
                 title: 'Send Confirm',
                 context: self,
                 allowClose: false,
-                message: 'You are about to send encrypted bio-marker data to the blockchain. Do you wish to continue?',
+                message: 'You are about to send encrypted, anonymous bio-marker data to the blockchain. Do you wish to continue?',
                 affirmativeButtonText: 'Yes',
                 negativeButtonText: 'No',
                 affirmativeHandler: function(){ sendConfirmDeferred.resolve(); },
@@ -321,7 +320,7 @@ define(['knockout',
 
     biomarkersType.prototype.sendToAddress = function(auth){
         var self = this;
-        // Add biomarker to schema server-side then encode base64 before sending.
+        // Encode base64 before sending.
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
         var sendCommand = new Command('sendfrom',
                                       [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm],
@@ -331,6 +330,7 @@ define(['knockout',
                     console.log("TxId: " + txid);
                 }
                 self.statusMessage("Success! You've earned " + self.amount() + " credits.");
+                // Reset Send button
                 self.Reset();
                 self.wallet.User().profile.credit = self.wallet.User().profile.credit + self.amount();
                 var saveUserProfileCommand = new Command('saveuserprofile',

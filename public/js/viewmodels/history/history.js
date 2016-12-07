@@ -52,17 +52,38 @@ define(['knockout',
         self.isLoadingTransactions(true);
         var historyPromise = getTransactionsCommand.execute()
             .done(function(data){
-                var i = 0, maxRows = self.wallet.settings().historyRowsPP;
+                var i = 0, k = 0, maxRows = self.wallet.settings().historyRowsPP;
                 //var descendingTxns = data.reverse();
                 //self.transactions(ko.utils.arrayMap(descendingTxns,function(transaction){
                 self.transactions(ko.utils.arrayMap(data, function(transaction){
-                    i++;
-                    return new Transaction(transaction);
-                }));
+                        i++;
+                        // Cosmetic changes
+                        if (transaction.address !== self.wallet.address()){
+                            // TODO: Implement Address Book in DB (user.wallet[].addressBook[]) to set and look up accounts.
+                            //       PS: Need to re-istate 'label' on send page.
+                            transaction.account = ""; // addressBookLookup(transaction.address);
+                        } else {
+                            if (transaction.category !== "receive"){
+                                transaction.account = "To Me";
+                            } else {
+                                transaction.account = "From Me";
+                            }
+                        }
+                        return new Transaction(transaction);
+                    }).filter(function(transaction){
+                        // Remove duplicate record for Biomarkers
+                        if (transaction.category !== "receive" && transaction.txcomment.search(/^hcbm:/) !== 0){
+                            return transaction;
+                        } else {
+                            k++; // Count Biomark txn skips
+                        }
+                    })
+                );
+
                 if (page === self.pageLast()) page = self.pageNext(); // Go to last: page=99999999
                 if (page === self.pageFirst()) page = 1; // Go to first: page=-1
                 if (i > 0){
-                    if (i < maxRows){
+                    if (i < maxRows - k){
                         self.pagePrev(page-1);
                         self.pageNext(0);
                     } else {

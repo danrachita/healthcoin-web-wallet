@@ -9,7 +9,7 @@ define(['knockout',
         self.account = ko.observable("");
         self.address = ko.observable("");
 
-        self.profileComplete = true;
+        self.profileComplete = ko.observable(false);
         self.role = ko.observable("");
         self.login_type = ko.observable("");
         self.login_id = ko.observable("");
@@ -82,7 +82,7 @@ define(['knockout',
 
     profileType.prototype.refresh = function(){
         var self = this;
-        if (!self.isDirty() || !self.profileComplete){
+        if (!self.isDirty() || !self.profileComplete()){
             self.login_type(self.wallet.User().profile.login_type);
             switch(self.login_type()){
                 case ("local"):
@@ -117,10 +117,10 @@ define(['knockout',
             self.credit(self.wallet.User().profile.credit);
 
             if (!self.wallet.profileComplete()){
-                self.profileComplete = false;
+                self.profileComplete(false);
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
-                self.profileComplete = true;
+                self.profileComplete(true);
                 self.statusMessage("");
             }
             self.dirtyFlag(false);
