@@ -148,8 +148,11 @@ define(['knockout',
                 pattern: { params: patterns.coin, message: 'Not a valid address.' },
                 required: true
             });
+
         // This is passed as a credit in the biomarker header for future granting.
-        self.amount = ko.observable(0.0001).extend(
+        self.credit = ko.observable(0.00);
+
+        self.amount = ko.observable(0.00).extend(
             {
                 number: true,
                 required: true
@@ -196,6 +199,9 @@ define(['knockout',
     biomarkersType.prototype.refresh = function(){
         var self = this;
         self.available(self.wallet.walletStatus.available());
+        self.amount(self.wallet.settings().minTxFee);
+        self.credit(self.wallet.settings().minTxFee * 2);
+
         if (!self.isDirty() || !self.profileComplete()){
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
@@ -329,10 +335,10 @@ define(['knockout',
                 if (self.wallet.settings().env !== 'production'){
                     console.log("TxId: " + txid);
                 }
-                self.statusMessage("Success! You've earned " + self.amount() + " credits.");
+                self.statusMessage("Success! You've earned " + self.credit() + " credits.");
                 // Reset Send button
                 self.Reset();
-                self.wallet.User().profile.credit = self.wallet.User().profile.credit + self.amount();
+                self.wallet.User().profile.credit = self.wallet.User().profile.credit + self.credit();
                 var saveUserProfileCommand = new Command('saveuserprofile',
                                                         [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
                                                         self.wallet.settings().env).execute()

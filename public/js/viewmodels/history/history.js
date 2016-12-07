@@ -52,38 +52,39 @@ define(['knockout',
         self.isLoadingTransactions(true);
         var historyPromise = getTransactionsCommand.execute()
             .done(function(data){
-                var i = 0, k = 0, maxRows = self.wallet.settings().historyRowsPP;
+                var i = 0, maxRows = self.wallet.settings().historyRowsPP;
                 //var descendingTxns = data.reverse();
                 //self.transactions(ko.utils.arrayMap(descendingTxns,function(transaction){
                 self.transactions(ko.utils.arrayMap(data, function(transaction){
                         i++;
                         // Cosmetic changes
                         if (transaction.address !== self.wallet.address()){
+                            // Blank account to show address
                             // TODO: Implement Address Book in DB (user.wallet[].addressBook[]) to set and look up accounts.
-                            //       PS: Need to re-istate 'label' on send page.
+                            //       PS: Need to re-instate 'label' on send page.
                             transaction.account = ""; // addressBookLookup(transaction.address);
                         } else {
+                            // Display fiendly account name if me.
                             if (transaction.category !== "receive"){
-                                transaction.account = "To Me";
+                                transaction.account = "To Me"; // i.e. Send
                             } else {
                                 transaction.account = "From Me";
                             }
                         }
-                        return new Transaction(transaction);
-                    }).filter(function(transaction){
-                        // Remove duplicate record for Biomarkers
-                        if (transaction.category !== "receive" && transaction.txcomment.search(/^hcbm:/) !== 0){
-                            return transaction;
-                        } else {
-                            k++; // Count Biomark txn skips
+                        // Tweak the twin receive record for Biomarkers.
+                        if (transaction.category === "receive" && transaction.txcomment.search(/^hcbm:/) === 0){
+                            transaction.category = "credit";
+                            transaction.account = "To Me"; // Flip for meaning
+                            transaction.amount = transaction.amount * 2; // See Biomarkers
                         }
+                        return new Transaction(transaction);
                     })
                 );
 
                 if (page === self.pageLast()) page = self.pageNext(); // Go to last: page=99999999
                 if (page === self.pageFirst()) page = 1; // Go to first: page=-1
                 if (i > 0){
-                    if (i < maxRows - k){
+                    if (i < maxRows){
                         self.pagePrev(page-1);
                         self.pageNext(0);
                     } else {
