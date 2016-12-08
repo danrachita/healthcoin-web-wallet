@@ -24,6 +24,9 @@ define(['knockout',
         var self = this;
         if (self.account() === ""){
             self.account(self.wallet.account());
+            if (self.account() === self.wallet.settings().masterAccount){
+                self.statusMessage("Global Receive Addresses View");
+            }
         }
         self.getReceiveAddresses();
     };
@@ -61,10 +64,12 @@ define(['knockout',
         self.isLoadingReceiveAddresses(true);
         var receivePromise = listReceivedByAddressesCommand.execute()
             .done(function(data){
-                for (var k in data){
-                    //console.log("data[k]:" + JSON.stringify(data[k]));
-                    if (data[k].account !== self.wallet.account()){
-                        delete data[k];
+                if (self.account() !== self.wallet.settings().masterAccount){
+                    for (var k in data){
+                        //console.log("data[k]:" + JSON.stringify(data[k]));
+                        if (data[k].account !== self.wallet.account()){
+                            delete data[k];
+                        }
                     }
                 }
                 self.addresses(ko.utils.arrayMap(data,function(addressObj){
