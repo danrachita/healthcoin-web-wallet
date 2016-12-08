@@ -61,13 +61,17 @@ define(['knockout',
                 //self.transactions(ko.utils.arrayMap(descendingTxns,function(transaction){
                 self.transactions(ko.utils.arrayMap(data, function(transaction){
                         i++;
+                        // Match Qt wallet wording.
+                        if (transaction.category === "generate"){
+                            transaction.category = "interest";
+                        }
                         // Cosmetic changes if txn is for me.
                         if (transaction.address === self.wallet.address()){
                             // Display fiendly account name if me.
-                            if (transaction.category !== "receive"){
+                            if (transaction.category === "send"){
                                 transaction.account = "To Me"; // i.e. Send to self
                             } else {
-                                transaction.account = "";
+                                transaction.account = "For Me";
                             }
                         } else {
                             // Blank account to show address
