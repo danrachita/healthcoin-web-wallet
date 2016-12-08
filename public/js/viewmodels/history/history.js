@@ -67,7 +67,7 @@ define(['knockout',
                             if (transaction.category !== "receive"){
                                 transaction.account = "To Me"; // i.e. Send to self
                             } else {
-                                transaction.account = "From Me";
+                                transaction.account = "";
                             }
                         } else {
                             // Blank account to show address
