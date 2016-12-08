@@ -27,7 +27,7 @@ define(['knockout',
         var account = self.wallet.account();
         if (account !== ""){
             if (account === self.wallet.settings().masterAccount){
-                self.statusMessage("(Global History View)");
+                self.statusMessage("Global Wallet History View");
             }
             self.getTransactions(account, self.page());
         }
@@ -61,24 +61,23 @@ define(['knockout',
                 //self.transactions(ko.utils.arrayMap(descendingTxns,function(transaction){
                 self.transactions(ko.utils.arrayMap(data, function(transaction){
                         i++;
-                        // Cosmetic changes
-                        if (transaction.address !== self.wallet.address()){
+                        // Cosmetic changes if txn is for me.
+                        if (transaction.address === self.wallet.address()){
+                            // Display fiendly account name if me.
+                            if (transaction.category !== "receive"){
+                                transaction.account = "To Me"; // i.e. Send to self
+                            } else {
+                                transaction.account = "From Me";
+                            }
+                        } else {
                             // Blank account to show address
                             // TODO: Implement Address Book in DB (user.wallet[].addressBook[]) to set and look up accounts.
                             //       PS: Need to re-instate 'label' on send page.
                             transaction.account = ""; // addressBookLookup(transaction.address);
-                        } else {
-                            // Display fiendly account name if me.
-                            if (transaction.category !== "receive"){
-                                transaction.account = "To Me"; // i.e. Send
-                            } else {
-                                transaction.account = "From Me";
-                            }
                         }
                         // Tweak the twin receive record for Biomarkers.
                         if (transaction.category === "receive" && transaction.txcomment.search(/^hcbm:/) === 0){
                             transaction.category = "credit";
-                            transaction.account = "To Me"; // Flip for meaning
                             transaction.amount = transaction.amount * 2; // See Biomarkers
                         }
                         return new Transaction(transaction);

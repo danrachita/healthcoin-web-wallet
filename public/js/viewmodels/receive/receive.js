@@ -7,6 +7,7 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.account = ko.observable("");
         self.addresses = ko.observableArray([]);
         self.isLoadingReceiveAddresses = ko.observable(false);
         self.isLoading = ko.computed(function(){
@@ -21,20 +22,27 @@ define(['knockout',
 
     receiveType.prototype.refresh = function(){
         var self = this;
-        if (self.wallet.account() !== ""){
-            self.getReceiveAddresses();
+        if (self.account() === ""){
+            self.account(self.wallet.account());
         }
+        self.getReceiveAddresses();
     };
 
     receiveType.prototype.newAddress = function(){
         dialog.openDialog(this.newAddressDialog, 'modals/new-address');
     };
 
-    receiveType.prototype.newAddressConfirm = function(account, address){
-        var self = this, getNewAddressCommand = new Command('getnewaddress', [self.wallet.account()], self.wallet.settings().env);
+    receiveType.prototype.newAddressConfirm = function(){
+        var self = this,
+            getNewAddressCommand = new Command('getnewaddress', [self.account()], self.wallet.settings().env);
+
         getNewAddressCommand.execute()
             .done(function(address){
-                self.addresses.push(new ReceiveAddress({addressObj:{address: address, account: self.wallet.account()}}));
+                if (address && address.length === 34){
+                    self.addresses.push(new ReceiveAddress({addressObj:{address: address, account: self.account()}}));
+                } else {
+                    self.statusMessage("There was a problem creating a new address.");
+                }
             })
             .fail(function(){
             })
