@@ -92,9 +92,6 @@ mdb.connect(dbString, function() {
     console.log('Connected to database.');
 });
 
-// Init MASTER_ACCOUNT db functions (Requires exported 'coin')
-require('./lib/init-wallet')();
-
 // Auth routes / functions
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./lib/passport')(passport);        // Requires exported 'coin'
@@ -232,7 +229,6 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
         if (txcomment !== ''){
             if (comment === 'HCBM'){
                 var credit = amount * 2; // See Biomarkers
-                // TODO: encrypt/decrypt biomarker
                 // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
                 var txcommentObj = JSON.parse(txcomment) || {};
                 var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcommentObj);
@@ -416,6 +412,9 @@ function startApp(app) {
     var port = coin.isLocal ? coin.settings.port : coin.settings.sslPort;
 
     server.listen(port, function(){
+        // Init MASTER_ACCOUNT in wallet and database for this node_id (Requires exported 'coin')
+        require('./lib/init-wallet')();
+
         var io = require('socket.io')(server, {
                 port: port
             });

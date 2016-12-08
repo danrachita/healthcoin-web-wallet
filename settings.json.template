@@ -73,7 +73,7 @@
   "masterAccount": "MASTER_ACCOUNT",
 
   // Master email account.
-  "masterEmail": "healthcoin@localhost",
+  "masterEmail": "admin@healthcoin.com",
 
   // Master can encrypt the wallet
   "masterCanEncrypt": true
