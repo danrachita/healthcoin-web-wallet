@@ -27,7 +27,7 @@ define(['knockout',
         var account = self.wallet.account();
         if (account !== ""){
             if (account === self.wallet.settings().masterAccount){
-                self.statusMessage("Global Wallet History View");
+                self.statusMessage("Global Transaction History View");
             }
             self.getTransactions(account, self.page());
         }
