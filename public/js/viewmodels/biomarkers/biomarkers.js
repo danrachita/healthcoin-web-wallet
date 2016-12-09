@@ -3,46 +3,20 @@ define(['knockout',
     'viewmodels/common/confirmation-dialog',
     'viewmodels/common/wallet-passphrase',
     'viewmodels/common/command',
+    './biomarkers-pulldown',
     'lib/dateformat',
-    'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Dateformat, patterns){
+    'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Pulldown, Dateformat, patterns){
     var biomarkersType = function(options){
         var self = this;
         self.wallet = options.parent || {};
 
+        // Source value arrays for pulldown menues
+        self.pulldown = new Pulldown();
+
         self.profileComplete = ko.observable(false);
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source = ko.observable("");
-        self.hcbmEHR_SourceValues = ko.observableArray(["",
-                                    "Columbia South Valley Hospital, Gilroy",
-                                    "Community Hospital of Los Gatos, Los Gatos",
-                                    "El Camino Hospital, Mountain View",
-                                    "Good Samaritan Hospital, San Jose",
-                                    "Kaiser Permanente Medical Center Gilroy, Gilroy, California",
-                                    "Kaiser Permanente Santa Clara Medical Center, Santa Clara, California",
-                                    "Kaiser Permanente Santa Teresa Medical Center, San Jose, California",
-                                    "Lucile Salter Packard Children's Hospital at Stanford, Palo Alto, California",
-                                    "O'Connor Hospital, San Jose, California",
-                                    "Regional Medical Center of San Jose, San Jose, California",
-                                    "Saint Louise Regional Hospital, Gilroy, California",
-                                    "San Jose Medical Center, San Jose, California",
-                                    "Santa Clara Valley Medical Center, San Jose, California",
-                                    "Stanford University Medical Center, Stanford",
-                                    "VA Palo Alto Health Care System, Palo Alto"
-                                    ]);
         self.hcbmEHR_Type = ko.observable("");
-        self.hcbmEHR_TypeValues =   ko.observableArray(["",
-                                    "Athena Health",
-                                    "Cerner",
-                                    "CPSI",
-                                    "Drchrono",
-                                    "EClinicalWorks",
-                                    "Epic",
-                                    "GE Healthcare",
-                                    "Greenway Health",
-                                    "McKesson",
-                                    "Meditech",
-                                    "Nextgen"
-                                    ]);
         self.hcbmA1c = ko.observable(0.00);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
@@ -58,59 +32,6 @@ define(['knockout',
         self.hcbmCountry = ko.observable("");
 
         self.hcbmDevice_Source = ko.observable("");
-        self.hcbmDevice_SourceValues =   ko.observableArray(["",
-                                    "Adidas",
-                                    "Apple",
-                                    "Biomedtrics",
-                                    "BodyTrace",
-                                    "CareTRx",
-                                    "CoheroHealth",
-                                    "DailyMile",
-                                    "Edamam",
-                                    "Emfit",
-                                    "EpsonPulsense",
-                                    "Fatsecret",
-                                    "Fitbit",
-                                    "Fitbug",
-                                    "FitLinxx",
-                                    "Garmin Connect",
-                                    "Higi",
-                                    "iHealth",
-                                    "inrfood",
-                                    "Jawbone Up",
-                                    "Kiqplan",
-                                    "Life Fitness",
-                                    "LifeTrak",
-                                    "Lumo",
-                                    "ManageBGL",
-                                    "MapMyFitness",
-                                    "Microsoft",
-                                    "Misfit",
-                                    "Moov",
-                                    "Moveable",
-                                    "Moves",
-                                    "MyFitnessPal",
-                                    "Omron Wellness",
-                                    "PearSports",
-                                    "Personalabs",
-                                    "Polar",
-                                    "Precor",
-                                    "Qardio",
-                                    "RunKeeper",
-                                    "RxCheck",
-                                    "Sleep_Image",
-                                    "Sony",
-                                    "Strava",
-                                    "Striiv",
-                                    "Suunto",
-                                    "Telcare",
-                                    "TomTom MySports",
-                                    "Under Armour",
-                                    "Visiomed",
-                                    "VitaDock",
-                                    "Withings",
-                                    "Yoo"
-                                    ]);
         self.hcbmDevice_Steps = ko.observable(0);
         self.hcbmScore = ko.observable(0);
         self.hcbmOther = ko.observable("n/a");

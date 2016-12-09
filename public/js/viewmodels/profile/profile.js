@@ -1,9 +1,13 @@
 define(['knockout',
-        'viewmodels/common/command',
-        'viewmodels/wallet-status'], function(ko,Command){
+    'viewmodels/common/command',
+    './profile-pulldown',
+    'viewmodels/wallet-status'], function(ko,Command,Pulldown){
     var profileType = function(options){
         var self = this;
         self.wallet = options.parent || {};
+
+        // Source value arrays for pulldown menues
+        self.pulldown = new Pulldown();
 
         self.node_id = ko.observable("");
         self.account = ko.observable("");
@@ -27,27 +31,8 @@ define(['knockout',
         self.weight = ko.observable("");
         self.waist = ko.observable("");
         self.gender = ko.observable("");
-        self.genderValues = ko.observableArray(["",
-                                    "Female",
-                                    "Male"
-                                    ]);
         self.ethnicity = ko.observable("");
-        self.ethnicityValues = ko.observableArray(["",
-                                    "Non-Hispanic White or Euro-American",
-                                    "Black, Afro-Caribbean, or African American",
-                                    "Latino or Hispanic American",
-                                    "East Asian or Asian American",
-                                    "South Asian or Indian American",
-                                    "Middle Eastern or Arab American",
-                                    "Native American or Alaskan Native",
-                                    "Other"
-                                    ]);
         self.country = ko.observable("");
-        self.countryValues = ko.observableArray(["",
-                                    "United States",
-                                    "Canada",
-                                    "Mexico"
-                                    ]);
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
