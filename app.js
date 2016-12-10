@@ -367,7 +367,7 @@ app.use(function(req, res, next) {
 
 // This goes last.
 app.use(function(err, req, res, next) {
-    res.status(404);
+    //res.status(404);
     console.log("DEBUG: 404 found.");
     if (req.accepts('html')) {
         if (app.get('env') === 'development') {

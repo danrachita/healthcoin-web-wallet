@@ -9,8 +9,23 @@ A running RPC daemon. See:
 Mongo DB for storing account info and biomarker data. See:
  https://www.mongodb.com/
 
-Node.js for running the Web Wallet app. See:
- https://github.com/onsightit/web-wallet
+ Create DB and user:
+ > use healthcoin
+ > db.createUser( { user: "healthcoin", pwd: "{password}", roles: [ "readWrite" ] } )
+
+Node.js 6.x for running the Web Wallet. For debian installations:
+ If running 4.x:
+ sudo apt-get purge nodejs npm
+ Install 6.x:
+ curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+ sudo apt-get install -y nodejs
+
+If the Web Wallet is not running locally, https is the default protocol.  To set up a self-signed SSL certificate in debian/apache2 environments, run:
+
+ sudo mkdir /etc/apache2/certs
+ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/certs/{domain name}.key -out /etc/apache2/certs/{domain name}.crt
+
+ Note: Also copy the crt and key file to the {Web Wallet}/sslcert directory. Change the owner to that of the nodejs process, then make sure your settings.json SSL parameters have the correct file-names for your key and crt files.
 
 
 ## Configuring:
