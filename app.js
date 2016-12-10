@@ -349,9 +349,29 @@ app.get('/setadressbookname/:address/:label', function(req, res){
 
 // Custom routes //
 
+// This never gets hit
 app.get('/', function(req, res){
     res.render('index');
 });
+
+// This goes last.
+app.get('*', function(req, res) {
+    var err = 'The document you requested was not found.';
+    if (req.accepts('html')) {
+        // development error handler will print stacktrace
+        res.render('error', {
+            message: err,
+            error: 404
+        });
+        return;
+    }
+    if (req.accepts('json')) {
+        res.send({ error: err });
+        return;
+    }
+    res.type('txt').send(err);
+});
+
 
 // *** Express 4.x requires these app.use calls to be after any app.get or app.post routes.
 // *** "Your code should move any calls to app.use that came after app.use(app.router) after any routes (HTTP verbs)."
@@ -365,34 +385,6 @@ app.use(function(req, res, next) {
     }
 });
 
-// This goes last.
-app.use(function(err, req, res, next) {
-    //res.status(404);
-    console.log("DEBUG: 404 found.");
-    if (req.accepts('html')) {
-        if (app.get('env') === 'development') {
-            // development error handler will print stacktrace
-            res.render('error', {
-                message: err.message,
-                error: JSON.stringify(err)
-            });
-            return;
-        } else {
-            // production error handler no stacktraces leaked to user
-            res.render('error', {
-                message: err.message,
-                error: {}
-            });
-            return;
-        }
-    }
-    if (req.accepts('json')) {
-        res.send({ error: 'Not found' });
-        return;
-    }
-    res.type('txt').send('Not found');
-    next();
-});
 
 // TODO: Needs testing
 function tryReconnect(){
