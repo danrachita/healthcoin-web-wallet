@@ -37,7 +37,9 @@ define(['knockout',
 
     receiveType.prototype.newAddressConfirm = function(){
         var self = this,
-            getNewAddressCommand = new Command('getnewaddress', [self.account()], self.wallet.settings().env);
+            getNewAddressCommand = new Command('getnewaddress', [self.account()],
+                                               self.wallet.settings().chRoot,
+                                               self.wallet.settings().env);
 
         getNewAddressCommand.execute()
             .done(function(address){
@@ -60,7 +62,10 @@ define(['knockout',
     };
 
     receiveType.prototype.getReceiveAddresses = function(){
-        var self = this, listReceivedByAddressesCommand = new Command('listreceivedbyaddress', ['1','true'], self.wallet.settings().env);
+        var self = this,
+            listReceivedByAddressesCommand = new Command('listreceivedbyaddress', ['1','true'],
+                                                         self.wallet.settings().chRoot,
+                                                         self.wallet.settings().env);
         self.isLoadingReceiveAddresses(true);
         var receivePromise = listReceivedByAddressesCommand.execute()
             .done(function(data){

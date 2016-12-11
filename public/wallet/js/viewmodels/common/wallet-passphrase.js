@@ -54,9 +54,11 @@ define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','view
             walletPassphraseCommand = encrypt ?
                 new Command('encryptwallet',
                             [encodeURIComponent(btoa(self.walletPassphrase()))],
+                            self.wallet.settings().chRoot,
                             'production')     :
                 new Command('walletpassphrase',
                             [encodeURIComponent(btoa(self.walletPassphrase())), defaultWalletStakingUnlockTime,  self.stakingOnly()],
+                            self.wallet.settings().chRoot,
                             'production');
 
         walletPassphraseCommand.execute()

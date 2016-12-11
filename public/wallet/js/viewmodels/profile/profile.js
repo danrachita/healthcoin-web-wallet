@@ -132,6 +132,7 @@ define(['knockout',
         self.wallet.User().profile.country = self.country();
         var saveUserProfileCommand = new Command('saveuserprofile',
                                                 [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
+                                                self.wallet.settings().chRoot,
                                                 self.wallet.settings().env).execute()
             .done(function(){
                 console.log("Profile Saved!");

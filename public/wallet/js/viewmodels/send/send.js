@@ -58,7 +58,9 @@ define(['knockout',
 
     sendType.prototype.lockWallet = function(){
         var self = this;
-        var sendCommand = new Command('walletlock', [], self.wallet.settings().env).execute()
+        var sendCommand = new Command('walletlock', [],
+                                      self.wallet.settings().chRoot,
+                                      self.wallet.settings().env).execute()
             .done(function(){
                 console.log('Wallet relocked');
             })
@@ -138,6 +140,7 @@ define(['knockout',
         var txcomment = encodeURIComponent(btoa(self.txcomment()));
         var sendCommand = new Command('sendfrom',
                                       [self.wallet.account(), self.recipientAddress(), self.amount(), 1, 'SEND', self.recipientAddress(), txcomment],
+                                      self.wallet.settings().chRoot,
                                       self.wallet.settings().env).execute()
             .done(function(txid){
                 console.log("TxId: " + JSON.stringify(txid));

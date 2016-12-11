@@ -40,7 +40,7 @@ define(['knockout',
         self.settings = ko.observable({});          // Some settings from settings.json
 
         // Get node_id and settings, and User account
-        self.initNode();
+        self.initNode('/wallet'); // Set unknown chRoot to common production environment.
 
         self.walletStatus = new WalletStatus({parent: self});
 
@@ -84,9 +84,14 @@ define(['knockout',
     };
 
     // Called once at startup.
-    walletType.prototype.initNode = function(){
+    walletType.prototype.initNode = function(chRoot){
         var self = this;
-        var getNodeInfoCommand = new Command('getnodeinfo', [], 'production'); // Gets the wallet info and settings quietly
+        // Catch-22: We don't know if the Web Wallet is chRoot'd to /public or /public/wallet,
+        // because 'settings' has not been set yet, so we need to test for a failure first
+        // to determine if settings().chRoot is "" or "/wallet".
+        var getNodeInfoCommand = new Command('getnodeinfo', [],
+                                             chRoot, // unknown chRoot on first call.
+                                             'production'); // Gets the wallet info and settings quietly
         $.when(getNodeInfoCommand.execute())
             .done(function(getNodeInfoData){
                 if (typeof getNodeInfoData.node_id !== 'undefined'){
@@ -99,16 +104,28 @@ define(['knockout',
                 } else {
                     // Bailing...
                     console.log("ERROR: Aborting! Node_ID not found.");
-                    window.location = '/logout';
+                    window.location = 'logout';
                 }
                 self.initUser();
+            }).fail(function(jqXHR){
+                // If the second call to initNode fails, we bail.
+                if (chRoot === '/wallet'){
+                    self.initNode(''); // Set unknown chRoot to normal '' mode.
+                } else {
+                    // Bailing...
+                    console.log("ERROR: Aborting! Unknown chRoot!");
+                    console.log("jqXHR: " + JSON.stringify(jqXHR));
+                    window.location = 'logout';
+                }
             });
     };
 
     // Called once at startup.
     walletType.prototype.initUser = function(){
         var self = this;
-        var getUserAccountCommand = new Command('getuseraccount', [], 'production'); // Gets the User from the session quietly
+        var getUserAccountCommand = new Command('getuseraccount', [],
+                                                self.settings().chRoot,
+                                                'production'); // Gets the User from the session quietly
         $.when(getUserAccountCommand.execute())
             .done(function(getUserAccountData){
                 if (typeof getUserAccountData.User !== 'undefined'){
@@ -125,12 +142,12 @@ define(['knockout',
                     if (!wallet) {
                         // Bailing...
                         console.log("ERROR: Aborting! User wallet not found.");
-                        window.location = '/logout';
+                        window.location = 'logout';
                     }
                 } else {
                     // Bailing...
                     console.log("ERROR: Aborting! User account not found.");
-                    window.location = '/logout';
+                    window.location = 'logout';
                 }
                 self.initComplete = true;
             });
@@ -146,7 +163,7 @@ define(['knockout',
                         self.pollWalletStatus();
                 } else {
                     console.log("Session Expired. Polling stopped.");
-                    window.location = '/logout';
+                    window.location = 'logout';
                 }
             } else {
                 // Normal polling
@@ -168,7 +185,7 @@ define(['knockout',
                     });
                 } else {
                     console.log("Session Expired. Polling stopped.");
-                    window.location = '/logout';
+                    window.location = 'logout';
                 }
             }
         },self.timeout);
@@ -228,7 +245,9 @@ define(['knockout',
     walletType.prototype.lockWallet = function(){
         var self = this;
         if (self.isLocalWallet() || self.account() === self.settings().masterAccount){
-            var walletLockCommand = new Command('walletlock', [], self.settings().env).execute()
+            var walletLockCommand = new Command('walletlock', [],
+                                                self.settings().chRoot,
+                                                self.settings().env).execute()
             .done(function(){
                 dialog.notification("Wallet is now locked. To send transactions or stake you must unlock the wallet.");
                 self.walletStatus.refresh(self.account());

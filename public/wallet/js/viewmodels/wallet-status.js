@@ -23,9 +23,12 @@ define(['knockout',
 
     walletStatusType.prototype.refresh = function(){
         var self = this;
-        var env = self.wallet.settings().env;
-        var getInfoCommand = new Command('getinfo', [], env),
-            getBalanceCommand = new Command('getbalance', [self.wallet.account()], env);
+        var getInfoCommand = new Command('getinfo', [],
+                                         self.wallet.settings().chRoot,
+                                         self.wallet.settings().env),
+            getBalanceCommand = new Command('getbalance', [self.wallet.account()],
+                                         self.wallet.settings().chRoot,
+                                         self.wallet.settings().env);
         var statusPromise = $.when(getInfoCommand.execute(), getBalanceCommand.execute())
             .done(function(getInfoData, getBalanceData){
                 if (typeof getInfoData.unlocked_until !== 'undefined'){

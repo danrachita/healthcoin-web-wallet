@@ -172,7 +172,9 @@ define(['knockout',
 
     biomarkersType.prototype.lockWallet= function(){
         var self = this;
-        var walletlockCommand = new Command('walletlock', [], self.wallet.settings().env).execute()
+        var walletlockCommand = new Command('walletlock', [],
+                                            self.wallet.settings().chRoot,
+                                            self.wallet.settings().env).execute()
             .done(function(){
                 console.log('Wallet relocked');
             })
@@ -251,6 +253,7 @@ define(['knockout',
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
         var sendCommand = new Command('sendfrom',
                                       [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm],
+                                      self.wallet.settings().chRoot,
                                       self.wallet.settings().env).execute()
             .done(function(txid){
                 if (self.wallet.settings().env !== 'production'){
@@ -262,6 +265,7 @@ define(['knockout',
                 self.wallet.User().profile.credit = self.wallet.User().profile.credit + self.credit();
                 var saveUserProfileCommand = new Command('saveuserprofile',
                                                         [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
+                                                        self.wallet.settings().chRoot,
                                                         self.wallet.settings().env).execute()
                     .done(function(){
                         console.log("User credited!");

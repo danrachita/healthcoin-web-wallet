@@ -1,14 +1,16 @@
 define(['knockout'],function(ko){
 
-    var commandType = function(commandName, args, env){
+    var commandType = function(commandName, args, chRoot, env){
         this.commandName = ko.observable(commandName);
         this.args = ko.observableArray(args);
+        this.chRoot = ko.observable(chRoot || '');
         this.env = ko.observable(env || '');
     };
 
-    function parseCommand(commandName, args){
+    function parseCommand(commandName, args, chRoot){
         var port = (window.location.port === '' ? '' : ":" + window.location.port);
-        var url = window.location.protocol + '//' + window.location.hostname + port + '/'; // Allow CORS
+        var url = window.location.protocol + '//' + window.location.hostname + port; // Allow CORS
+        url = url.concat(chRoot + '/');
         url = url.concat(commandName.concat('/'));
         if(args && args.length > 0){
             url = url.concat(args.join('/'));
@@ -18,7 +20,7 @@ define(['knockout'],function(ko){
 
     commandType.prototype.execute = function(){
         var self = this, deferred = $.Deferred();
-        var url = parseCommand(self.commandName(), self.args());
+        var url = parseCommand(self.commandName(), self.args(), self.chRoot());
         $.ajax({
             async: true,
             method: 'GET',
@@ -37,11 +39,11 @@ define(['knockout'],function(ko){
             } else {
                 deferred.resolve(data.result);
             }
-        }).fail(function(jqXHR,textStatus,errorThrown){
-            console.log("Ajax call failure: ");
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
+        }).fail(function(jqXHR){
+            if (self.env() === 'development'){
+                console.log("Ajax call failure: ");
+                console.log(jqXHR);
+            }
             deferred.reject({ code: jqXHR.status, message: "Request failed: " + jqXHR.responseText });
         });
         return deferred.promise();

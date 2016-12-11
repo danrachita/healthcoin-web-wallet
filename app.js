@@ -99,7 +99,7 @@ for (var s in coin.settings){
             // Need to flip relativeness for routes/auth.js.
             if (coin.settings[s] === ""){
                 // We chrooted to public
-                coin.settings[s] = "/wallet"; 
+                coin.settings[s] = "/wallet";
             } else {
                 // We chrooted to public/wallet
                 coin.settings[s] = "";
@@ -110,6 +110,7 @@ for (var s in coin.settings){
             app.set(s, coin.settings[s]);
     }
 }
+var chRoot = app.get('chRoot') || '';
 
 // Auth routes / functions
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
@@ -148,7 +149,7 @@ function coinHandler(err, result){
 // Non-RPC routes //
 
 // Returns this rpc wallet node info and some localized settings.
-app.get('/getnodeinfo', function(req,res){
+app.get(chRoot + '/getnodeinfo', function(req,res){
     var response = {
         error: null,
         result: {
@@ -161,7 +162,7 @@ app.get('/getnodeinfo', function(req,res){
 });
 
 // Returns user account and address.
-app.get('/getuseraccount', function(req,res){
+app.get(chRoot + '/getuseraccount', function(req,res){
     if (req.user) {
         var response = {
             error: null,
@@ -174,7 +175,7 @@ app.get('/getuseraccount', function(req,res){
 });
 
 // Saves user profile.
-app.get('/saveuserprofile/:profile', function(req,res){
+app.get(chRoot + '/saveuserprofile/:profile', function(req,res){
     var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.user.profile,
         result = null;
     if (profile && profile.login_type){
@@ -191,14 +192,14 @@ app.get('/saveuserprofile/:profile', function(req,res){
 
 // RPC routes //
 
-app.get('/getinfo', function(req,res){ callCoin('getInfo', res, coinHandler); } );
-app.get('/getinterestrate', function(req,res){ callCoin('getInterestRate', res, coinHandler); } );
-app.get('/getinflationrate', function(req,res){ callCoin('getInflationRate', res, coinHandler); } );
-app.get('/getblockcount', function(req,res){ callCoin('getBlockCount', res, coinHandler); } );
-app.get('/getstakinginfo', function(req,res) { callCoin('getStakingInfo', res, coinHandler); } );
+app.get(chRoot + '/getinfo', function(req,res){ callCoin('getInfo', res, coinHandler); } );
+app.get(chRoot + '/getinterestrate', function(req,res){ callCoin('getInterestRate', res, coinHandler); } );
+app.get(chRoot + '/getinflationrate', function(req,res){ callCoin('getInflationRate', res, coinHandler); } );
+app.get(chRoot + '/getblockcount', function(req,res){ callCoin('getBlockCount', res, coinHandler); } );
+app.get(chRoot + '/getstakinginfo', function(req,res) { callCoin('getStakingInfo', res, coinHandler); } );
 
 // pagination view
-app.get('/listtransactions/:account/:page', function(req, res){
+app.get(chRoot + '/listtransactions/:account/:page', function(req, res){
     var account = (req.params.account || ''),
         page = (req.params.page || 1),
         count = coin.settings.historyRowsPP,
@@ -213,11 +214,11 @@ app.get('/listtransactions/:account/:page', function(req, res){
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
-app.get('/makekeypair', function(req, res){
+app.get(chRoot + '/makekeypair', function(req, res){
     callCoin('makekeypair', res, coinHandler);
 });
 
-app.get('/getbalance/:account', function(req, res){
+app.get(chRoot + '/getbalance/:account', function(req, res){
     var account = req.params.account || '';
     if(account.length > 1)
         callCoin('getbalance', res, coinHandler, account);
@@ -226,7 +227,7 @@ app.get('/getbalance/:account', function(req, res){
 });
 
 // Note: The wallet is account based. Always use accounts!
-app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentto?/:txcomment?', function(req, res){
+app.get(chRoot + '/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentto?/:txcomment?', function(req, res){
     var fromaccount = req.params.fromaccount || '';
     var toaddress = req.params.toaddress || '';
     var amount = parseFloat(req.params.amount) || 0.0;
@@ -255,12 +256,12 @@ app.get('/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentt
 });
 
 // Note: Use sendfrom instead as the wallet is account based
-app.get('/sendtoaddress/:toaddress/:amount', function(req, res){
+app.get(chRoot + '/sendtoaddress/:toaddress/:amount', function(req, res){
     var amount = parseFloat(req.params.amount);
     callCoin('sendtoaddress', res, coinHandler, req.params.toaddress, amount);
 });
 
-app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(req, res){
+app.get(chRoot + '/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(req, res){
     var fromaccount = req.params.fromaccount || '';
     var toaccount = req.params.toaccount || '';
     var amount = parseFloat(req.params.amount) || 0.0;
@@ -273,7 +274,7 @@ app.get('/move/:fromaccount/:toaccount/:amount/:minconf?/:comment?', function(re
         res.send(JSON.stringify("Error: Invalid move."));
 });
 
-app.get('/getnewaddress/:account', function(req, res){
+app.get(chRoot + '/getnewaddress/:account', function(req, res){
     var account = req.params.account || '';
     if(account.length > 1)
         callCoin('getnewaddress', res, coinHandler, account);
@@ -281,7 +282,7 @@ app.get('/getnewaddress/:account', function(req, res){
         res.send(JSON.stringify("Error: Invalid Account."));
 });
 
-app.get('/setaccount/:address/:account', function(req, res){
+app.get(chRoot + '/setaccount/:address/:account', function(req, res){
     coin.api.setaccount(req.params.address, req.params.account, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
@@ -291,19 +292,19 @@ app.get('/setaccount/:address/:account', function(req, res){
     });
 });
 
-app.get('/validateaddress/:address', function(req, res){
+app.get(chRoot + '/validateaddress/:address', function(req, res){
     var address = req.params.address || 'blah';
     callCoin('validateaddress', res, coinHandler, address);
 });
 
-app.get('/encryptwallet/:passphrase', function(req,res){
+app.get(chRoot + '/encryptwallet/:passphrase', function(req,res){
     var passphrase = atob(req.params.passphrase); // TODO: Use encryption instead of base64
     if (passphrase){
         callCoin('encryptwallet', res, coinHandler, passphrase);
     }
 });
 
-app.get('/walletpassphrase/:passphrase/:timeout/:stakingonly', function(req,res){
+app.get(chRoot + '/walletpassphrase/:passphrase/:timeout/:stakingonly', function(req,res){
     var stakingOnly = req.params.stakingonly === 'true',
         timeout = parseInt(req.params.timeout),
         passphrase = atob(req.params.passphrase); // TODO: Use encryption instead of base64
@@ -312,22 +313,22 @@ app.get('/walletpassphrase/:passphrase/:timeout/:stakingonly', function(req,res)
     }
 });
 
-app.get('/walletlock', function(req,res){ callCoin('walletlock', res, coinHandler); });
+app.get(chRoot + '/walletlock', function(req,res){ callCoin('walletlock', res, coinHandler); });
 
-app.get('/help/:commandname?', function(req, res){
+app.get(chRoot + '/help/:commandname?', function(req, res){
     if (req.params.commandname !== undefined)
         callCoin('help', res, coinHandler, req.params.commandname);
     else
         callCoin('help', res, coinHandler);
 });
 
-app.get('/listreceivedbyaddress/:minconf?/:includeempty?', function(req, res){
+app.get(chRoot + '/listreceivedbyaddress/:minconf?/:includeempty?', function(req, res){
     var includeEmpty = (req.params.includeempty || false) === 'true', 
         minConf = parseInt(req.params.minconf || 1);
     callCoin('listreceivedbyaddress', res, coinHandler, minConf, includeEmpty);
 });
 
-app.get('/getaccount/:address', function(req, res){
+app.get(chRoot + '/getaccount/:address', function(req, res){
     coin.api.getaccount(req.params.address, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
@@ -337,7 +338,7 @@ app.get('/getaccount/:address', function(req, res){
     });
 });
 
-app.get('/listaddressgroupings', function(req, res){
+app.get(chRoot + '/listaddressgroupings', function(req, res){
     coin.api.listaddressgroupings(function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
@@ -347,7 +348,7 @@ app.get('/listaddressgroupings', function(req, res){
     });
 });
 
-app.get('/setadressbookname/:address/:label', function(req, res){
+app.get(chRoot + '/setadressbookname/:address/:label', function(req, res){
     coin.api.setadressbookname(req.params.address, req.params.label, function(err, result){
         console.log("err:"+err+" result:"+result);
         if(err)
@@ -360,7 +361,7 @@ app.get('/setadressbookname/:address/:label', function(req, res){
 // Custom routes //
 
 // This never gets hit
-app.get(app.get('chRoot') + '/', function(req, res){
+app.get(chRoot + '/', function(req, res){
     res.render('index');
 });
 

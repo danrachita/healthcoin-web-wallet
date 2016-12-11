@@ -52,7 +52,9 @@ define(['knockout',
 
     historyType.prototype.getTransactions = function(account, page){
         var self = this,
-            getTransactionsCommand = new Command('listtransactions', [account, page], self.wallet.settings().env); // For pagination
+            getTransactionsCommand = new Command('listtransactions', [account, page],
+                                                 self.wallet.settings().chRoot,
+                                                 self.wallet.settings().env); // For pagination
         self.isLoadingTransactions(true);
         var historyPromise = getTransactionsCommand.execute()
             .done(function(data){
