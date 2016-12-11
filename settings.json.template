@@ -38,7 +38,7 @@
   //      RewriteRule ./ /index.php [L]
   // Set to "" to allow the sub-folder 'wallet' to be exposed for proxying.
   // Set to "/wallet" to chroot the node to /public/wallet/ (Normal for stand-alone web wallet).
-  "subRoot": "/wallet",
+  "chRoot": "/wallet",
 
   // Logo
   "logo": "./public/wallet/images/Icon.png",
