@@ -58,7 +58,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public' + coin.settings.chRoot)));
 app.use(favicon(path.join(__dirname, coin.settings.favicon)));
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -92,18 +92,28 @@ mdb.connect(dbString, function() {
     console.log('Connected to database.');
 });
 
-// Auth routes / functions
-require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
-require('./lib/passport')(passport);        // Requires exported 'coin'
-
-// Localizations for the client [MUST COME AFTER DB FUNCTIONS] (i.e. for EJS rendered settings)
+// Localizations for EJS rendering [MUST COME AFTER DB FUNCTIONS AND BEFORE AUTH ROUTES]
 for (var s in coin.settings){
     if (coin.settings.hasOwnProperty(s)){
+        if (s === "chRoot"){
+            // Need to flip relativeness for routes/auth.js.
+            if (coin.settings[s] === ""){
+                // We chrooted to public
+                coin.settings[s] = "/wallet"; 
+            } else {
+                // We chrooted to public/wallet
+                coin.settings[s] = "";
+            }
+        }
         // Don't overwrite!
         if (app.get(s) === undefined)
             app.set(s, coin.settings[s]);
     }
 }
+
+// Auth routes / functions
+require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
+require('./lib/passport')(passport);        // Requires exported 'coin'
 
 
 ////////// Routes //////////
@@ -159,7 +169,7 @@ app.get('/getuseraccount', function(req,res){
         };
         res.send(JSON.stringify(response));
     } else {
-        res.redirect('/logout');
+        res.redirect(app.get('chRoot') + '/logout');
     }
 });
 
@@ -350,7 +360,7 @@ app.get('/setadressbookname/:address/:label', function(req, res){
 // Custom routes //
 
 // This never gets hit
-app.get('/', function(req, res){
+app.get(app.get('chRoot') + '/', function(req, res){
     res.render('index');
 });
 
@@ -381,7 +391,7 @@ app.use(function(req, res, next) {
     if (req.session && Date.now() <= req.session.cookie.expires){
         next();
     } else {
-   		res.redirect('/');
+   		res.redirect(app.get('chRoot') + '/');
     }
 });
 

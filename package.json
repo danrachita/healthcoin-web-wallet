@@ -7,7 +7,7 @@
   "window": {
     "show": true,
     "title": "Web Wallet",
-    "icon": "./public/images/Icon.png",
+    "icon": "./public/wallet/images/Icon.png",
     "toolbar": false,
     "frame": true,
     "width": 1024,

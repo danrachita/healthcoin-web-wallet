@@ -1,4 +1,0 @@
-RewriteEngine on 
-
-RewriteCond %{REQUEST_URI} ^/#_=_$ [NC]
-RewriteRule ^(.*)$ http://nequals1.io/ [R=302,L]
