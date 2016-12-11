@@ -1,7 +1,7 @@
 module.exports = function(app, passport){
 
 	var chRoot = app.get('chRoot');
-	console.log("Info: Base route is: " + chRoot);
+	console.log("Info: Base route is: " + (chRoot ? chRoot : '/'));
 
 	app.get(chRoot + '/', isLoggedIn, function(req, res){
 		if (req.user.local.changeme){
