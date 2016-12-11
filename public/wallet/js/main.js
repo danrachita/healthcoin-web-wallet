@@ -1,5 +1,4 @@
 require.config({
-    baseUrl: 'js/',
     paths: {
         jquery: 'lib/jquery.min', // 2.2.4
         sammy: "lib/sammy",
