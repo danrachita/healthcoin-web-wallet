@@ -140,6 +140,7 @@ sup {
     line-height: 60px;
     text-decoration: none;
     color: #fff;
+    padding-top: 5px;
 }
 
 .sidebar-nav div.sidebar-nav-button-content:hover {
