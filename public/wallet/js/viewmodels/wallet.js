@@ -31,7 +31,9 @@ define(['knockout',
         self.sessionExpires = ko.observable(Date.now() + self.sessionTimeout());
 
         self.User = ko.observable({});
-        self.role = ko.observable("");
+        self.role = ko.observable("");             // For features control
+        self.gender = ko.observable("");           // For personalization of wallet
+
         self.node_id = ko.observable("");
         self.account = ko.observable("");
         self.address = ko.observable("");
@@ -131,6 +133,7 @@ define(['knockout',
                 if (typeof getUserAccountData.User !== 'undefined'){
                     self.User(getUserAccountData.User);
                     self.role(self.User().profile.role);
+                    self.gender(self.User().profile.gender);
                     // Get the user's wallet account info for this node_id
                     var wallet = self.User().wallet.filter(function(wal){
                         if(wal.node_id && wal.node_id === self.node_id()){

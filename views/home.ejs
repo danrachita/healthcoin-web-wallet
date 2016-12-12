@@ -25,7 +25,15 @@
 					<li><a href="#send"><div data-bind="css: { selected: $data.currentView() === 'send' }" class="sidebar-nav-button-content"><div class="fa fa-paper-plane fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">Send</span></div></div></a></li>
 					<li><a href="#receive"><div data-bind="css: { selected: $data.currentView() === 'receive' }" class="sidebar-nav-button-content"><div class="fa fa-inbox fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">Receive</span></div></div></a></li>
 					<li><a href="#history"><div data-bind="css: { selected: $data.currentView() === 'history' }" class="sidebar-nav-button-content"><div class="fa fa-calendar fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">History</span></div></div></a></li>
+		<!-- ko if: gender() === 'Female' -->
 					<li><a href="#profile"><div data-bind="css: { selected: $data.currentView() === 'profile' }" class="sidebar-nav-button-content"><div class="fa fa-user fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a></li>
+		<!-- /ko -->
+		<!-- ko if: gender() === 'Male' -->
+					<li><a href="#profile"><div data-bind="css: { selected: $data.currentView() === 'profile' }" class="sidebar-nav-button-content"><div class="fa fa-user fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a></li>
+		<!-- /ko -->
+		<!-- ko if: gender() === '' -->
+					<li><a href="#profile"><div data-bind="css: { selected: $data.currentView() === 'profile' }" class="sidebar-nav-button-content"><div class="fa fa-user fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">Profile</span></div></div></a></li>
+		<!-- /ko -->
 		<!-- ko if: role() === 'Admin' -->
 					<li><a href="#explore"><div data-bind="css: { selected: $data.currentView() === 'explore' }" class="sidebar-nav-button-content"><div class="fa fa-search fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">Explore</span></div></div></a></li>
 					<li><a href="#console"><div data-bind="css: { selected: $data.currentView() === 'console' }" class="sidebar-nav-button-content"><div class="fa fa-terminal fa-2x" aria-hidden="true"><span class="sidebar-nav-button-content">Console</span></div></div></a></li>
