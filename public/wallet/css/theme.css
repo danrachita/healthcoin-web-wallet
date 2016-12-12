@@ -107,7 +107,8 @@ sup {
 
 .sidebar-nav li {
     text-indent: 20px;
-    line-height: 40px;
+    line-height: 30px;
+    font-size: 12px;
     color: #ddd;
 }
 
@@ -136,7 +137,7 @@ sup {
 
 .sidebar-nav div.sidebar-nav-button-content {
     text-indent: 10px;
-    line-height: 50px;
+    line-height: 60px;
     text-decoration: none;
     color: #fff;
 }
@@ -167,19 +168,6 @@ sup {
 .sidebar-nav > .sidebar-brand a:hover {
     color: #fff;
     background: none;
-}
-
-.sidebar-stats {
-    margin: 0;
-    padding: 0;
-}
-
-.sidebar-stats li {
-    font-size: 12px;
-    font-size: 1.2vh;
-    text-indent: 20px;
-    line-height: 14px !important;
-    color: #ddd;
 }
 
 
