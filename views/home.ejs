@@ -39,18 +39,20 @@
 			<!-- /ko -->
 		<!-- /ko -->
 					<li><a href="logout"><div class="sidebar-nav-button-content"><div class="fa fa-sign-out" aria-hidden="true"><span class="sidebar-nav-button-content">Logout</span></div></div></a></li>
-					<li><span>&nbsp;</span</li>
+
+					<li><p>&nbsp;</p></li>
+
 					<li><h4><%= settings.coinName %> Stats</h4></li>
-					<li class="small">Balance: <span data-bind='text: walletStatus.totalFmt'></span></li>
+					<li class="sidebar-stats">Balance: <span data-bind='text: walletStatus.totalFmt'></span></li>
 		<!-- ko if: walletStatus.isEncrypted() === 'Yes' && (isLocalWallet() || role() === 'Admin') -->
-					<li class="small">Available: <span data-bind='text: walletStatus.availableFmt'></span></li>
-					<li class="small">Staking: <span data-bind='text: walletStatus.stakeFmt'></span></li>
+					<li class="sidebar-stats">Available: <span data-bind='text: walletStatus.availableFmt'></span></li>
+					<li class="sidebar-stats">Staking: <span data-bind='text: walletStatus.stakeFmt'></span></li>
 		<!-- /ko -->
 		<!-- ko if: isLocalWallet() || role() === 'Admin' -->
-					<li class="small">Block Height: <span data-bind="text: walletStatus.blocks"></span></li>
-					<li class="small">Wallet Encrypted: <span data-bind="text: walletStatus.isEncrypted"></span></li>
+					<li class="sidebar-stats">Block Height: <span data-bind="text: walletStatus.blocks"></span></li>
+					<li class="sidebar-stats">Wallet Encrypted: <span data-bind="text: walletStatus.isEncrypted"></span></li>
 			<!-- ko if: walletStatus.isEncrypted() === 'Yes' -->
-					<li class="small">Currently Staking: <span data-bind="text: walletStatus.isUnlocked"></span></li>
+					<li class="sidebar-stats">Currently Staking: <span data-bind="text: walletStatus.isUnlocked"></span></li>
 			<!-- /ko -->
 		<!-- /ko -->
 				</ul>

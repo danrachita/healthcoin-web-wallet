@@ -3,19 +3,19 @@
 
 ## Prerequisites:
 
-A running RPC daemon. See:
- https://github.com/onsightit/healthcoin
+A running RPC coin daemon. See: https://github.com/onsightit/healthcoin
 
-Mongo DB for storing account info and biomarker data. See:
- https://www.mongodb.com/
+Mongo DB for storing account info and biomarker data. See: https://www.mongodb.com/
 
  Create DB and user:
  > use healthcoin
  > db.createUser( { user: "healthcoin", pwd: "{password}", roles: [ "readWrite" ] } )
 
 Node.js 6.x for running the Web Wallet. For debian installations:
+
  If running 4.x:
  sudo apt-get purge nodejs npm
+
  Install 6.x:
  curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
  sudo apt-get install -y nodejs
@@ -25,7 +25,7 @@ If the Web Wallet is not running locally, https is the default protocol.  To set
  sudo mkdir /etc/apache2/certs
  sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/certs/{domain name}.key -out /etc/apache2/certs/{domain name}.crt
 
- Note: Also copy the crt and key file to the {Web Wallet}/sslcert directory. Change the owner to that of the nodejs process, then make sure your settings.json SSL parameters have the correct file-names for your key and crt files.
+ Note: Also copy the crt and key file to the {nodejs}/sslcert directory. Change the owner to that of the nodejs process, then make sure your settings.json SSL parameters have the correct file-names for your key and crt files.
 
 
 ## Configuring:
@@ -72,6 +72,8 @@ If the daemon and Web Wallet are both running on the same machine, you can still
 If 'isLocal' is true, more control over the Web Wallet is allowed. (i.e. encrypting the wallet, locking/unlocking the wallet for sending/staking, and more wallet stats and features are available.)
 
 [See 'rpcconnect' in the Qt coin's source code, init.cpp, for more information.]
+
+If you need to run the Web Wallet app from a "sub directory" of the main web-site (e.g. https://example.com/wallet/), change the settings.json parameter, chRoot to: "".
 
 
 ## Running:
