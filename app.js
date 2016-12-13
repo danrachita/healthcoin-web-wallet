@@ -430,12 +430,12 @@ function startApp(app) {
         //        socket.emit('news', { news: 'Node socket connection error.' });
         //        console.log("Socket.io Error: " + err);
         //    });
+            process.on('uncaughtException', function (err) {
+        //      socket.emit('news', { news: 'Wallet connection error.' });
+              console.log('Caught exception: ' + err);
+              tryReconnect();
+            });
         //});
-        process.on('uncaughtException', function (err) {
-          socket.emit('news', { news: 'Wallet connection error.' });
-          console.log('Caught exception: ' + err);
-          tryReconnect();
-        });
         console.log('  Server listening on port ' + port);
         console.log('  Wallet is: ' + (coin.isLocal ? 'Local' : 'Not-Local'));
     });
