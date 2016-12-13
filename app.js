@@ -418,25 +418,26 @@ function startApp(app) {
         // Init MASTER_ACCOUNT in wallet and database for this node_id (Requires exported 'coin')
         require('./lib/init-wallet')();
 
-        var io = require('socket.io')(server, {
-                port: port
-            });
-        io.on('connection', function (socket) {
-            socket.emit('news', { news: 'Socket.io connected!' });
-            socket.on('news', function (data) {
-              console.log(data);
-            });
-            socket.on('connect_error', function (err) {
-                socket.emit('news', { news: 'Node socket connection error.' });
-                console.log("Socket.io Error: " + err);
-            });
-            process.on('uncaughtException', function (err) {
-              socket.emit('news', { news: 'Wallet connection error.' });
-              console.log('Caught exception: ' + err);
-              tryReconnect();
-            });
+        //var io = require('socket.io')(server, {
+        //        port: port
+        //    });
+        //io.on('connection', function (socket) {
+        //    socket.emit('news', { news: 'Socket.io connected!' });
+        //    socket.on('news', function (data) {
+        //      console.log(data);
+        //    });
+        //    socket.on('connect_error', function (err) {
+        //        socket.emit('news', { news: 'Node socket connection error.' });
+        //        console.log("Socket.io Error: " + err);
+        //    });
+        //});
+        process.on('uncaughtException', function (err) {
+          socket.emit('news', { news: 'Wallet connection error.' });
+          console.log('Caught exception: ' + err);
+          tryReconnect();
         });
         console.log('  Server listening on port ' + port);
+        console.log('  Wallet is: ' + (coin.isLocal ? 'Local' : 'Not-Local'));
     });
 }
 startApp(app);
