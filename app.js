@@ -164,6 +164,7 @@ app.get(chRoot + '/getnodeinfo', function(req,res){
 // Returns user account and address.
 app.get(chRoot + '/getuseraccount', function(req,res){
     if (req.user) {
+      console.log("DEBUG: user = " + JSON.stringify(req.user));
         var response = {
             error: null,
             result: { User: req.user }
