@@ -4,6 +4,7 @@ define(['knockout'], function(ko){
         self.wallet = options.parent || {};
 
         self.role = ko.observable("");
+        self.explorerURL = ko.observable("https://explorer.healthcoin.com/");
 
         self.statusMessage = ko.observable("");
     };
