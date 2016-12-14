@@ -1,7 +1,8 @@
 define(['knockout',
     'viewmodels/common/command',
     './profile-pulldown',
-    'viewmodels/wallet-status'], function(ko,Command,Pulldown){
+    'lib/dateformat',
+    'viewmodels/wallet-status'], function(ko,Command,Pulldown,Dateformat){
     var profileType = function(options){
         var self = this;
         self.wallet = options.parent || {};
@@ -28,6 +29,7 @@ define(['knockout',
         self.email = ko.observable("");
         self.description = ko.observable("");
         self.age = ko.observable("");
+        self.dob = ko.observable("");
         self.weight = ko.observable("");
         self.waist = ko.observable("");
         self.gender = ko.observable("");
@@ -43,7 +45,26 @@ define(['knockout',
         self.name.subscribe(function (){self.dirtyFlag(true);});
         self.email.subscribe(function (){self.dirtyFlag(true);});
         self.description.subscribe(function (){self.dirtyFlag(true);});
-        self.age.subscribe(function (){self.dirtyFlag(true);});
+        self.dob.subscribe(function (){
+            if (self.dob() !== ""){
+                var curDateYY = Dateformat(Date.now(), "yyyy");
+                var curDateMM = Dateformat(Date.now(), "mm");
+                var curDateDD = Dateformat(Date.now(), "dd");
+                var dobDateYY = Dateformat(self.dob(), "yyyy");
+                var dobDateMM = Dateformat(self.dob(), "mm");
+                var dobDateDD = Dateformat(self.dob(), "dd");
+                var age = curDateYY - dobDateYY;
+                if (curDateMM < dobDateMM){
+                    age--;
+                } else {
+                    if (curDateMM === dobDateMM && curDateDD < dobDateDD){
+                        age--; // Almost birthday time!
+                    }
+                }
+                self.age(age);
+                self.dirtyFlag(true);
+            }
+        });
         self.weight.subscribe(function (){self.dirtyFlag(true);});
         self.waist.subscribe(function (){self.dirtyFlag(true);});
         self.gender.subscribe(function (){self.dirtyFlag(true);});
@@ -53,7 +74,8 @@ define(['knockout',
         self.canSubmit = ko.computed(function(){
             var canSubmit = self.name() !== "" &&
                             self.email() !== "" &&
-                            self.age() > 0 &&
+                            self.age() >= 18 &&
+                            self.dob() !== "" &&
                             self.weight() > 0 &&
                             self.waist() > 0 &&
                             self.gender() !== "" &&
@@ -67,7 +89,7 @@ define(['knockout',
 
     profileType.prototype.refresh = function(){
         var self = this;
-        if (!self.isDirty() || !self.profileComplete()){
+        if (!self.isDirty()){
             self.login_type(self.wallet.User().profile.login_type);
             switch(self.login_type()){
                 case ("local"):
@@ -94,6 +116,9 @@ define(['knockout',
             self.email(self.wallet.User().profile.email);
             self.description(self.wallet.User().profile.description);
             self.age(self.wallet.User().profile.age);
+            if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
+                self.dob(Dateformat(self.wallet.User().profile.dob, "yyyy-mm-dd"));
+            }
             self.weight(self.wallet.User().profile.weight);
             self.waist(self.wallet.User().profile.waist);
             self.gender(self.wallet.User().profile.gender);
@@ -125,6 +150,7 @@ define(['knockout',
         self.wallet.User().profile.email = self.email();
         self.wallet.User().profile.description = self.description();
         self.wallet.User().profile.age = self.age();
+        self.wallet.User().profile.dob = self.dob();
         self.wallet.User().profile.weight = self.weight();
         self.wallet.User().profile.waist = self.waist();
         self.wallet.User().profile.gender = self.gender();
@@ -138,6 +164,7 @@ define(['knockout',
                 console.log("Profile Saved!");
                 self.statusMessage("Profile Saved!");
                 self.dirtyFlag(false);
+                self.wallet.initUser(); // wallet needs updating.
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());

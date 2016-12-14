@@ -71,8 +71,13 @@ define(['knockout',
     };
 
     sendType.prototype.unlockWallet = function(){
-        var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
-            passphraseDialogPromise = $.Deferred();
+        var self = this;
+        var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true,
+                                                    stakingOnly:false,
+                                                    chRoot: self.wallet.settings().chRoot,
+                                                    env: self.wallet.settings().env
+                                                    }
+            ), passphraseDialogPromise = $.Deferred();
 
         walletPassphrase.userPrompt(false, 'Wallet Unlock', 'Unlock the wallet for sending','OK')
             .done(function(){
@@ -160,7 +165,9 @@ define(['knockout',
                             var walletPassphrase = new WalletPassphrase({
                                 walletPassphrase: auth,
                                 forEncryption: false,
-                                stakingOnly: true
+                                stakingOnly: true,
+                                chRoot: self.wallet.settings().chRoot,
+                                env: self.wallet.settings().env
                             });
                             console.log("Wallet successfully relocked. Opening for staking...");
                             walletPassphrase.openWallet(false)

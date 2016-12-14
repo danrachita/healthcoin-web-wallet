@@ -19,18 +19,27 @@ define(['knockout'], function(ko){
             "VA Palo Alto Health Care System, Palo Alto"
             ]);
 
-        this.hcbmEHR_TypeValues =   ko.observableArray(["",
-            "Athena Health",
-            "Cerner",
-            "CPSI",
-            "Drchrono",
-            "EClinicalWorks",
-            "Epic",
-            "GE Healthcare",
-            "Greenway Health",
+        this.hcbmEmployerValues =   ko.observableArray(["",
+            "American International Group",
+            "Bank of America Corp.",
+            "Berkshire Hathaway",
+            "Cardinal Health",
+            "Citigroup",
+            "ConocoPhillips",
+            "Exxon Mobil",
+            "Ford Motor",
+            "General Electric",
+            "General Motors",
+            "Hewlett-Packard",
+            "Home Depot",
+            "International Business Machines",
+            "J.P. Morgan Chase & Co.",
             "McKesson",
-            "Meditech",
-            "Nextgen"
+            "Morgan Stanley",
+            "Valero Energy",
+            "Verizon Communications",
+            "Wal-Mart Stores",
+            "Zappos"
             ]);
 
         this.hcbmDevice_SourceValues =   ko.observableArray(["",

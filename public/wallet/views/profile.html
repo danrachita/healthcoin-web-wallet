@@ -34,15 +34,15 @@
 	            </div>
 
 				<!-- Biomarker data -->
-                <label class="control-label col-sm-2" for="age">Age</label>
+                <label class="control-label col-sm-2" for="age">Date of Birth</label>
                 <div class="col-sm-10">
-                    <p><input class="slider form-control" type="text" id="age" data-bind="sliderValue: {value: age, min: 18, max: 130, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: age"></b></p>
-	            </div>
-                <label class="control-label col-sm-2" for="weight">Weight (kg)</label>
+                    <p><a href="#profile" class="editable form-control" id="dob" data-type="date" data-bind="editable: dob" data-format="yyyy-mm-dd" data-viewformat="yyyy-mm-dd" data-title="When were you born? (click year twice)" data-placement="top"></a></p>
+                </div>
+                <label class="control-label col-sm-2" for="weight">Weight (lb)</label>
                 <div class="col-sm-10">
                     <p><input class="slider form-control" type="text" id="weight" data-bind="sliderValue: {value: weight, min: 90, max: 400, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: weight"></b></p>
 	            </div>
-                <label class="control-label col-sm-2" for="waist">Waist (cm)</label>
+                <label class="control-label col-sm-2" for="waist">Waist (in)</label>
                 <div class="col-sm-10">
                     <p><input class="slider form-control" type="text" id="waist" data-bind="sliderValue: {value: waist, min: 20, max: 100, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: waist"></b></p>
 	            </div>

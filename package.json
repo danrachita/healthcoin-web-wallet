@@ -1,9 +1,26 @@
 {
-  "name": "Web Wallet",
+  "name": "web-wallet",
   "version": "1.0.0",
+  "description": "Web Wallet for PoS Coins",
   "private": true,
   "node-main": "./app.js",
   "main": "loading.html",
+  "keywords": [
+    "coin, altcoin, wallet"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/onsightit/web-wallet.git"
+  },
+  "author": {
+    "name": "Steve Woods",
+    "email": "onsightit@gmail.com"
+  },
+  "readme": "See README.md\n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/onsightit/web-wallet/issues"
+  },
   "window": {
     "show": true,
     "title": "Web Wallet",
@@ -21,6 +38,7 @@
     "bcryptjs": "latest",
     "body-parser": "latest",
     "btoa": "latest",
+    "coin-node": "1.0.0",
     "connect-flash": "~0.1.1",
     "cookie": "latest",
     "cookie-parser": "latest",
@@ -28,7 +46,6 @@
     "ejs": "latest",
     "express": "latest",
     "express-session": "latest",
-    "coin-node": "1.0.0",
     "jsonminify": "0.4.1",
     "mongode": "0.1.6",
     "mongoose": "latest",

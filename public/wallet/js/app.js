@@ -9,6 +9,7 @@ define( [
         "knockout-amd-helpers",
         "knockout-validation",
         "knockout-x-editable",
+        "knockout-chart",
         "common/dialog",
         "viewmodels/wallet",
         "socket.io",
@@ -16,7 +17,8 @@ define( [
         "bindinghandlers/slider",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        ], function(jQuery, Sammy, moment, bootstrap, bse, slider, ko, koah, kov, koxe, dialog, Wallet, io){
+        "chart",
+        ], function(jQuery, Sammy, moment, bootstrap, bse, slider, ko, koah, kov, koxe, koc, dialog, Wallet, io){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";
@@ -49,6 +51,9 @@ define( [
             });
             this.get('#biomarkers', function() {
                 wallet.currentView('biomarkers');
+            });
+            this.get('#coinstream', function() {
+                wallet.currentView('coinstream');
             });
             this.get('#send', function() {
                 wallet.currentView('send');

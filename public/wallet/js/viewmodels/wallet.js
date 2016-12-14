@@ -14,6 +14,7 @@ define(['knockout',
     'viewmodels/wallet-status',
     'viewmodels/home/home',
     'viewmodels/biomarkers/biomarkers',
+    'viewmodels/coinstream/coinstream',
     'viewmodels/send/send',
     'viewmodels/receive/receive',
     'viewmodels/history/history',
@@ -22,7 +23,7 @@ define(['knockout',
     'viewmodels/profile/profile',
     'bindinghandlers/modal',
     'viewmodels/common/wallet-passphrase',
-    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Home, Biomarkers, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
+    'viewmodels/common/command'], function(ko, dialog, WalletStatus, Home, Biomarkers, Coinstream, Send, Receive, History, Explore, Console, Profile, Modal, WalletPassphrase, Command){
 
     var walletType = function(){
         var self = this;
@@ -51,6 +52,7 @@ define(['knockout',
 
         this.home = new Home({parent: self});
         this.biomarkers = new Biomarkers({parent: self}); // Unique to Healthcoin
+        this.coinstream = new Coinstream({parent: self}); // Unique to Healthcoin
         this.send = new Send({parent: self});
         this.receive = new Receive({parent: self});
         this.history = new History({parent: self});
@@ -67,6 +69,7 @@ define(['knockout',
             if (self.User().profile && self.User().profile.name !== 'undefined') {
                 isComplete = self.User().profile.name !== "" &&
                              self.User().profile.age > 0 &&
+                             self.User().profile.dob && self.User().profile.dob !== "" &&
                              self.User().profile.weight > 0 &&
                              self.User().profile.waist > 0 &&
                              self.User().profile.gender !== "" &&
@@ -201,6 +204,7 @@ define(['knockout',
             .done(function(){
                 self.home.refresh();
                 self.biomarkers.refresh();
+                self.coinstream.refresh();
                 self.send.refresh();
                 self.receive.refresh();
                 self.history.refresh();

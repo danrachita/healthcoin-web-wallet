@@ -1,0 +1,8 @@
+<div class="container" data-bind="with:coinstream">
+
+    <!-- COINSTREAM -->
+    <div class="well">
+        <h1 class="text-primary"><span class="fa fa-line-chart"></span> Your <span data-bind="text: wallet.settings().coinName"></span> Coinstream</h1>
+        <canvas id="coinstreamChart" data-bind="chart: { type: 'line', data: coinstreamData }"></canvas>
+    </div>
+</div>

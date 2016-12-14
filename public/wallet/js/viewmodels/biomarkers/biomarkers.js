@@ -16,7 +16,7 @@ define(['knockout',
         self.profileComplete = ko.observable(false);
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source = ko.observable("");
-        self.hcbmEHR_Type = ko.observable("");
+        self.hcbmEmployer = ko.observable("");
         self.hcbmA1c = ko.observable(0.00);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
@@ -44,7 +44,7 @@ define(['knockout',
         // User changeables subscriptions
         self.hcbmDate.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmEHR_Source.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmEHR_Type.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmEmployer.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmA1c.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmTriglycerides.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmHDL.subscribe(function (){self.dirtyFlag(true);});
@@ -84,7 +84,7 @@ define(['knockout',
             var hcbmValid = self.profileComplete() &&
                             self.hcbmDate() !== "" &&
                             self.hcbmEHR_Source() !== "" &&
-                            self.hcbmEHR_Type() !== "" &&
+                            self.hcbmEmployer() !== "" &&
                             self.hcbmA1c() >= 2.00 && self.hcbmA1c() <= 12.00 &&
                             self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
                             self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
@@ -123,7 +123,7 @@ define(['knockout',
         self.amount(self.wallet.settings().minTxFee);
         self.credit(self.wallet.settings().minTxFee * 2);
 
-        if (!self.isDirty() || !self.profileComplete()){
+        if (!self.isDirty()){
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
             self.hcbmWaist(self.wallet.User().profile.waist);
@@ -137,8 +137,7 @@ define(['knockout',
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
                 self.profileComplete(true);
-                var creditFmt = self.wallet.formatNumber(self.wallet.User().profile.credit, 4, '.', ',');
-                self.statusMessage("You've earned " + creditFmt + " " + self.wallet.settings().coinSymbol + " credits so far!");
+                self.statusMessage("");
             }
             self.dirtyFlag(false);
         }
@@ -148,7 +147,7 @@ define(['knockout',
         var self = this;
         self.hcbmDate(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source("");
-        self.hcbmEHR_Type("");
+        self.hcbmEmployer("");
         self.hcbmA1c(0.00);
         self.hcbmTriglycerides(0);
         self.hcbmHDL(0);
@@ -185,8 +184,13 @@ define(['knockout',
     };
 
     biomarkersType.prototype.unlockWallet= function(){
-        var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true, stakingOnly:false}),
-            passphraseDialogPromise = $.Deferred();
+        var self = this;
+        var walletPassphrase = new WalletPassphrase({canSpecifyStaking:true,
+                                                    stakingOnly:false,
+                                                    chRoot: self.wallet.settings().chRoot,
+                                                    env: self.wallet.settings().env
+                                                    }
+            ), passphraseDialogPromise = $.Deferred();
 
         walletPassphrase.userPrompt(false, 'Wallet Unlock', 'Unlock the wallet for sending','OK')
             .done(function(){
@@ -277,7 +281,9 @@ define(['knockout',
                             var walletPassphrase = new WalletPassphrase({
                                 walletPassphrase: auth,
                                 forEncryption: false,
-                                stakingOnly: true
+                                stakingOnly: true,
+                                chRoot: self.wallet.settings().chRoot,
+                                env: self.wallet.settings().env
                             });
                             console.log("Wallet successfully relocked. Opening for staking...");
                             walletPassphrase.openWallet(false)
@@ -303,7 +309,7 @@ define(['knockout',
         var hcbm = {
         "Date": self.hcbmDate(), // Date of activity
 		"EHR_Source": self.hcbmEHR_Source(),
-		"EHR_Type": self.hcbmEHR_Type(),
+		"EHR_Type": self.hcbmEmployer(),
         "A1C": self.hcbmA1c(),
         "Triglycerides": self.hcbmTriglycerides(),
         "HDL": self.hcbmHDL(),

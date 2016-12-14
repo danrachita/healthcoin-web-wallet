@@ -1,4 +1,5 @@
-define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','viewmodels/common/command'], function(ko,dialog,ConfirmationDialog,Command) {
+define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','viewmodels/common/command'],
+    function(ko,dialog,ConfirmationDialog,Command) {
     var defaultWalletStakingUnlockTime = 999999;
     var walletPassphraseType = function(options){
         var self = this,
@@ -8,6 +9,8 @@ define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','view
         this.walletPassphraseConfirm = ko.observable('');
         this.stakingOnly = opts.stakingOnly === false ? ko.observable(false) : ko.observable(true);
         this.canSpecifyStaking = opts.canSpecifyStaking === true ? ko.observable(true) : ko.observable(false);
+        this.chRoot = ko.observable(opts.chRoot || '');
+        this.env = ko.observable(opts.env || 'production');
         this.canSubmit = ko.computed(function(){
             //return true;
             var passphrase = self.walletPassphrase(),
@@ -54,12 +57,12 @@ define(['knockout','common/dialog','viewmodels/common/confirmation-dialog','view
             walletPassphraseCommand = encrypt ?
                 new Command('encryptwallet',
                             [encodeURIComponent(btoa(self.walletPassphrase()))],
-                            self.wallet.settings().chRoot,
-                            'production')     :
+                            self.chRoot(),
+                            self.env())     :
                 new Command('walletpassphrase',
                             [encodeURIComponent(btoa(self.walletPassphrase())), defaultWalletStakingUnlockTime,  self.stakingOnly()],
-                            self.wallet.settings().chRoot,
-                            'production');
+                            self.chRoot(),
+                            self.env());
 
         walletPassphraseCommand.execute()
             .done(function(result){

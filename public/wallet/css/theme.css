@@ -5,6 +5,7 @@ body {
 #main {
     margin-bottom: 15px;
 }
+
 @media screen and (min-width: 720px) {
     #main {
         margin-top: 25px;
@@ -298,7 +299,7 @@ sup {
 
 /* Customize well from bootstrap.css */
 .well {
-    min-width: 500px !important;
+    /*min-width: 500px !important; /* Breaks datepicker width */
     background-color: inherit;
     padding: 20px;
     margin-bottom: 0px;
@@ -344,6 +345,16 @@ a.text-primary:focus {
 }
 
 /* Customize popover from bootstrap-editable.css */
+/*.editable-container {
+    max-width: 240px;
+}
+.editable-input {
+    max-width: 240px;
+}
+.editable-date {
+    max-width: 240px;
+}
+*/
 .editable-container.popover {
     padding: 10px;
 }
