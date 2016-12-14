@@ -159,7 +159,8 @@ define(['knockout',
         var saveUserProfileCommand = new Command('saveuserprofile',
                                                 [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
                                                 self.wallet.settings().chRoot,
-                                                self.wallet.settings().env).execute()
+                                                self.wallet.settings().env);
+        saveUserProfileCommand.execute()
             .done(function(){
                 console.log("Profile Saved!");
                 self.statusMessage("Profile Saved!");

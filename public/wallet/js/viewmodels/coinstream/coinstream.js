@@ -10,7 +10,7 @@ define(['knockout'], function(ko){
             labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
             datasets: [
                 {
-                    label: "Normal Biomarkers",
+                    label: "Average Coinstream",
                     backgroundColor: "rgba(220,220,220,0.2)",
                     borderColor: "rgba(220,220,220,1)",
                     pointColor: "rgba(220,220,220,1)",
@@ -20,7 +20,7 @@ define(['knockout'], function(ko){
                     data: [5.52, 5.33, 5.7, 6.07, 6.44, 4.78, 6.44, 6.07, 6.26, 6.63, 5.33, 6.44]
                 },
                 {
-                    label: "Your Biomarkers",
+                    label: "Your Coinstream",
                     backgroundColor: "rgba(151,187,205,0.2)",
                     borderColor: "rgba(151,187,205,1)",
                     pointColor: "rgba(151,187,205,1)",

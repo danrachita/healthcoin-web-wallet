@@ -10,8 +10,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
-        // Source value arrays for pulldown menues
-        self.pulldown = new Pulldown();
+        self.pulldown = new Pulldown(); // Source value arrays for pulldown menues
+        self.dob = ko.observable(""); // DoB from user Profile
 
         self.profileComplete = ko.observable(false);
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
@@ -42,7 +42,24 @@ define(['knockout',
         });
 
         // User changeables subscriptions
-        self.hcbmDate.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmDate.subscribe(function (){
+            var curDateYY = Dateformat(self.hcbmDate(), "yyyy");
+            var curDateMM = Dateformat(self.hcbmDate(), "mm");
+            var curDateDD = Dateformat(self.hcbmDate(), "dd");
+            var dobDateYY = Dateformat(self.dob(), "yyyy");
+            var dobDateMM = Dateformat(self.dob(), "mm");
+            var dobDateDD = Dateformat(self.dob(), "dd");
+            var age = curDateYY - dobDateYY;
+            if (curDateMM < dobDateMM){
+                age--;
+            } else {
+                if (curDateMM === dobDateMM && curDateDD < dobDateDD){
+                    age--; // Almost birthday time!
+                }
+            }
+            self.hcbmAge(age);
+            self.dirtyFlag(true);
+        });
         self.hcbmEHR_Source.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmEmployer.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmA1c.subscribe(function (){self.dirtyFlag(true);});
@@ -50,12 +67,9 @@ define(['knockout',
         self.hcbmHDL.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmBPS.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmBPD.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmAge.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmWeight.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmWaist.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmGender.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmEthnicity.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmCountry.subscribe(function (){self.dirtyFlag(true);});
+
         self.hcbmDevice_Source.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmDevice_Steps.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmOther.subscribe(function (){self.dirtyFlag(true);});
@@ -81,15 +95,19 @@ define(['knockout',
         self.available = ko.observable(0.00);
 
         self.canSend = ko.computed(function(){
+            var hcbmDate  = Dateformat(self.hcbmDate(), "yyyy-mm-dd"); // Remove timestamp
             var hcbmValid = self.profileComplete() &&
-                            self.hcbmDate() !== "" &&
+                            hcbmDate < Dateformat(Date.now(), "yyyy-mm-dd") &&
                             self.hcbmEHR_Source() !== "" &&
                             self.hcbmEmployer() !== "" &&
                             self.hcbmA1c() >= 2.00 && self.hcbmA1c() <= 12.00 &&
                             self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
                             self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
                             self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
-                            self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130;
+                            self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130 &&
+                            self.hcbmAge() >= 0 &&
+                            self.hcbmWeight() > 0 &&
+                            self.hcbmWaist() > 0;
 
             var address = self.recipientAddress(),
                 addressValid = address.length && self.recipientAddress.isValid(),
@@ -124,6 +142,7 @@ define(['knockout',
         self.credit(self.wallet.settings().minTxFee * 2);
 
         if (!self.isDirty()){
+            self.dob(self.wallet.User().profile.dob);
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
             self.hcbmWaist(self.wallet.User().profile.waist);
@@ -153,6 +172,10 @@ define(['knockout',
         self.hcbmHDL(0);
         self.hcbmBPS(0);
         self.hcbmBPD(0);
+        self.hcbmAge(self.wallet.User().profile.age);
+        self.hcbmWeight(self.wallet.User().profile.weight);
+        self.hcbmWaist(self.wallet.User().profile.waist);
+
         self.hcbmDevice_Source("");
         self.hcbmDevice_Steps(0);
         self.txcommentBiomarker("");
@@ -263,7 +286,7 @@ define(['knockout',
                 if (self.wallet.settings().env !== 'production'){
                     console.log("TxId: " + txid);
                 }
-                self.statusMessage("Success! You've earned " + self.credit() + " credits.");
+                self.statusMessage("Success!");
                 // Reset Send button
                 self.Reset();
                 self.wallet.User().profile.credit = self.wallet.User().profile.credit + self.credit();
