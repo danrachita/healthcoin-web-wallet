@@ -174,6 +174,25 @@ app.get(chRoot + '/getuseraccount', function(req,res){
     }
 });
 
+// Gets user's biomarkers.
+app.get(chRoot + '/getbiomarkerscores/:id/:startdate', function(req,res){
+    var id = atob(decodeURIComponent(req.params.id)) || '*',
+        startdate = decodeURIComponent(req.params.startdate) || '*';
+
+    mdb.getBiomarkerScores(id, startdate, function(err, data){
+        if (err) {
+            res.send(500, JSON.stringify(err));
+        } else {
+            //console.log("DEBUG: data = " + JSON.stringify(data));
+            var response = {
+                error: null,
+                result: data
+            };
+            res.send(JSON.stringify(response));
+        }
+    });
+});
+
 // Saves user profile.
 app.get(chRoot + '/saveuserprofile/:profile', function(req,res){
     var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.user.profile,
