@@ -8,14 +8,8 @@ define(['knockout',
         self.name = ko.observable("");
         self.role = ko.observable("");
 
-        self.dirtyFlag = ko.observable(false);
-        self.isDirty = ko.computed(function() {
-            return self.dirtyFlag();
-        });
-
         self.startDate = ko.observable(Dateformat(Date.now(), "yyyy") + "-01-01");
         self.startDate.subscribe(function (){
-            self.dirtyFlag(true);
             self.getBiomarkerScores();
         });
 
@@ -58,11 +52,9 @@ define(['knockout',
         if (self.wallet.User().profile){
             self.name(self.wallet.User().profile.name);
             self.role(self.wallet.User().profile.role);
-            if (!self.isDirty()){
-                if (typeof self.userData.datasets[1].data !== 'undefined' &&
-                    self.userData.datasets[1].data.length === 0){
-                    self.getBiomarkerScores(); // Keep looking if no data yet.
-                }
+            if (typeof self.userData.datasets[1].data !== 'undefined' &&
+                self.userData.datasets[1].data.length === 0){
+                self.getBiomarkerScores(); // Look if no data yet.
             }
         }
     };
