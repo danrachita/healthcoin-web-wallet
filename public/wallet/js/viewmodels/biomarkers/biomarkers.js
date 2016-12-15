@@ -17,7 +17,7 @@ define(['knockout',
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmEmployer = ko.observable("");
-        self.hcbmA1c = ko.observable(0.00);
+        self.hcbmHA1c = ko.observable(0.00);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
         self.hcbmBPS = ko.observable(0);
@@ -33,7 +33,6 @@ define(['knockout',
 
         self.hcbmDevice_Source = ko.observable("");
         self.hcbmDevice_Steps = ko.observable(0);
-        self.hcbmScore = ko.observable(0);
         self.hcbmOther = ko.observable("n/a");
 
         self.dirtyFlag = ko.observable(false);
@@ -62,7 +61,7 @@ define(['knockout',
         });
         self.hcbmEHR_Source.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmEmployer.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmA1c.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmHA1c.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmTriglycerides.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmHDL.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmBPS.subscribe(function (){self.dirtyFlag(true);});
@@ -100,7 +99,7 @@ define(['knockout',
                             hcbmDate < Dateformat(Date.now(), "yyyy-mm-dd") &&
                             self.hcbmEHR_Source() !== "" &&
                             self.hcbmEmployer() !== "" &&
-                            self.hcbmA1c() >= 2.00 && self.hcbmA1c() <= 12.00 &&
+                            self.hcbmHA1c() >= 2.00 && self.hcbmHA1c() <= 12.00 &&
                             self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
                             self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
                             self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
@@ -118,14 +117,121 @@ define(['knockout',
             return (hcbmValid && addressValid && amountValid);
         });
 
-        self.tallyScore = ko.computed(function(){
-            // TODO: Use Nick's algo.
-            var bpScore = 0;
-            if (self.hcbmBPS() && self.hcbmBPD()){
-                bpScore = Number(self.hcbmBPS()) / Number(self.hcbmBPD()) - 1;
+        // Helper functions for calculating health score
+        function getHA1cScore(hcbmHA1c){
+            var ha1cScore = 0;
+            if (hcbmHA1c > 0.00){
+                // Best score: 2.0 -> 4.7 = 100
+                // Simulate a crude logarithm otherwise
+                if (hcbmHA1c <= 4.7){
+                    ha1cScore = 100;
+                } else {
+                    if (hcbmHA1c <= 6.4){
+                        ha1cScore = Number(288/hcbmHA1c);
+                    } else {
+                            ha1cScore = Number(156/hcbmHA1c);
+                    }
+                }
             }
-            var score = Number(self.hcbmA1c()) + Number(self.hcbmTriglycerides()) + Number(self.hcbmHDL()) + bpScore;
-            return score;
+            //console.log("DEBUG: ha1cScore = " + ha1cScore);
+            return ha1cScore;
+        }
+        function getTriglScore(hcbmTriglycerides){
+            var triglScore = 0;
+            if (hcbmTriglycerides > 0){
+                // Best score: 20 -> 40 = 100
+                // Simulate a crude logarithm otherwise
+                if (hcbmTriglycerides <= 40){
+                    triglScore = 100;
+                } else {
+                    if (hcbmTriglycerides <= 220){
+                        triglScore = Number(4400/hcbmTriglycerides);
+                    } else {
+                        if (hcbmTriglycerides >= 320){
+                            triglScore = 0;
+                        } else {
+                            triglScore = Number(2240/hcbmTriglycerides);
+                        }
+                    }
+                }
+            }
+            //console.log("DEBUG: triglScore = " + triglScore);
+            return triglScore;
+        }
+        function getHDLScore(hcbmHDL){
+            var hdlScore = 0;
+            if (hcbmHDL > 0){
+                // Best score: 0 -> 28 = 100
+                // Simulate a crude logarithm otherwise
+                if (hcbmHDL <= 28){
+                    hdlScore = 100;
+                } else {
+                    if (hcbmHDL <= 50){
+                        hdlScore = Number(2000/hcbmHDL);
+                    } else {
+                        if (hcbmHDL >= 95){
+                            hdlScore = 0;
+                        } else {
+                            hdlScore = Number(980/hcbmHDL);
+                        }
+                    }
+                }
+            }
+            //console.log("DEBUG: hdlScore = " + hdlScore);
+            return hdlScore;
+        }
+        function getBPScore(hcbmBPS, hcbmBPD){
+            var bpScore = 0;
+            if (hcbmBPS > 0 && hcbmBPD > 0){
+                // Best score: 40.5 = (60+90)/2 * 0.6 * 0.9
+                //             4050/40.5 = 100
+                bpScore = Number(4050/((hcbmBPS+hcbmBPD)/2*(hcbmBPS/100)*(hcbmBPD/100)));
+            }
+            //console.log("DEBUG: bpScore = " + bpScore);
+            return bpScore;
+        }
+        function getWaistScore(hcbmWaist, hcbmGender){
+            var waistScore = 0;
+            if (hcbmWaist > 0 && hcbmGender !== ""){
+                if (hcbmGender === "Female"){
+                    // Best score: 25 -> 27 = 100
+                    // Simulate a crude logarithm otherwise
+                    if (hcbmWaist <= 27){
+                        waistScore = 100;
+                    } else {
+                        if (hcbmWaist <= 45){
+                            waistScore = Number(1440/hcbmWaist);
+                        } else {
+                            waistScore = 0;
+                        }
+                    }
+                } else {
+                    // Best score: 30 -> 32 = 100
+                    // Simulate a crude logarithm otherwise
+                    if (hcbmWaist <= 32){
+                        waistScore = 100;
+                    } else {
+                        if (hcbmWaist <= 50){
+                            waistScore = Number(1440/hcbmWaist);
+                        } else {
+                            waistScore = 0;
+                        }
+                    }
+                }
+            }
+            //console.log("DEBUG: waistScore = " + waistScore);
+            return waistScore;
+        }
+        self.hcbmScore = ko.computed(function(){
+            // Calculate the Healthscore based on Nick's ratios.
+            // score = (x * HA1c) + (x * Triglycerides) + (x * HDL) + (x * (BPS + BPD)/2 * (BPS/100) * (BPD/100)) + (x * Waist/Gender)
+            var xHA1c  = Number(0.50 * getHA1cScore(self.hcbmHA1c()));
+            var xTrigl = Number(0.05 * getTriglScore(self.hcbmTriglycerides()));
+            var xHDL   = Number(0.20 * getHDLScore(self.hcbmHDL()));
+            var xBP    = Number(0.15 * getBPScore(self.hcbmBPS(), self.hcbmBPD()));
+            var xWaist = Number(0.05 * getWaistScore(self.hcbmWaist(), self.hcbmGender()));
+
+            return self.wallet.formatNumber(Number(xHA1c + xTrigl + xHDL + xBP + xWaist), 2, '.', ',');
         });
 
         self.isEncrypted = ko.computed(function(){
@@ -167,7 +273,7 @@ define(['knockout',
         self.hcbmDate(Dateformat(Date.now(), "yyyy-mm-dd"));
         self.hcbmEHR_Source("");
         self.hcbmEmployer("");
-        self.hcbmA1c(0.00);
+        self.hcbmHA1c(0.00);
         self.hcbmTriglycerides(0);
         self.hcbmHDL(0);
         self.hcbmBPS(0);
@@ -333,7 +439,7 @@ define(['knockout',
         "Date": self.hcbmDate(), // Date of activity
 		"EHR_Source": self.hcbmEHR_Source(),
 		"EHR_Type": self.hcbmEmployer(),
-        "A1C": self.hcbmA1c(),
+        "A1C": self.hcbmHA1c(),
         "Triglycerides": self.hcbmTriglycerides(),
         "HDL": self.hcbmHDL(),
         "BPS": self.hcbmBPS(),
@@ -346,8 +452,8 @@ define(['knockout',
 		"Country": self.hcbmCountry(),
         "Device_Source": self.hcbmDevice_Source(),
         "Device_Steps": self.hcbmDevice_Steps(),
-		"Score": self.hcbmScore(),
-        "Other": self.hcbmOther()
+        "Other": self.hcbmOther(),
+		"Score": self.hcbmScore()
         };
 
         return JSON.stringify(hcbm);

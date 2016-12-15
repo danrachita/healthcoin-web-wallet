@@ -132,8 +132,8 @@ sup {
 
 .sidebar-nav span.sidebar-nav-button-content {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 22px;
-    font-size: 2.2vh;
+    font-size: 19px;
+    font-size: 2.1vh;
     margin-left: 20px;
 }
 
@@ -365,5 +365,11 @@ a.text-primary:focus {
     margin-right: 10px;
     margin-top: 5px;
 }
+/* font-awesome icon fix-up
+[class*="fa-"]:before,
+[class^=" fa"]:before {
+    margin-right: 10px;
+}
+*/
 
 /*** End Bootstrap  Overrides ***/
