@@ -54,12 +54,18 @@ define(['knockout',
             self.role(self.wallet.User().profile.role);
             if (typeof self.userData.datasets[1].data !== 'undefined' &&
                 self.userData.datasets[1].data.length === 0){
-                self.getBiomarkerScores(); // Look if no data yet.
+                self.getBiomarkerScores(); // Pull if no data yet.
             }
         }
     };
 
-    coinstreamType.prototype.getBiomarkerScores = function(){
+    coinstreamType.prototype.Refresh = function(){
+        var self = this;
+        self.userData.datasets[1].data = []; // Reset data so it will refresh
+        self.getBiomarkerScores(true);
+    };
+
+    coinstreamType.prototype.getBiomarkerScores = function(refresh){
         var self = this;
         var id = self.wallet.User()._id;
         var startDate = self.startDate();
@@ -82,8 +88,8 @@ define(['knockout',
                             scores.push(biomarker.Score);
                         }
                     }
-                    console.log("DEBUG: dates = " + JSON.stringify(dates));
-                    console.log("DEBUG: scores = " + JSON.stringify(scores));
+                    console.log("DEBUG: in dates = " + JSON.stringify(dates));
+                    console.log("DEBUG: in scores = " + JSON.stringify(scores));
                     if (scores.length && dates.length){
                         var currYear = Dateformat(Date.now(), "yyyy");
                         var startYear = Dateformat(dates[0], "yyyy");
@@ -117,14 +123,20 @@ define(['knockout',
                             }
                         }
                         self.userData.datasets[1].data = dataPoints;
-                        console.log("DEBUG: scores = " + JSON.stringify(self.userData.datasets[1].data));
-                        
+                        console.log("DEBUG: out scores = " + JSON.stringify(self.userData.datasets[1].data));
+
                         self.coinstreamData(self.userData);
-                        self.statusMessage("Biomarkers Found!");
-                        return;
+                        if (!refresh){
+                            self.statusMessage("You've got Biomarkers!");
+                        } else {
+                            self.statusMessage("Biomarkers Refreshed.");
+                        }
+                    } else {
+                        self.statusMessage("No Biomarkers scores were found.");
                     }
+                } else {
+                    self.statusMessage("No Biomarkers were found since " + Dateformat(startDate, "yyyy-mm-dd") + ".");
                 }
-                self.statusMessage("No Biomarkers found since " + Dateformat(startDate, "yyyy-mm-dd") + ".");
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());

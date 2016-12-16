@@ -12,6 +12,9 @@
             </div>
         </form>
         <canvas id="coinstreamChart" data-bind="chart: { type: 'line', data: coinstreamData }"></canvas>
+        <div class="floatleft">
+            <button type="submit" class="btn btn-primary btn-lg" data-bind="click: Refresh">Refresh</button>
+        </div>
         <h3 align="center" data-bind="text:statusMessage"></h3>
     </div>
 </div>
