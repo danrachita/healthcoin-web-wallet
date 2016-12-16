@@ -8,9 +8,16 @@ define(['knockout',
         self.name = ko.observable("");
         self.role = ko.observable("");
 
-        self.startDate = ko.observable(Dateformat(Date.now(), "yyyy") + "-01-01");
-        self.startDate.subscribe(function (){
-            self.getBiomarkerScores();
+        self.startYear = ko.observable(Dateformat(Date.now(), "yyyy"));
+        self.startYear.subscribe(function (){
+            var currYear = Number(Dateformat(Date.now(), "yyyy"));
+            var startYear = Number(Dateformat(self.startYear(), "yyyy"));
+            if (startYear <= currYear && startYear >= 1900){
+                self.statusMessage("");
+                self.getBiomarkerScores();
+            } else {
+                self.statusMessage("Invalid year. " + startYear + " " + currYear);
+            }
         });
 
         self.labelsMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -68,9 +75,9 @@ define(['knockout',
     coinstreamType.prototype.getBiomarkerScores = function(refresh){
         var self = this;
         var id = self.wallet.User()._id;
-        var startDate = self.startDate();
+        var startYear = Date(self.startYear() + '-01-01');
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
-                                                [encodeURIComponent(btoa(id)), encodeURIComponent(startDate)],
+                                                [encodeURIComponent(btoa(id)), encodeURIComponent(startYear)],
                                                 self.wallet.settings().chRoot,
                                                 self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
@@ -115,10 +122,10 @@ define(['knockout',
                         var dataPoints = [0,0,0,0,0,0,0,0,0,0,0,0];
                         for (var dp = 0; dp < dates.length; dp++){
                             if (startYear === currYear){ // 12 months view
-                                var mo = Dateformat(dates[dp], "mm");
+                                var mo = Number(Dateformat(dates[dp], "mm"));
                                 dataPoints[mo - 1] = scores[dp];
                             } else { // 12 years view
-                                var yr = Dateformat(dates[dp], "yyyy") - startYear;
+                                var yr = Number(Dateformat(dates[dp], "yyyy")) - startYear;
                                 dataPoints[yr] = scores[dp];
                             }
                         }
@@ -135,7 +142,7 @@ define(['knockout',
                         self.statusMessage("No Biomarkers scores were found.");
                     }
                 } else {
-                    self.statusMessage("No Biomarkers were found since " + Dateformat(startDate, "yyyy-mm-dd") + ".");
+                    self.statusMessage("No Biomarkers were found since " + Dateformat(self.startYear(), "yyyy") + ".");
                 }
             })
             .fail(function(error){
