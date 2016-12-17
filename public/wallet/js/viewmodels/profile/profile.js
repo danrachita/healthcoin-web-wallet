@@ -117,7 +117,7 @@ define(['knockout',
             self.description(self.wallet.User().profile.description);
             self.age(self.wallet.User().profile.age);
             if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
-                self.dob(Dateformat(self.wallet.User().profile.dob, "yyyy-mm-dd"));
+                self.dob(Dateformat(self.wallet.User().profile.dob, "GMT:yyyy-mm-dd")); // Dates from db need conversion to GMT
             }
             self.weight(self.wallet.User().profile.weight);
             self.waist(self.wallet.User().profile.waist);

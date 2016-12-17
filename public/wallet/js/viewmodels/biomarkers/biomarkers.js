@@ -11,10 +11,9 @@ define(['knockout',
         self.wallet = options.parent || {};
 
         self.pulldown = new Pulldown(); // Source value arrays for pulldown menues
-        self.dob = ko.observable(""); // DoB from user Profile
 
         self.profileComplete = ko.observable(false);
-        self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd"));
+        self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd")); // Date.now() already has GMT timezone info
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmEmployer = ko.observable("");
         self.hcbmHA1c = ko.observable(0.00);
@@ -24,6 +23,7 @@ define(['knockout',
         self.hcbmBPD = ko.observable(0);
 
         // These come from profile
+        self.dob = ko.observable("");
         self.hcbmAge = ko.observable(0);
         self.hcbmWeight = ko.observable(0);
         self.hcbmWaist = ko.observable(0);
@@ -96,7 +96,7 @@ define(['knockout',
         self.canSend = ko.computed(function(){
             var hcbmDate  = Dateformat(self.hcbmDate(), "yyyy-mm-dd"); // Remove timestamp
             var hcbmValid = self.profileComplete() &&
-                            hcbmDate < Dateformat(Date.now(), "yyyy-mm-dd") &&
+                            hcbmDate <= Dateformat(Date.now(), "yyyy-mm-dd") &&
                             self.hcbmEHR_Source() !== "" &&
                             self.hcbmEmployer() !== "" &&
                             self.hcbmHA1c() >= 2.00 && self.hcbmHA1c() <= 12.00 &&
@@ -248,7 +248,7 @@ define(['knockout',
         self.credit(self.wallet.settings().minTxFee * 2);
 
         if (!self.isDirty()){
-            self.dob(self.wallet.User().profile.dob);
+            self.dob(Dateformat(self.wallet.User().profile.dob, "GMT:yyyy-mm-dd")); // Dates from db need conversion to GMT
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
             self.hcbmWaist(self.wallet.User().profile.waist);

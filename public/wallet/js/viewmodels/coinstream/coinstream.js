@@ -8,15 +8,15 @@ define(['knockout',
         self.name = ko.observable("");
         self.role = ko.observable("");
 
-        self.startYear = ko.observable(Dateformat(Date.now(), "yyyy"));
-        self.startYear.subscribe(function (){
-            var currYear = Number(Dateformat(Date.now(), "yyyy"));
-            var startYear = Number(Dateformat(self.startYear(), "yyyy"));
+        self.startDate = ko.observable(Dateformat(Date.now(), "GMT:yyyy"));
+        self.startDate.subscribe(function (){
+            var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
+            var startYear = Number(Dateformat(self.startDate(), "GMT:yyyy"));
             if (startYear <= currYear && startYear >= 1900){
                 self.statusMessage("");
                 self.getBiomarkerScores();
             } else {
-                self.statusMessage("Invalid year. " + startYear + " " + currYear);
+                self.statusMessage("Invalid year...");
             }
         });
 
@@ -75,9 +75,9 @@ define(['knockout',
     coinstreamType.prototype.getBiomarkerScores = function(refresh){
         var self = this;
         var id = self.wallet.User()._id;
-        var startYear = Date(self.startYear() + '-01-01');
+        var startDate = Dateformat(self.startDate(), "GMT:yyyy-mm-dd");
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
-                                                [encodeURIComponent(btoa(id)), encodeURIComponent(startYear)],
+                                                [encodeURIComponent(btoa(id)), encodeURIComponent(startDate)],
                                                 self.wallet.settings().chRoot,
                                                 self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
@@ -91,15 +91,15 @@ define(['knockout',
                         var header = data[i].header;
                         if (biomarker && header && header.user_id === id){
                             // Dates returned oldest to newest.
-                            dates.push(Dateformat(biomarker.Date, "yyyy-mm-dd"));
+                            dates.push(Dateformat(biomarker.Date, "GMT:yyyy-mm-dd")); // Dates from db need conversion to GMT
                             scores.push(biomarker.Score);
                         }
                     }
                     console.log("DEBUG: in dates = " + JSON.stringify(dates));
                     console.log("DEBUG: in scores = " + JSON.stringify(scores));
                     if (scores.length && dates.length){
-                        var currYear = Dateformat(Date.now(), "yyyy");
-                        var startYear = Dateformat(dates[0], "yyyy");
+                        var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
+                        var startYear = Number(Dateformat(dates[0], "GMT:yyyy"));
                         // Determine which labels to use.
                         if (startYear < currYear){
                             // Build 12 Year labels
@@ -125,7 +125,7 @@ define(['knockout',
                                 var mo = Number(Dateformat(dates[dp], "mm"));
                                 dataPoints[mo - 1] = scores[dp];
                             } else { // 12 years view
-                                var yr = Number(Dateformat(dates[dp], "yyyy")) - startYear;
+                                var yr = Number(Dateformat(dates[dp], "GMT:yyyy")) - startYear;
                                 dataPoints[yr] = scores[dp];
                             }
                         }
@@ -142,8 +142,10 @@ define(['knockout',
                         self.statusMessage("No Biomarkers scores were found.");
                     }
                 } else {
-                    self.statusMessage("No Biomarkers were found since " + Dateformat(self.startYear(), "yyyy") + ".");
+                    self.statusMessage("No Biomarkers were found since " + Dateformat(self.startDate(), "GMT:yyyy") + ".");
                 }
+                console.log("DEBUG: startDate = " + startDate);
+                console.log("DEBUG: startDate() = " + self.startDate());
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());
