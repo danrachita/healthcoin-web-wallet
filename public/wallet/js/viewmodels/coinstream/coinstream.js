@@ -110,6 +110,7 @@ define(['knockout',
                                 currYear = currYear + 12 - offset;
                             }
                             offset = 12;
+                            self.labelsYear = [];
                             for(var year = currYear - offset; year < currYear; year++) {
                                 self.labelsYear.push(year);
                             }
