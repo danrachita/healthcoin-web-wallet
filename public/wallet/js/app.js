@@ -2,6 +2,7 @@ define( [
         "jquery",
         "sammy",
         "moment",
+        "chart",
         "bootstrap",
         "bootstrap-editable",
         "bootstrap-slider",
@@ -17,8 +18,7 @@ define( [
         "bindinghandlers/slider",
         "bindinghandlers/numeric-text",
         "bindinghandlers/numeric-input",
-        "chart",
-        ], function(jQuery, Sammy, moment, bootstrap, bse, slider, ko, koah, kov, koxe, koc, dialog, Wallet, io){
+        ], function(jQuery, Sammy, moment, chart, bootstrap, bse, slider, ko, koah, kov, koxe, koc, dialog, Wallet, io){
     var App = function(){
     };
     ko.amdTemplateEngine.defaultPath = "../views";

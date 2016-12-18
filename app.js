@@ -177,11 +177,11 @@ app.get(chRoot + '/getuseraccount', function(req,res){
 // Gets user's biomarkers.
 app.get(chRoot + '/getbiomarkerscores/:id/:startdate', function(req,res){
     var id = atob(decodeURIComponent(req.params.id)) || '*',
-        startdate = decodeURIComponent(req.params.startdate) || '*';
+        startdate = atob(decodeURIComponent(req.params.startdate)) || '*';
 
     mdb.getBiomarkerScores(id, startdate, function(err, data){
         if (err) {
-            res.send(500, JSON.stringify(err));
+            res.status(500).send(JSON.stringify(err));
         } else {
             //console.log("DEBUG: data = " + JSON.stringify(data));
             var response = {

@@ -23,8 +23,10 @@ define(['knockout',
         self.labelsMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         self.labelsYear = [];
 
-        self.userData = {
-            labels: self.labelsMonth,
+        self.dataAvg = [56.52, 55.33, 53.7, 56.07, 59.44, 60.78, 61.44, 64.07, 63.26, 61.63, 58.33, 58.13];
+
+        self.coinstreamData = {
+            labels: ko.observable(self.labelsMonth),
             datasets: [
                 {
                     label: "Average Coinstream",
@@ -34,7 +36,7 @@ define(['knockout',
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: [56.52, 55.33, 53.7, 56.07, 59.44, 60.78, 61.44, 64.07, 63.26, 61.63, 58.33, 58.13]
+                    data: ko.observable(self.dataAvg)
                 },
                 {
                     label: "Your Coinstream",
@@ -44,12 +46,10 @@ define(['knockout',
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(151,187,205,1)",
-                    data: []
+                    data: ko.observable([])
                 }
             ]
         };
-
-        self.coinstreamData = ko.observable(self.userData);
 
         self.statusMessage = ko.observable("");
     };
@@ -59,31 +59,30 @@ define(['knockout',
         if (self.wallet.User().profile){
             self.name(self.wallet.User().profile.name);
             self.role(self.wallet.User().profile.role);
-            if (typeof self.userData.datasets[1].data !== 'undefined' &&
-                self.userData.datasets[1].data.length === 0){
-                self.getBiomarkerScores(); // Pull if no data yet.
+            if (typeof self.coinstreamData.datasets[1].data !== 'undefined' &&
+                self.coinstreamData.datasets[1].data().length === 0){
+                self.getBiomarkerScores();
             }
         }
     };
 
     coinstreamType.prototype.Refresh = function(){
         var self = this;
-        self.userData.datasets[1].data = []; // Reset data so it will refresh
-        self.getBiomarkerScores(true);
+        self.getBiomarkerScores();
     };
 
-    coinstreamType.prototype.getBiomarkerScores = function(refresh){
+    coinstreamType.prototype.getBiomarkerScores = function(){
         var self = this;
         var id = self.wallet.User()._id;
         var startDate = Dateformat(self.startDate(), "GMT:yyyy-mm-dd");
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
-                                                [encodeURIComponent(btoa(id)), encodeURIComponent(startDate)],
+                                                [encodeURIComponent(btoa(id)), encodeURIComponent(btoa(startDate))],
                                                 self.wallet.settings().chRoot,
                                                 self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
             .done(function(data){
                 if (data && data.length){
-                    //console.log("DEBUG: data = " + JSON.stringify(data));
+                    // Push the data to parallel dates[] and scores[] arrays
                     var dates = [];
                     var scores = [];
                     for(var i = 0; i < data.length; i++) {
@@ -95,62 +94,66 @@ define(['knockout',
                             scores.push(biomarker.Score);
                         }
                     }
-                    console.log("DEBUG: in dates = " + JSON.stringify(dates));
-                    console.log("DEBUG: in scores = " + JSON.stringify(scores));
+                    // Process the data arrays
                     if (scores.length && dates.length){
-                        var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
                         var startYear = Number(Dateformat(dates[0], "GMT:yyyy"));
-                        // Determine which labels to use.
+                        var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
+                        // Determine which labels and data points to use.
+                        var dataPoints = [], dp = 0;
                         if (startYear < currYear){
-                            // Build 12 Year labels
-                            var offset = currYear - startYear;
-                            if (offset > 12){
-                                currYear = currYear - offset + 12;
-                            } else {
-                                currYear = currYear + 12 - offset;
-                            }
-                            offset = 12;
+                            // Build Year labels and data points
                             self.labelsYear = [];
-                            for(var year = currYear - offset; year < currYear; year++) {
-                                self.labelsYear.push(year);
+                            for (dp = 0; dp < dates.length; dp++){
+                                var year = Number(Dateformat(dates[dp], "GMT:yyyy"));
+                                // See if we already have this year
+                                if (!self.labelsYear.hasOwnProperty(year)){
+                                    self.labelsYear.push(year);
+                                    dataPoints.push(scores[dp]);
+                                } else {
+                                    // Already have this year
+                                    var idx = self.labelsYear.indexOf(year);
+                                    if (idx >= 0){
+                                        dataPoints[idx] = scores[dp]; // Always use the latest score if multiples
+                                    }
+                                }
                             }
-                            self.userData.labels = self.labelsYear;
+                            // Make sure we have the current year label and a data point
+                            if (!self.labelsYear.hasOwnProperty(currYear)){
+                                self.labelsYear.push(currYear);
+                                dataPoints.push(0);
+                            }
+                            // Load the new Years labels
+                            self.coinstreamData.labels(self.labelsYear);
+                            // Load the average data for as many labels as we have
+                            self.coinstreamData.datasets[0].data([]);
+                            for (avg = 0; avg < self.labelsYear.length; avg++){
+                                self.coinstreamData.datasets[0].data().push(self.dataAvg[avg]);
+                            }
                         } else {
-                            // Use Month labels
-                            self.userData.labels = self.labelsMonth;
-                        }
-                        // There may be less than 12 scores, but we start at beginning of chart
-                        var dataPoints = [0,0,0,0,0,0,0,0,0,0,0,0];
-                        for (var dp = 0; dp < dates.length; dp++){
-                            if (startYear === currYear){ // 12 months view
-                                var mo = Number(Dateformat(dates[dp], "mm"));
-                                dataPoints[mo - 1] = scores[dp];
-                            } else { // 12 years view
-                                var yr = Number(Dateformat(dates[dp], "GMT:yyyy")) - startYear;
-                                dataPoints[yr] = scores[dp];
+                            // Using static Month labels and average data points.
+                            self.coinstreamData.labels(self.labelsMonth);
+                            self.coinstreamData.datasets[0].data(self.dataAvg);
+                            // There may be less than 12 month scores, so fill out w/zeros
+                            dataPoints = [0,0,0,0,0,0,0,0,0,0,0,0];
+                            for (dp = 0; dp < dates.length; dp++){
+                                var mm = Number(Dateformat(dates[dp], "GMT:mm"));
+                                dataPoints[mm - 1] = scores[dp]; // Always use the latest score if multiples
                             }
                         }
-                        self.userData.datasets[1].data = dataPoints;
-                        console.log("DEBUG: out scores = " + JSON.stringify(self.userData.datasets[1].data));
+                        // Load the new user data points
+                        self.coinstreamData.datasets[1].data(dataPoints);
 
-                        self.coinstreamData(self.userData);
-                        if (!refresh){
-                            self.statusMessage("You've got Biomarkers!");
-                        } else {
-                            self.statusMessage("Biomarkers Refreshed.");
-                        }
+                        self.statusMessage("You've got Biomarkers!");
                     } else {
-                        self.statusMessage("No Biomarkers scores were found.");
+                        self.statusMessage("No Biomarkers were found.");
                     }
                 } else {
                     self.statusMessage("No Biomarkers were found since " + Dateformat(self.startDate(), "GMT:yyyy") + ".");
                 }
-                console.log("DEBUG: startDate = " + startDate);
-                console.log("DEBUG: startDate() = " + self.startDate());
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());
-                self.statusMessage("Biomarker Retrieve Error!");
+                self.statusMessage("Biomarker Retrieval Error!");
             });
     };
 
