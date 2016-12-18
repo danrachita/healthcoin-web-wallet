@@ -116,7 +116,7 @@ define(['knockout',
                                 }
                             }
                             // Make sure we have the current year label and a data point
-                            if (!self.labelsYear.hasOwnProperty(currYear)){
+                            if (self.labelsYear.indexOf(currYear) < 0){
                                 self.labelsYear.push(currYear);
                                 dataPoints.push(0);
                             }
