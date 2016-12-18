@@ -106,15 +106,13 @@ define(['knockout',
                             for (dp = 0; dp < dates.length; dp++){
                                 var year = Number(Dateformat(dates[dp], "GMT:yyyy"));
                                 // See if we already have this year
-                                if (!self.labelsYear.hasOwnProperty(year)){
+                                var idx = self.labelsYear.indexOf(year);
+                                if (idx < 0){
                                     self.labelsYear.push(year);
                                     dataPoints.push(scores[dp]);
                                 } else {
                                     // Already have this year
-                                    var idx = self.labelsYear.indexOf(year);
-                                    if (idx >= 0){
-                                        dataPoints[idx] = scores[dp]; // Always use the latest score if multiples
-                                    }
+                                    dataPoints[idx] = scores[dp]; // Always use the latest score if multiples
                                 }
                             }
                             // Make sure we have the current year label and a data point
