@@ -19,6 +19,17 @@ define(['knockout',
                 self.statusMessage("Invalid year...");
             }
         });
+        self.monthView = ko.observable(true);
+        self.monthView.subscribe(function (){
+            var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
+            var startYear = Number(Dateformat(self.startDate(), "GMT:yyyy"));
+            if (startYear <= currYear && startYear >= 1900){
+                self.statusMessage("");
+                self.getBiomarkerScores();
+            } else {
+                self.statusMessage("Invalid year...");
+            }
+        });
 
         self.labelsMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         self.labelsYear = [];
@@ -75,10 +86,15 @@ define(['knockout',
         var self = this;
         var id = self.wallet.User()._id;
         var startDate = Dateformat(self.startDate(), "GMT:yyyy-mm-dd");
+        var endDate   = (self.monthView() ?
+                        Dateformat(self.startDate(), "GMT:yyyy") + '-12-31' :
+                        Dateformat(Date.now(), "GMT:yyyy-mm-dd"));
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
-                                                [encodeURIComponent(btoa(id)), encodeURIComponent(btoa(startDate))],
-                                                self.wallet.settings().chRoot,
-                                                self.wallet.settings().env);
+                                            [encodeURIComponent(btoa(id)),
+                                            encodeURIComponent(btoa(startDate)),
+                                            encodeURIComponent(btoa(endDate))],
+                                            self.wallet.settings().chRoot,
+                                            self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
             .done(function(data){
                 if (data && data.length){
@@ -97,10 +113,10 @@ define(['knockout',
                     // Process the data arrays
                     if (scores.length && dates.length){
                         var startYear = Number(Dateformat(dates[0], "GMT:yyyy"));
-                        var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
+                        var endYear = Number(Dateformat(endDate, "GMT:yyyy"));
                         // Determine which labels and data points to use.
                         var dataPoints = [], dp = 0;
-                        if (startYear < currYear){
+                        if (startYear < endYear){
                             // Build Year labels and data points
                             self.labelsYear = [];
                             for (dp = 0; dp < dates.length; dp++){
@@ -116,8 +132,8 @@ define(['knockout',
                                 }
                             }
                             // Make sure we have the current year label and a data point
-                            if (self.labelsYear.indexOf(currYear) < 0){
-                                self.labelsYear.push(currYear);
+                            if (self.labelsYear.indexOf(endYear) < 0){
+                                self.labelsYear.push(endYear);
                                 dataPoints.push(0);
                             }
                             // Load the new Years labels
@@ -146,7 +162,7 @@ define(['knockout',
                         self.statusMessage("No Biomarkers were found.");
                     }
                 } else {
-                    self.statusMessage("No Biomarkers were found since " + Dateformat(self.startDate(), "GMT:yyyy") + ".");
+                    self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + Dateformat(self.startDate(), "GMT:yyyy") + ".");
                 }
             })
             .fail(function(error){

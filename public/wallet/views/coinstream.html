@@ -5,12 +5,18 @@
         <h1 class="text-primary"><span class="fa fa-line-chart"></span> Your <span data-bind="text: wallet.settings().coinName"></span> Coinstream</h1>
         <form class="form-horizontal" role="form">
             <div class="form-group">
-                <label class="control-label col-sm-2" for="startDate"><span class="fa fa-calendar"></span> Since Year</label>
-                <div class="col-sm-10">
-                    <p><a href="#coinstream" class="editable form-control" id="startDate" data-type="date" data-bind="editable: startDate" data-datepicker="{ startView: 2, minViewMode: 2 }" data-format="yyyy" data-viewformat="yyyy" data-mode="popup" data-title="Provide a year to start searching from." data-placement="bottom"></a></p>
-                </div>
-            </div>
-        </form>
+	<!-- ko if: monthView() !== true -->
+				<label class="control-label col-sm-2" for="startDate"><span class="fa fa-calendar"></span> Since Year</label>
+	<!-- /ko -->
+	<!-- ko if: monthView() === true -->
+				<label class="control-label col-sm-2" for="startDate"><span class="fa fa-calendar"></span> For Year</label>
+	<!-- /ko -->
+				<div class="col-sm-6">
+					<p><a href="#coinstream" class="editable form-control" id="startDate" data-type="date" data-bind="editable: startDate" data-datepicker="{ startView: 2, minViewMode: 2 }" data-format="yyyy" data-viewformat="yyyy" data-mode="popup" data-title="Provide a year to start searching from." data-placement="bottom"></a></p>
+				</div>
+				<label class="form-control-addon control-label col-sm-2"><input type="checkbox" data-bind="checked: monthView"> Month View</label>
+			</div>
+		</form>
         <canvas id="coinstreamChart" data-bind="chart: { type: 'line', data: coinstreamData, options: { observeChanges: true, throttle: 500 } }"></canvas>
         <p>&nbsp;</p>
 		<button type="button" class="btn btn-primary btn-lg" data-bind="click: Refresh">

@@ -14,16 +14,16 @@ Mongo DB for storing account info and biomarker data. See: https://www.mongodb.c
 Node.js 6.x for running the Web Wallet. For debian installations:
 
  If running 4.x:
- sudo apt-get purge nodejs npm
+ > sudo apt-get purge nodejs npm
 
  Install 6.x:
- curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
- sudo apt-get install -y nodejs
+ > curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+ > sudo apt-get install -y nodejs
 
 If the Web Wallet is not running locally, https is the default protocol.  To set up a self-signed SSL certificate in debian/apache2 environments, run:
 
- sudo mkdir /etc/apache2/certs
- sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/certs/{domain name}.key -out /etc/apache2/certs/{domain name}.crt
+ > sudo mkdir /etc/apache2/certs
+ > sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/certs/{domain name}.key -out /etc/apache2/certs/{domain name}.crt
 
  Note: Also copy the crt and key file to the {nodejs}/sslcert directory. Change the owner to that of the nodejs process, then make sure your settings.json SSL parameters have the correct file-names for your key and crt files.
 
@@ -51,19 +51,19 @@ If the daemon is running on another machine, you will need to configure node.js'
 
 Either way, the config file will need at a minimum the following parameters:
 
-rpcuser=rpcuser
-rpcpassword=password  # Change me!
-rpcconnect=localhost  # RPC daemon
-rpcport=18184
+ > rpcuser=rpcuser
+ > rpcpassword=password  # Change me!
+ > rpcconnect=localhost  # RPC daemon
+ > rpcport=18184
 
 Local vs Not-Local configuration:
 
 The config file parameter 'rpcconnect' determines whether the daemon (and thus the Web Wallet) is local or not-local, even if the daemon and Web Wallet are both running on the same machine. The Web Wallet's boolean flag 'isLocal' is determined to be true if 'rpcconnect' is one of the following:
 
-rpcconnect=127.0.0.1
-rpcconnect=localhost
-rpcconnect=192.168.x.x
-rpcconnect=hostname_with_no_tld
+ > rpcconnect=127.0.0.1
+ > rpcconnect=localhost
+ > rpcconnect=192.168.x.x
+ > rpcconnect=hostname_with_no_tld
 
 The last two examples allow for the Web Wallet to be considered 'local', even though the node and daemon may be running on different machines on the same local network.
 
@@ -80,20 +80,20 @@ If you need to run the Web Wallet app from a "sub directory" of the main web-sit
 
 Windows:
 
-  web-wallet.bat
+ > web-wallet.bat
 
-  (If supervisor is not installed, run 'npm install supervisor'.)
+ (If supervisor is not installed, run 'npm install supervisor'.)
 
 Linux:
 
-  web-wallet.sh
+ > web-wallet.sh
 
-  (If 'daemon' is not installed, please consult your Linux distro's documentation for installing 'daemon'.)
+ (If 'daemon' is not installed, please consult your Linux distro's documentation for installing 'daemon'.)
 
 The Web Wallet has an admin account pre-defined which you can login with:
 
-  Login:    MASTER_ACCOUNT
-  Password: password  (you will be required to change this)
+ > Login:    MASTER_ACCOUNT
+ > Password: password  (you will be required to change this)
 
 The MASTER_ACOUNT always sees the Web Wallet as 'local' and has views into the wallet as if you were running a Qt wallet (i.e. the full wallet balance).
 
