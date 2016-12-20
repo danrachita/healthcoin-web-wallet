@@ -287,6 +287,19 @@ sup {
     padding-right: 200px;
 }
 
+#coinstreamCharts {
+    position: relative;
+    height: 480px;
+    width: auto;
+}
+#coinstreamChartLine {
+    position: absolute;
+    visibility: visible;
+}
+#coinstreamChartBar {
+    position: absolute;
+    visibility: hidden;
+}
 
 /*** Bootstrap Overrides ***/
 

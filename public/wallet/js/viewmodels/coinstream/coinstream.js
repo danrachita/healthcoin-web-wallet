@@ -1,9 +1,13 @@
 define(['knockout',
     'viewmodels/common/command',
-    'lib/dateformat'], function(ko, Command, Dateformat){
+    './coinstream-pulldown',
+    'lib/dateformat'], function(ko, Command,Pulldown,Dateformat){
     var coinstreamType = function(options){
         var self = this;
         self.wallet = options.parent || {};
+
+        // Source value arrays for pulldown menues
+        self.pulldown = new Pulldown();
 
         self.name = ko.observable("");
         self.role = ko.observable("");
@@ -30,6 +34,10 @@ define(['knockout',
                 self.statusMessage("Invalid year...");
             }
         });
+        self.chartStyle = ko.observable("Line");
+        self.chartStyle.subscribe(function (){
+            self.updateCharts(self.chartStyle());
+        });
 
         self.labelsMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         self.labelsYear = [];
@@ -40,24 +48,24 @@ define(['knockout',
             labels: ko.observable(self.labelsMonth),
             datasets: [
                 {
-                    label: "Average Coinstream",
-                    backgroundColor: "rgba(220,220,220,0.2)",
-                    borderColor: "rgba(220,220,220,1)",
-                    pointColor: "rgba(220,220,220,1)",
+                    label: "Your Coinstream",
+                    backgroundColor: "rgba(45,169,171,0.4)",
+                    borderColor: "rgba(45,169,171,1.0)",
+                    pointColor: "rgba(151,187,205,1.0)",
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: ko.observable(self.dataAvg)
+                    pointHighlightStroke: "rgba(151,187,205,1.0)",
+                    data: ko.observable([])
                 },
                 {
-                    label: "Your Coinstream",
-                    backgroundColor: "rgba(151,187,205,0.2)",
-                    borderColor: "rgba(151,187,205,1)",
-                    pointColor: "rgba(151,187,205,1)",
+                    label: "Average Coinstream",
+                    backgroundColor: "rgba(220,220,220,0.4)",
+                    borderColor: "rgba(220,220,220,1.0)",
+                    pointColor: "rgba(220,220,220,1.0)",
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(151,187,205,1)",
-                    data: ko.observable([])
+                    pointHighlightStroke: "rgba(220,220,220,1.0)",
+                    data: ko.observable(self.dataAvg)
                 }
             ]
         };
@@ -70,8 +78,8 @@ define(['knockout',
         if (self.wallet.User().profile){
             self.name(self.wallet.User().profile.name);
             self.role(self.wallet.User().profile.role);
-            if (typeof self.coinstreamData.datasets[1].data !== 'undefined' &&
-                self.coinstreamData.datasets[1].data().length === 0){
+            if (typeof self.coinstreamData.datasets[0].data !== 'undefined' &&
+                self.coinstreamData.datasets[0].data().length === 0){
                 self.getBiomarkerScores();
             }
         }
@@ -80,6 +88,25 @@ define(['knockout',
     coinstreamType.prototype.Refresh = function(){
         var self = this;
         self.getBiomarkerScores();
+    };
+
+    coinstreamType.prototype.updateCharts = function(style){
+        var canvasLine = document.getElementById('coinstreamChartLine');
+        var canvasBar = document.getElementById('coinstreamChartBar');
+        switch(style){
+            case ("Line"):
+                canvasLine.style.visibility='visible';
+                canvasBar.style.visibility='hidden';
+                break;
+            case ("Bar"):
+                canvasLine.style.visibility='hidden';
+                canvasBar.style.visibility='visible';
+                break;
+            default:
+                canvasLine.style.visibility='visible';
+                canvasBar.style.visibility='hidden';
+                break;
+        }
     };
 
     coinstreamType.prototype.getBiomarkerScores = function(){
@@ -139,14 +166,14 @@ define(['knockout',
                             // Load the new Years labels
                             self.coinstreamData.labels(self.labelsYear);
                             // Load the average data for as many labels as we have
-                            self.coinstreamData.datasets[0].data([]);
+                            self.coinstreamData.datasets[1].data([]);
                             for (avg = 0; avg < self.labelsYear.length; avg++){
-                                self.coinstreamData.datasets[0].data().push(self.dataAvg[avg]);
+                                self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
                             }
                         } else {
                             // Using static Month labels and average data points.
                             self.coinstreamData.labels(self.labelsMonth);
-                            self.coinstreamData.datasets[0].data(self.dataAvg);
+                            self.coinstreamData.datasets[1].data(self.dataAvg);
                             // There may be less than 12 month scores, so fill out w/zeros
                             dataPoints = [0,0,0,0,0,0,0,0,0,0,0,0];
                             for (dp = 0; dp < dates.length; dp++){
@@ -155,13 +182,14 @@ define(['knockout',
                             }
                         }
                         // Load the new user data points
-                        self.coinstreamData.datasets[1].data(dataPoints);
-
+                        self.coinstreamData.datasets[0].data(dataPoints);
                         self.statusMessage("You've got Biomarkers!");
                     } else {
+                        self.coinstreamData.datasets[0].data([]);
                         self.statusMessage("No Biomarkers were found.");
                     }
                 } else {
+                    self.coinstreamData.datasets[0].data([]);
                     self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + Dateformat(self.startDate(), "GMT:yyyy") + ".");
                 }
             })
