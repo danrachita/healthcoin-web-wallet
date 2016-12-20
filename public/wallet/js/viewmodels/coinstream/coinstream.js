@@ -50,7 +50,7 @@ define(['knockout',
                 {
                     label: "Your Coinstream",
                     backgroundColor: "rgba(45,169,171,0.4)",
-                    borderColor: "rgba(45,169,171,1.0)",
+                    borderColor: "rgba(45,169,171,0.8)",
                     pointColor: "rgba(151,187,205,1.0)",
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
