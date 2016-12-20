@@ -90,5 +90,13 @@
   "masterEmail": "admin@healthcoin.com",
 
   // Master can encrypt the wallet
-  "masterCanEncrypt": true
+  "masterCanEncrypt": true,
+
+  // **** Frontend Settings **** //
+
+  // Google reCaptcha private key
+  "reCaptchaSecret":  "",
+
+  // Google reCaptcha public key
+  "reCaptchaKey": ""
 }

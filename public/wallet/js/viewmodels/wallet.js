@@ -109,7 +109,7 @@ define(['knockout',
                 } else {
                     // Bailing...
                     console.log("ERROR: Aborting! Node_ID not found.");
-                    window.location = 'logout';
+                    window.location = chRoot + '/logout';
                 }
                 self.initUser();
             }).fail(function(jqXHR){
@@ -120,7 +120,7 @@ define(['knockout',
                     // Bailing...
                     console.log("ERROR: Aborting! Unknown chRoot!");
                     console.log("jqXHR: " + JSON.stringify(jqXHR));
-                    window.location = 'logout';
+                    window.location = chRoot + '/logout';
                 }
             });
     };
@@ -148,12 +148,12 @@ define(['knockout',
                     if (!wallet) {
                         // Bailing...
                         console.log("ERROR: Aborting! User wallet not found.");
-                        window.location = 'logout';
+                        window.location = self.settings().chRoot + '/logout';
                     }
                 } else {
                     // Bailing...
                     console.log("ERROR: Aborting! User account not found.");
-                    window.location = 'logout';
+                    window.location = self.settings().chRoot + '/logout';
                 }
                 self.initComplete = true;
             });
@@ -169,7 +169,7 @@ define(['knockout',
                         self.pollWalletStatus();
                 } else {
                     console.log("Session Expired. Polling stopped.");
-                    window.location = 'logout';
+                    window.location = self.settings().chRoot + '/logout';
                 }
             } else {
                 // Normal polling
@@ -191,7 +191,7 @@ define(['knockout',
                     });
                 } else {
                     console.log("Session Expired. Polling stopped.");
-                    window.location = 'logout';
+                    window.location = self.settings().chRoot + '/logout';
                 }
             }
         },self.timeout);
