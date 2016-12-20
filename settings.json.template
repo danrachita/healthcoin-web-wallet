@@ -92,11 +92,7 @@
   // Master can encrypt the wallet
   "masterCanEncrypt": true,
 
-  // **** Frontend Settings **** //
-
-  // Google reCaptcha private key
+  // Google reCaptcha private/public keys
   "reCaptchaSecret":  "",
-
-  // Google reCaptcha public key
   "reCaptchaKey": ""
 }
