@@ -120,7 +120,9 @@ define(['knockout',
                             self.hcbmAge() >= 0 &&
                             self.hcbmWeight() > 0 &&
                             self.hcbmWaist() > 0;
-
+            if (self.role() === "Admin" && !self.verified()){
+                self.statusMessage("Warning! Biomarkers only go to the blockchain when verified.");
+            }
             var address = self.recipientAddress(),
                 addressValid = address.length && self.recipientAddress.isValid(),
                 amount = self.amount(),
