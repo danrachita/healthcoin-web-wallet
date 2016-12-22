@@ -12,8 +12,10 @@ define(['knockout',
 
         self.pulldown = new Pulldown(); // Source value arrays for pulldown menues
 
+        self.role = ko.observable("");
+
         self.profileComplete = ko.observable(false);
-        self.hcbmDate = ko.observable(Dateformat(Date.now(), "yyyy-mm-dd")); // Date.now() already has GMT timezone info
+        self.hcbmDate = ko.observable(Dateformat(Date.now(), "GMT:yyyy-mm-dd")); // Date.now() already has GMT timezone info
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmEmployer = ko.observable("");
         self.hcbmHA1c = ko.observable(0.00);
@@ -21,6 +23,16 @@ define(['knockout',
         self.hcbmHDL = ko.observable(0);
         self.hcbmBPS = ko.observable(0);
         self.hcbmBPD = ko.observable(0);
+
+        self.pobFiles = ko.observable({dataURLArray: ko.observableArray()});
+        self.onClear = function(pobFile){
+            if(confirm('Are you sure?')){
+                if (pobFile.clear) pobFile.clear();
+            }                            
+        };
+
+        self.verified = ko.observable(false);
+        self.terms = ko.observable(false);
 
         // These come from profile
         self.dob = ko.observable("");
@@ -42,12 +54,12 @@ define(['knockout',
 
         // User changeables subscriptions
         self.hcbmDate.subscribe(function (){
-            var curDateYY = Dateformat(self.hcbmDate(), "yyyy");
-            var curDateMM = Dateformat(self.hcbmDate(), "mm");
-            var curDateDD = Dateformat(self.hcbmDate(), "dd");
-            var dobDateYY = Dateformat(self.dob(), "yyyy");
-            var dobDateMM = Dateformat(self.dob(), "mm");
-            var dobDateDD = Dateformat(self.dob(), "dd");
+            var curDateYY = Dateformat(self.hcbmDate(), "GMT:yyyy");
+            var curDateMM = Dateformat(self.hcbmDate(), "GMT:mm");
+            var curDateDD = Dateformat(self.hcbmDate(), "GMT:dd");
+            var dobDateYY = Dateformat(self.dob(), "GMT:yyyy");
+            var dobDateMM = Dateformat(self.dob(), "GMT:mm");
+            var dobDateDD = Dateformat(self.dob(), "GMT:dd");
             var age = curDateYY - dobDateYY;
             if (curDateMM < dobDateMM){
                 age--;
@@ -94,9 +106,10 @@ define(['knockout',
         self.available = ko.observable(0.00);
 
         self.canSend = ko.computed(function(){
-            var hcbmDate  = Dateformat(self.hcbmDate(), "yyyy-mm-dd"); // Remove timestamp
+            var hcbmDate  = Dateformat(self.hcbmDate(), "GMT:yyyy-mm-dd"); // Remove timestamp
             var hcbmValid = self.profileComplete() &&
-                            hcbmDate <= Dateformat(Date.now(), "yyyy-mm-dd") &&
+                            self.terms() &&
+                            hcbmDate <= Dateformat(Date.now(), "GMT:yyyy-mm-dd") &&
                             self.hcbmEHR_Source() !== "" &&
                             self.hcbmEmployer() !== "" &&
                             self.hcbmHA1c() >= 2.00 && self.hcbmHA1c() <= 12.00 &&
@@ -248,6 +261,7 @@ define(['knockout',
         self.credit(self.wallet.settings().minTxFee * 2);
 
         if (!self.isDirty()){
+            self.role(self.wallet.User().profile.role);
             self.dob(Dateformat(self.wallet.User().profile.dob, "GMT:yyyy-mm-dd")); // Dates from db need conversion to GMT
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
@@ -270,7 +284,7 @@ define(['knockout',
 
     biomarkersType.prototype.Reset = function(){
         var self = this;
-        self.hcbmDate(Dateformat(Date.now(), "yyyy-mm-dd"));
+        self.hcbmDate(Dateformat(Date.now(), "GMT:yyyy-mm-dd"));
         self.hcbmEHR_Source("");
         self.hcbmEmployer("");
         self.hcbmHA1c(0.00);
@@ -384,8 +398,9 @@ define(['knockout',
         var self = this;
         // Encode base64 before sending.
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
-        var sendCommand = new Command('sendfrom',
-                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm],
+        var pobFiles = encodeURIComponent(btoa(self.pobFiles()));
+        var sendCommand = new Command('sendbiomarker',
+                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm, verified(), pobFiles],
                                       self.wallet.settings().chRoot,
                                       self.wallet.settings().env).execute()
             .done(function(txid){
@@ -436,7 +451,7 @@ define(['knockout',
     biomarkersType.prototype.buildBiomarker = function(){
         var self = this;
         var hcbm = {
-        "Date": self.hcbmDate(), // Date of activity
+        "Date": self.hcbmDate(), // Date of biomarker
 		"EHR_Source": self.hcbmEHR_Source(),
 		"EHR_Type": self.hcbmEmployer(),
         "A1C": self.hcbmHA1c(),

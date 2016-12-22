@@ -47,12 +47,12 @@ define(['knockout',
         self.description.subscribe(function (){self.dirtyFlag(true);});
         self.dob.subscribe(function (){
             if (self.dob() !== ""){
-                var curDateYY = Dateformat(Date.now(), "yyyy");
-                var curDateMM = Dateformat(Date.now(), "mm");
-                var curDateDD = Dateformat(Date.now(), "dd");
-                var dobDateYY = Dateformat(self.dob(), "yyyy");
-                var dobDateMM = Dateformat(self.dob(), "mm");
-                var dobDateDD = Dateformat(self.dob(), "dd");
+                var curDateYY = Dateformat(Date.now(), "GMT:yyyy");
+                var curDateMM = Dateformat(Date.now(), "GMT:mm");
+                var curDateDD = Dateformat(Date.now(), "GMT:dd");
+                var dobDateYY = Dateformat(self.dob(), "GMT:yyyy");
+                var dobDateMM = Dateformat(self.dob(), "GMT:mm");
+                var dobDateDD = Dateformat(self.dob(), "GMT:dd");
                 var age = curDateYY - dobDateYY;
                 if (curDateMM < dobDateMM){
                     age--;

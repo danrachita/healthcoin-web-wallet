@@ -16,7 +16,8 @@ define(['knockout'], function(ko){
             "San Jose Medical Center, San Jose, California",
             "Santa Clara Valley Medical Center, San Jose, California",
             "Stanford University Medical Center, Stanford",
-            "VA Palo Alto Health Care System, Palo Alto"
+            "VA Palo Alto Health Care System, Palo Alto",
+            "Other"
             ]);
 
         this.hcbmEmployerValues =   ko.observableArray(["",
@@ -39,7 +40,7 @@ define(['knockout'], function(ko){
             "Valero Energy",
             "Verizon Communications",
             "Wal-Mart Stores",
-            "Zappos"
+            "Other"
             ]);
 
         this.hcbmDevice_SourceValues =   ko.observableArray(["",
@@ -93,7 +94,8 @@ define(['knockout'], function(ko){
             "Visiomed",
             "VitaDock",
             "Withings",
-            "Yoo"
+            "Yoo",
+            "Other"
             ]);
 
     };

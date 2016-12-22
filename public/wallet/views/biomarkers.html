@@ -6,8 +6,31 @@
         <form class="form-horizontal" role="form">
             <div class="form-group">
                 <label class="control-label col-sm-2" for="hcbmDate"><span class="fa fa-calendar"></span> Marker Date</label>
-                <div class="col-sm-8">
+                <div class="col-sm-2">
                     <p><a href="#biomarkers" class="editable form-control" id="hcbmDate" data-type="date" data-bind="editable: hcbmDate" data-format="yyyy-mm-dd" data-viewformat="yyyy-mm-dd" data-mode="popup" data-title="When did you make your mark?" data-placement="bottom"></a></p>
+                </div>
+				<label class="form-control-addon control-label col-sm-4">I Agree to <a href="/terms" target="_blank">Terms &amp; Conditions</a> <input type="checkbox" data-bind="checked: terms"></label>
+        <!-- ko if: role() === 'Admin' -->
+				<label class="form-control-addon control-label col-sm-2">Verified <input type="checkbox" data-bind="checked: verified"></label>
+        <!-- /ko -->
+            </div>
+            <div class="form-group" data-bind="fileDrag: pobFiles">
+                <div class="row">
+                    <div class="col-md-5">
+                        <!-- ko foreach: {data: pobFiles().dataURLArray, as: 'dataURL'} -->
+                        <img style="height: 40px; margin: 5px;" class="img-rounded thumb" data-bind="attr: { src: dataURL }, visible: dataURL">
+                        <!-- /ko -->
+                        <label class="drag-label">Drag Proof of Biomarker files here...<br><i class="small">(Drag multiple files all at once.)</i></label>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="file" multiple data-bind="fileInput: pobFiles,
+                            customFileInput: {
+                            noFileText: 'No files selected',
+                            buttonText: 'Select Files',
+                            buttonClass: 'btn btn-primary',
+                            fileNameClass: 'disabled form-control',
+                            onClear: onClear }" accept="image/*">
+                    </div>
                 </div>
             </div>
             <div class="form-group">

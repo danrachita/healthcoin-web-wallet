@@ -301,7 +301,7 @@ sup {
     visibility: hidden;
 }
 
-/*** Bootstrap Overrides ***/
+/*** Overrides ***/
 
 /* Customize container from bootstrap.css */
 .container {
@@ -385,4 +385,14 @@ a.text-primary:focus {
 }
 */
 
-/*** End Bootstrap  Overrides ***/
+/* Customize knockout-file-bindings */
+.filedrag {
+    border: 0px dashed #AAA;
+    border-radius: 8px;
+}
+.filedrag .drag-label {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+/*** End Overrides ***/
