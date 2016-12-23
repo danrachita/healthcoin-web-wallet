@@ -425,11 +425,12 @@ define(['knockout',
 
     biomarkersType.prototype.sendToAddress = function(auth){
         var self = this;
-        // Encode base64 before sending.
+        // Encode to base64 before sending.
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
-        var fileData = encodeURIComponent(btoa(self.fileData()));
+        // Except for the meta-data, this is already an array of base64 strings (no need to encode it)
+        var dataURLArray = encodeURIComponent(self.fileData().dataURLArray());
         var sendCommand = new Command('sendbiomarker',
-                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm, self.verified(), fileData],
+                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm, self.verified(), dataURLArray],
                                       self.wallet.settings().chRoot,
                                       self.wallet.settings().env).execute()
             .done(function(txid){

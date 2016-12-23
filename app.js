@@ -247,7 +247,7 @@ app.get(chRoot + '/getbalance/:account', function(req, res){
 });
 
 // Based on sendfrom. Note: The wallet is account based. Always use accounts!
-app.get(chRoot + '/sendbiomarker/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentto?/:txcomment?/:verified?/:pobfiles?', function(req, res){
+app.get(chRoot + '/sendbiomarker/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentto?/:txcomment?/:verified?/:dataurlarray?', function(req, res){
     var fromaccount = req.params.fromaccount || '';
     var toaddress = req.params.toaddress || '';
     var amount = parseFloat(req.params.amount) || 0.0;
@@ -257,12 +257,13 @@ app.get(chRoot + '/sendbiomarker/:fromaccount/:toaddress/:amount/:minconf?/:comm
     var commentto = req.params.commentto || '';
     var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
     var verified = req.params.verified || false;
-    var fileData = atob(decodeURIComponent(req.params.pobfiles)) || [];
+    var dataURLArray = decodeURIComponent(req.params.dataurlarray) || [];
+    console.log("DEBUG: dataURLArray = " + dataURLArray);
     if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
         var credit = amount * 2; // See Biomarkers
         // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
         var txcommentObj = JSON.parse(txcomment) || {};
-        var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcommentObj, verified, fileData);
+        var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcommentObj, verified, dataURLArray);
         if (Biomarker){
             txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker.header)) + btoa(JSON.stringify(Biomarker.biomarker));
         } else {
