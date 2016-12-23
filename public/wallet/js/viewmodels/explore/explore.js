@@ -3,10 +3,10 @@ define(['knockout'], function(ko){
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         self.role = ko.observable("");
         self.explorerURL = ko.observable("https://explorer.healthcoin.com/");
-
-        self.statusMessage = ko.observable("");
     };
 
     exploreType.prototype.refresh = function(){

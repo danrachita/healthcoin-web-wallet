@@ -5,25 +5,94 @@
         <h1 class="text-primary"><span class="fa fa-heartbeat"></span> Submit a <span data-bind="text: wallet.settings().coinName"></span> Biomarker</h1>
         <form class="form-horizontal" role="form">
             <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmDate"><span class="fa fa-calendar"></span> Marker Date</label>
-                <div class="col-sm-2">
+                <label class="control-label col-sm-2" for="hcbmDate"><span class="fa fa-calendar"></span> Marker Date *</label>
+                <div class="col-sm-4">
                     <p><a href="#biomarkers" class="editable form-control" id="hcbmDate" data-type="date" data-bind="editable: hcbmDate" data-format="yyyy-mm-dd" data-viewformat="yyyy-mm-dd" data-mode="popup" data-title="When did you make your mark?" data-placement="bottom"></a></p>
                 </div>
-				<label class="form-control-addon control-label col-sm-4">I Agree to <a href="/terms" target="_blank">Terms &amp; Conditions</a> <input type="checkbox" data-bind="checked: terms"></label>
-        <!-- ko if: role() === 'Admin' -->
-				<label class="form-control-addon control-label col-sm-2">Marker Verified? <input type="checkbox" data-bind="checked: verified"></label>
-        <!-- /ko -->
+				<p class="form-control-addon col-sm-offset-2 col-sm-4">* <b>When biomarker was taken.</b></p>
             </div>
-            <div class="form-group" data-bind="fileDrag: pobFiles">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hcbmEmployer">Employer</label>
+                <div class="col-sm-4">
+                    <p><select class="form-control" data-type="select" id="hcbmEmployer" data-bind="options: pulldown.hcbmEmployerValues, value: hcbmEmployer" data-title="Electronic Health Record Type"></select></p>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmEHR_Source">EHR Source</label>
+                <div class="col-sm-4">
+                    <p><select class="form-control" data-type="select" id="hcbmEHR_Source" data-bind="options: pulldown.hcbmEHR_SourceValues, value: hcbmEHR_Source" data-title="Electronic Health Record Source"></select></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hcbmWeight">Weight (lb) *</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmWeight" value="" data-bind="sliderValue: {value: hcbmWeight, min: 90, max: 400, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmWeight"></b></p>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmWaist">Waist (in) *</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmWaist" value="" data-bind="sliderValue: {value: hcbmWaist, min: 20, max: 100, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmWaist"></b></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hcbmBPS">BP Systolic</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmBPS" data-bind="sliderValue: {value: hcbmBPS, min: 90, max: 180, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmBPS"></b></p>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmBPD">BP Diastolic</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmBPD" data-bind="sliderValue: {value: hcbmBPD, min: 60, max: 130, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmBPD"></b></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hcbmHA1c">HA1c Percent</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmHA1c" value="" data-bind="sliderValue: {value: hcbmHA1c, min: 2.00, max: 12.00, step: 0.19, precision: 2, tooltip: 'hide'}"></input> <b data-bind="text: hcbmHA1c"></b>%</p>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmTriglycerides">Triglycerides</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmTriglycerides" data-bind="sliderValue: {value: hcbmTriglycerides, min: 0, max: 400, step: 10, tooltip: 'hide'}"></input> <b data-bind="text: hcbmTriglycerides"></b></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hcbmHDL">HDL</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmHDL" data-bind="sliderValue: {value: hcbmHDL, min: 0, max: 100, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmHDL"></b></p>
+                </div>
+            </div>
+            <!--
+            <p align="center"><i>Optional</i></p>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hcbmDevice_Source">Wearable Device</label>
+                <div class="col-sm-4">
+                    <p><select class="form-control" data-type="select" id="hcbmDevice_Source" data-bind="options: pulldown.hcbmDevice_SourceValues, value: hcbmDevice_Source" data-title="Select your wearable device."></select></p>
+                </div>
+                <label class="control-label col-sm-2" for="hcbmDevice_Steps">Steps from Device</label>
+                <div class="col-sm-4">
+                    <p><input class="slider form-control" type="text" id="hcbmDevice_Steps" data-bind="sliderValue: {value: hcbmDevice_Steps, min: 0, max: 10000, step: 100, tooltip: 'hide'}"></input> <b data-bind="text: hcbmDevice_Steps"></b></p>
+                </div>
+            </div>
+            -->
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hcbmComment">Comments</label>
+                <div class="col-sm-10">
+	                <p><input class="form-control" type="text" id="hcbmComment" data-bind="text, textInput: hcbmComment" placeholder="Biomarker remarks. (Optional)"></input></p>
+                </div>
+            </div>
+            <div class="form-group" data-bind="fileDrag: fileData">
                 <div class="row">
-                    <div class="col-md-5">
-                        <!-- ko foreach: {data: pobFiles().dataURLArray, as: 'dataURL'} -->
-                        <img style="height: 40px; margin: 5px;" class="img-rounded thumb" data-bind="attr: { src: dataURL }, visible: dataURL">
+                    <div class="col-md-8">
+                    <!-- ko foreach: {data: fileData().dataURLArray, as: 'dataURL'} -->
+                        <!-- ko if: dataURL.indexOf('application/pdf') > 0 -->
+                        <object height=50 style="margin: 5px; vertical-align: top;" class="img-rounded thumb" data-bind="attr: {data: dataURL}"></object>
                         <!-- /ko -->
-                        <label class="drag-label">Drag Proof of Biomarker files here...<br><i class="small">(Drag multiple files all at once.)</i></label>
+                        <!-- ko if: dataURL.indexOf('application/pdf') < 0 -->
+                        <img style="height: 50px; margin: 5px; vertical-align: top;" class="img-rounded thumb" data-bind="attr: {src: dataURL}, visible: dataURL"></img>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                        <label class="drag-label">Drag Proof of Biomarker files here...<br>
+                        <span class="small">Types allowed: PDF or Scanned Images<br></span>
+                        <span class="small"><i>(Drag multiple files all at once.)</i></span></label>
                     </div>
-                    <div class="col-md-5">
-                        <input type="file" multiple data-bind="fileInput: pobFiles,
+                    <div class="col-md-4">
+                        <input type="file" multiple data-bind="fileInput: fileData,
                             customFileInput: {
                             noFileText: 'No files selected',
                             buttonText: 'Select Files',
@@ -34,83 +103,19 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmEHR_Source">EHR Source</label>
-                <div class="col-sm-8">
-                    <p><select class="form-control" data-type="select" id="hcbmEHR_Source" data-bind="options: pulldown.hcbmEHR_SourceValues, value: hcbmEHR_Source" data-title="Electronic Health Record Source"></select></p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmEmployer">Employer</label>
-                <div class="col-sm-8">
-                    <p><select class="form-control" data-type="select" id="hcbmEmployer" data-bind="options: pulldown.hcbmEmployerValues, value: hcbmEmployer" data-title="Electronic Health Record Type"></select></p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmWeight">Weight (lb) *</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmWeight" value="" data-bind="sliderValue: {value: hcbmWeight, min: 90, max: 400, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmWeight"></b> * When biomarker was taken.</p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmWaist">Waist (in) *</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmWaist" value="" data-bind="sliderValue: {value: hcbmWaist, min: 20, max: 100, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmWaist"></b> * When biomarker was taken.</p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmHA1c">HA1c Percent</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmHA1c" value="" data-bind="sliderValue: {value: hcbmHA1c, min: 2.00, max: 12.00, step: 0.19, precision: 2, tooltip: 'hide'}"></input> <b data-bind="text: hcbmHA1c"></b>%</p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmTriglycerides">Triglycerides</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmTriglycerides" data-bind="sliderValue: {value: hcbmTriglycerides, min: 0, max: 400, step: 10, tooltip: 'hide'}"></input> <b data-bind="text: hcbmTriglycerides"></b></p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmHDL">HDL</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmHDL" data-bind="sliderValue: {value: hcbmHDL, min: 0, max: 100, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmHDL"></b></p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmBPS">BP Systolic</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmBPS" data-bind="sliderValue: {value: hcbmBPS, min: 90, max: 180, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmBPS"></b></p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmBPD">BP Diastolic</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmBPD" data-bind="sliderValue: {value: hcbmBPD, min: 60, max: 130, step: 1, tooltip: 'hide'}"></input> <b data-bind="text: hcbmBPD"></b></p>
-                </div>
-            </div>
-            <!--
-            <p align="center"><i>Optional</i></p>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmDevice_Source">Wearable Device</label>
-                <div class="col-sm-8">
-                    <p><select class="form-control" data-type="select" id="hcbmDevice_Source" data-bind="options: pulldown.hcbmDevice_SourceValues, value: hcbmDevice_Source" data-title="Select your wearable device."></select></p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="hcbmDevice_Steps">Steps from Device</label>
-                <div class="col-sm-8">
-                    <p><input class="slider form-control" type="text" id="hcbmDevice_Steps" data-bind="sliderValue: {value: hcbmDevice_Steps, min: 0, max: 10000, step: 100, tooltip: 'hide'}"></input> <b data-bind="text: hcbmDevice_Steps"></b></p>
-                </div>
-            </div>
-            -->
-            <div class="form-group">
                 <label class="control-label col-sm-2" for="hcbmScore">Health Score</label>
                 <div class="col-sm-2">
                     <p><span class="form-control" data-type="number" id="hcbmScore" data-bind="text: hcbmScore"></span></p>
                 </div>
+        <!-- ko if: role() === 'Admin' -->
+   				<p class="form-control-addon col-sm-offset-4 col-sm-4">Is the Biomarker verified? <input type="checkbox" data-bind="checked: verified"></p>
+        <!-- /ko -->
+        <!-- ko if: role() === 'User' -->
+				<p class="form-control-addon col-sm-offset-4 col-sm-4"><b>I Agree to the <a href="/terms" target="_blank">Terms &amp; Conditions</a></b> <input type="checkbox" data-bind="checked: terms"></p>
+        <!-- /ko -->
             </div>
-
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-8">
+                <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
                     <button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty() || !$data.canSend(), click: Submit">Submit</button>
                 </div>

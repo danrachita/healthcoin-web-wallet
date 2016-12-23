@@ -6,6 +6,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         self.page = ko.observable(1);
         self.pageFirst = ko.observable(-1);
         self.pagePrev = ko.observable(0);
@@ -18,8 +20,6 @@ define(['knockout',
             var trans = self.isLoadingTransactions();
             return trans;
         });
-
-        self.statusMessage = ko.observable("");
     };
 
     historyType.prototype.refresh = function(){

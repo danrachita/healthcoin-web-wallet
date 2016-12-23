@@ -3,10 +3,10 @@ define(['knockout'], function(ko){
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         self.name = ko.observable("");
         self.role = ko.observable("");
-
-        self.statusMessage = ko.observable("");
     };
 
     homeType.prototype.refresh = function(){

@@ -6,6 +6,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         // Source value arrays for pulldown menues
         self.pulldown = new Pulldown();
 
@@ -69,8 +71,6 @@ define(['knockout',
                 }
             ]
         };
-
-        self.statusMessage = ko.observable("");
     };
 
     coinstreamType.prototype.refresh = function(){
@@ -150,7 +150,7 @@ define(['knockout',
                         }
                     }
                     // Determine which labels and data points to use.
-                    var dataPoints = [], dp = 0;
+                    var dataPoints = [], dp = 0, avg = 0;
                     if (startYear < endYear){
                         // Build Year labels and data points
                         self.labelsYear = [];
@@ -175,6 +175,7 @@ define(['knockout',
                         if (self.labelsYear.indexOf(endYear) < 0){
                             self.labelsYear.push(endYear);
                             dataPoints.push(0);
+                            self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
                         }
                         // Load the new Years labels
                         self.coinstreamData.labels(self.labelsYear);

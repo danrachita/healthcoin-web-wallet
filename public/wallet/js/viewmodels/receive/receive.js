@@ -7,6 +7,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         self.account = ko.observable("");
         self.addresses = ko.observableArray([]);
         self.isLoadingReceiveAddresses = ko.observable(false);
@@ -16,8 +18,6 @@ define(['knockout',
         });
         self.newAddressDialog = new NewAddressDialog({parent: self});
         self.showNewAddressDialog = ko.observable(false);
-
-        self.statusMessage = ko.observable("");
     };
 
     receiveType.prototype.refresh = function(){

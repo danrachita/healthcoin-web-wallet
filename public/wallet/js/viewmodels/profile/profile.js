@@ -7,6 +7,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         // Source value arrays for pulldown menues
         self.pulldown = new Pulldown();
 
@@ -76,15 +78,20 @@ define(['knockout',
                             self.email() !== "" &&
                             self.age() >= 18 &&
                             self.dob() !== "" &&
-                            self.weight() > 0 &&
-                            self.waist() > 0 &&
+                            self.weight() >= 90 &&
+                            self.waist() >= 20 &&
                             self.gender() !== "" &&
                             self.ethnicity() !== "" &&
                             self.country() !== "";
+            if (self.description().length > 1000){
+                canSubmit = false;
+                self.statusMessage("Please limit your description to 1000 characters.");
+            }
+            if (canSubmit){
+                self.statusMessage("");
+            }
             return canSubmit;
         });
-
-        self.statusMessage = ko.observable("");
     };
 
     profileType.prototype.refresh = function(){
@@ -126,12 +133,12 @@ define(['knockout',
             self.country(self.wallet.User().profile.country);
             self.credit(self.wallet.User().profile.credit);
 
+            // This has to be inside the !isDirty check
             if (!self.wallet.profileComplete()){
                 self.profileComplete(false);
                 self.statusMessage("Please complete your profile before continuing.");
             } else {
                 self.profileComplete(true);
-                self.statusMessage("");
             }
             self.dirtyFlag(false);
         }

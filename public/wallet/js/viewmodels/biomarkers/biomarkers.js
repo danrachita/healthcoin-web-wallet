@@ -10,9 +10,28 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         self.pulldown = new Pulldown(); // Source value arrays for pulldown menues
 
         self.role = ko.observable("");
+
+        self.fileData = ko.observable({
+            file: ko.observable(), dataURL: ko.observable(),
+            dataURLArray: ko.observableArray()
+        });
+        self.fileData().dataURL.subscribe(function (){
+            self.dirtyFlag(true);
+        });
+        self.onClear = function(fileData){
+            //if(confirm('Are you sure?')){
+            if(fileData){
+                fileData.clear();
+            }                            
+        };
+
+        self.verified = ko.observable(false);
+        self.terms = ko.observable(false);
 
         self.profileComplete = ko.observable(false);
         self.hcbmDate = ko.observable(Dateformat(Date.now(), "GMT:yyyy-mm-dd")); // Date.now() already has GMT timezone info
@@ -23,16 +42,6 @@ define(['knockout',
         self.hcbmHDL = ko.observable(0);
         self.hcbmBPS = ko.observable(0);
         self.hcbmBPD = ko.observable(0);
-
-        self.pobFiles = ko.observable({dataURLArray: ko.observableArray()});
-        self.onClear = function(pobFile){
-            if(confirm('Are you sure?')){
-                if (pobFile.clear) pobFile.clear();
-            }                            
-        };
-
-        self.verified = ko.observable(false);
-        self.terms = ko.observable(false);
 
         // These come from profile
         self.dob = ko.observable("");
@@ -45,7 +54,7 @@ define(['knockout',
 
         self.hcbmDevice_Source = ko.observable("");
         self.hcbmDevice_Steps = ko.observable(0);
-        self.hcbmOther = ko.observable("n/a");
+        self.hcbmComment = ko.observable("");
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
@@ -83,7 +92,10 @@ define(['knockout',
 
         self.hcbmDevice_Source.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmDevice_Steps.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmOther.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmComment.subscribe(function (){self.dirtyFlag(true);});
+
+        self.terms.subscribe(function (){self.dirtyFlag(true);});
+        self.verified.subscribe(function (){self.dirtyFlag(true);});
 
         // For Admin view only.
         self.txcommentBiomarker = ko.observable("");
@@ -107,27 +119,40 @@ define(['knockout',
 
         self.canSend = ko.computed(function(){
             var hcbmDate  = Dateformat(self.hcbmDate(), "GMT:yyyy-mm-dd"); // Remove timestamp
-            var hcbmValid = self.profileComplete() &&
-                            self.terms() &&
-                            hcbmDate <= Dateformat(Date.now(), "GMT:yyyy-mm-dd") &&
+            var hcbmValid = hcbmDate <= Dateformat(Date.now(), "GMT:yyyy-mm-dd") &&
                             self.hcbmEHR_Source() !== "" &&
                             self.hcbmEmployer() !== "" &&
                             self.hcbmHA1c() >= 2.00 && self.hcbmHA1c() <= 12.00 &&
-                            self.hcbmTriglycerides() >= 0 && self.hcbmTriglycerides() <= 400 &&
-                            self.hcbmHDL() >= 0 && self.hcbmHDL() <= 100 &&
+                            self.hcbmTriglycerides() > 0 && self.hcbmTriglycerides() <= 400 &&
+                            self.hcbmHDL() > 0 && self.hcbmHDL() <= 100 &&
                             self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
                             self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130 &&
-                            self.hcbmAge() >= 0 &&
-                            self.hcbmWeight() > 0 &&
-                            self.hcbmWaist() > 0;
-            if (self.role() === "Admin" && !self.verified()){
-                self.statusMessage("Warning! Biomarkers only go to the blockchain when verified.");
-            }
+                            self.hcbmAge() >= 18 &&
+                            self.hcbmWeight() >= 90 &&
+                            self.hcbmWaist() >= 20;
+
             var address = self.recipientAddress(),
                 addressValid = address.length && self.recipientAddress.isValid(),
                 amount = self.amount(),
                 available = self.available(),
                 amountValid = !isNaN(amount) && amount > 0.00 && amount < available && self.amount.isValid();
+
+            self.statusMessage("");
+            if (self.role() === "Admin" && !self.verified()){
+                self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
+            }
+            if (self.role() === "User" && !self.terms()){
+                hcbmValid = false;
+                self.statusMessage("Please agree to the Terms & Conditions to continue.");
+            }
+            if (self.hcbmComment().length > 500){
+                hcbmValid = false;
+                self.statusMessage("Please limit your comment to 500 characters.");
+            }
+            if (!self.profileComplete()){
+                hcbmValid = false;
+                self.statusMessage("Please complete your profile before continuing.");
+            }
 
             return (hcbmValid && addressValid && amountValid);
         });
@@ -252,8 +277,6 @@ define(['knockout',
         self.isEncrypted = ko.computed(function(){
             return (self.wallet.walletStatus.isEncrypted() === 'Yes');
         });
-
-        self.statusMessage = ko.observable("");
     };
 
     biomarkersType.prototype.refresh = function(){
@@ -271,16 +294,16 @@ define(['knockout',
             self.hcbmGender(self.wallet.User().profile.gender);
             self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
             self.hcbmCountry(self.wallet.User().profile.country);
-            // Get the address of the user
             self.recipientAddress(self.wallet.address()); // Send to self
-            if (!self.wallet.profileComplete()){
-                self.profileComplete(false);
-                self.statusMessage("Please complete your profile before continuing.");
-            } else {
+            self.dirtyFlag(false);
+        }
+        if (!self.wallet.profileComplete()){
+            self.profileComplete(false);
+        } else {
+            if (!self.profileComplete()){
                 self.profileComplete(true);
                 self.statusMessage("");
             }
-            self.dirtyFlag(false);
         }
     };
 
@@ -297,12 +320,16 @@ define(['knockout',
         self.hcbmAge(self.wallet.User().profile.age);
         self.hcbmWeight(self.wallet.User().profile.weight);
         self.hcbmWaist(self.wallet.User().profile.waist);
-
         self.hcbmDevice_Source("");
         self.hcbmDevice_Steps(0);
+        self.hcbmComment("");
         self.txcommentBiomarker("");
 
+        self.fileData().clear();
+        self.terms(false);
+        self.verified(false);
         self.dirtyFlag(false);
+        self.statusMessage("");
     };
 
     biomarkersType.prototype.Submit = function(){
@@ -400,9 +427,9 @@ define(['knockout',
         var self = this;
         // Encode base64 before sending.
         var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
-        var pobFiles = encodeURIComponent(btoa(self.pobFiles()));
+        var fileData = encodeURIComponent(btoa(self.fileData()));
         var sendCommand = new Command('sendbiomarker',
-                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm, verified(), pobFiles],
+                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm, self.verified(), fileData],
                                       self.wallet.settings().chRoot,
                                       self.wallet.settings().env).execute()
             .done(function(txid){
@@ -469,7 +496,7 @@ define(['knockout',
 		"Country": self.hcbmCountry(),
         "Device_Source": self.hcbmDevice_Source(),
         "Device_Steps": self.hcbmDevice_Steps(),
-        "Other": self.hcbmOther(),
+        "Comment": self.hcbmComment(),
 		"Score": self.hcbmScore()
         };
 

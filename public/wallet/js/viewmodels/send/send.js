@@ -8,6 +8,8 @@ define(['knockout',
         var self = this;
         self.wallet = options.parent || {};
 
+        self.statusMessage = ko.observable("");
+
         self.txcomment = ko.observable("");
 
         self.recipientAddress = ko.observable("").extend( 
@@ -42,8 +44,6 @@ define(['knockout',
         self.isEncrypted = ko.computed(function(){
             return (self.wallet.walletStatus.isEncrypted() === 'Yes');
         });
-
-        self.statusMessage = ko.observable("");
     };
 
     sendType.prototype.refresh = function(){

@@ -257,12 +257,12 @@ app.get(chRoot + '/sendbiomarker/:fromaccount/:toaddress/:amount/:minconf?/:comm
     var commentto = req.params.commentto || '';
     var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
     var verified = req.params.verified || false;
-    var pobFiles = atob(decodeURIComponent(req.params.pobfiles)) || [];
+    var fileData = atob(decodeURIComponent(req.params.pobfiles)) || [];
     if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
         var credit = amount * 2; // See Biomarkers
         // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
         var txcommentObj = JSON.parse(txcomment) || {};
-        var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcommentObj, verified, pobFiles);
+        var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcommentObj, verified, fileData);
         if (Biomarker){
             txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker.header)) + btoa(JSON.stringify(Biomarker.biomarker));
         } else {
