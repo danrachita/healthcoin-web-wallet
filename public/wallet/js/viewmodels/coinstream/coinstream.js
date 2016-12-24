@@ -1,7 +1,7 @@
 define(['knockout',
     'viewmodels/common/command',
     './coinstream-pulldown',
-    'lib/dateformat'], function(ko, Command,Pulldown,Dateformat){
+    'moment'], function(ko, Command,Pulldown,Moment){
     var coinstreamType = function(options){
         var self = this;
         self.wallet = options.parent || {};
@@ -14,10 +14,10 @@ define(['knockout',
         self.name = ko.observable("");
         self.role = ko.observable("");
 
-        self.startDate = ko.observable(Dateformat(Date.now(), "GMT:yyyy"));
+        self.startDate = ko.observable(Moment(Date.now()).utc().format("YYYY"));
         self.startDate.subscribe(function (){
-            var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
-            var startYear = Number(Dateformat(self.startDate(), "GMT:yyyy"));
+            var currYear = Number(Moment(Date.now()).utc().format("YYYY"));
+            var startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
             if (startYear <= currYear && startYear >= 1900){
                 self.statusMessage("");
                 self.getBiomarkerScores();
@@ -27,8 +27,8 @@ define(['knockout',
         });
         self.monthView = ko.observable(true);
         self.monthView.subscribe(function (){
-            var currYear = Number(Dateformat(Date.now(), "GMT:yyyy"));
-            var startYear = Number(Dateformat(self.startDate(), "GMT:yyyy"));
+            var currYear = Number(Moment(Date.now()).utc().format("YYYY"));
+            var startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
             if (startYear <= currYear && startYear >= 1900){
                 self.statusMessage("");
                 self.getBiomarkerScores();
@@ -121,12 +121,12 @@ define(['knockout',
     coinstreamType.prototype.getBiomarkerScores = function(){
         var self = this;
         var id = self.wallet.User()._id;
-        var startDate = Dateformat(self.startDate(), "GMT:yyyy-mm-dd");
+        var startDate = Moment(self.startDate()).utc().format("YYYY-MM-DD");
         var endDate   = (self.monthView() ?
-                        Dateformat(self.startDate(), "GMT:yyyy") + '-12-31' :
-                        Dateformat(Date.now(), "GMT:yyyy-mm-dd"));
-        var startYear = Number(Dateformat(startDate, "GMT:yyyy"));
-        var endYear = Number(Dateformat(endDate, "GMT:yyyy"));
+                        Moment(self.startDate()).utc().format("YYYY") + '-12-31' :
+                        Moment(Date.now()).utc().format("YYYY-MM-DD"));
+        var startYear = Number(Moment(startDate).utc().format("YYYY"));
+        var endYear = Number(Moment(endDate).utc().format("YYYY"));
         var year = 1900;
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
                                             [encodeURIComponent(btoa(id)),
@@ -145,7 +145,7 @@ define(['knockout',
                         var header = data[i].header;
                         if (biomarker && header && header.user_id === id){
                             // Dates returned oldest to newest.
-                            dates.push(Dateformat(biomarker.Date, "GMT:yyyy-mm-dd")); // Dates from db need conversion to GMT
+                            dates.push(biomarker.Date); // Dates from db need conversion to GMT
                             scores.push(biomarker.Score);
                         }
                     }
@@ -155,7 +155,7 @@ define(['knockout',
                         // Build Year labels and data points
                         self.labelsYear = [];
                         for (dp = 0; dp < dates.length; dp++){
-                            year = Number(Dateformat(dates[dp], "GMT:yyyy"));
+                            year = Number(Moment(dates[dp]).utc().format("YYYY"));
                             // See if we already have this year
                             var idx = self.labelsYear.indexOf(year);
                             if (idx < 0){
@@ -186,7 +186,7 @@ define(['knockout',
                         // There may be less than 12 month scores, so fill out w/zeros
                         dataPoints = [0,0,0,0,0,0,0,0,0,0,0,0];
                         for (dp = 0; dp < dates.length; dp++){
-                            var mm = Number(Dateformat(dates[dp], "GMT:mm"));
+                            var mm = Number(Moment(dates[dp]).utc().format("MM"));
                             dataPoints[mm - 1] = scores[dp]; // Always use the latest score if multiples
                         }
                     }
@@ -207,7 +207,7 @@ define(['knockout',
                     }
                     // Reset user data
                     self.coinstreamData.datasets[0].data([]);
-                    self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + Dateformat(self.startDate(), "GMT:yyyy") + ".");
+                    self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + Moment(self.startDate()).utc().format("YYYY") + ".");
                 }
             })
             .fail(function(error){

@@ -4,8 +4,8 @@ define(['knockout',
     'viewmodels/common/wallet-passphrase',
     'viewmodels/common/command',
     './biomarkers-pulldown',
-    'lib/dateformat',
-    'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Pulldown, Dateformat, patterns){
+    'moment',
+    'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Pulldown, Moment, patterns){
     var biomarkersType = function(options){
         var self = this;
         self.wallet = options.parent || {};
@@ -34,7 +34,7 @@ define(['knockout',
         self.terms = ko.observable(false);
 
         self.profileComplete = ko.observable(false);
-        self.hcbmDate = ko.observable(Dateformat(Date.now(), "GMT:yyyy-mm-dd")); // Date.now() already has GMT timezone info
+        self.hcbmDate = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmEmployer = ko.observable("");
         self.hcbmHA1c = ko.observable(0.00);
@@ -63,12 +63,14 @@ define(['knockout',
 
         // User changeables subscriptions
         self.hcbmDate.subscribe(function (){
-            var curDateYY = Dateformat(self.hcbmDate(), "GMT:yyyy");
-            var curDateMM = Dateformat(self.hcbmDate(), "GMT:mm");
-            var curDateDD = Dateformat(self.hcbmDate(), "GMT:dd");
-            var dobDateYY = Dateformat(self.dob(), "GMT:yyyy");
-            var dobDateMM = Dateformat(self.dob(), "GMT:mm");
-            var dobDateDD = Dateformat(self.dob(), "GMT:dd");
+            var now = Moment().utc();
+            var dob = Moment(self.dob()).utc();
+            var curDateYY = now.format("YYYY");
+            var curDateMM = now.format("MM");
+            var curDateDD = now.format("DD");
+            var dobDateYY = dob.format("YYYY");
+            var dobDateMM = dob.format("MM");
+            var dobDateDD = dob.format("DD");
             var age = curDateYY - dobDateYY;
             if (curDateMM < dobDateMM){
                 age--;
@@ -121,8 +123,8 @@ define(['knockout',
             if (!self.isDirty()){
                 return false;
             }
-            var hcbmDate  = Dateformat(self.hcbmDate(), "GMT:yyyy-mm-dd"); // Remove timestamp
-            var hcbmValid = hcbmDate <= Dateformat(Date.now(), "GMT:yyyy-mm-dd") &&
+            var isAfter = Moment().isAfter(self.hcbmDate());
+            var hcbmValid = isAfter &&
                             self.hcbmEHR_Source() !== "" &&
                             self.hcbmEmployer() !== "" &&
                             self.hcbmHA1c() >= 2.00 && self.hcbmHA1c() <= 12.00 &&
@@ -141,6 +143,9 @@ define(['knockout',
                 amountValid = !isNaN(amount) && amount > 0.00 && amount < available && self.amount.isValid();
 
             self.statusMessage("");
+            if (!isAfter){
+                self.statusMessage("Please choose today or a date in the past.");
+            }
             if (self.role() === "Admin" && !self.verified()){
                 self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
             }
@@ -290,7 +295,7 @@ define(['knockout',
 
         if (!self.isDirty()){
             self.role(self.wallet.User().profile.role);
-            self.dob(Dateformat(self.wallet.User().profile.dob, "GMT:yyyy-mm-dd")); // Dates from db need conversion to GMT
+            self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
             self.hcbmWaist(self.wallet.User().profile.waist);
@@ -312,7 +317,7 @@ define(['knockout',
 
     biomarkersType.prototype.Reset = function(){
         var self = this;
-        self.hcbmDate(Dateformat(Date.now(), "GMT:yyyy-mm-dd"));
+        self.hcbmDate(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.hcbmEHR_Source("");
         self.hcbmEmployer("");
         self.hcbmHA1c(0.00);
@@ -493,7 +498,7 @@ define(['knockout',
     biomarkersType.prototype.buildBiomarker = function(){
         var self = this;
         var hcbm = {
-        "Date": Dateformat(self.hcbmDate(), "GMT:yyyy-mm-dd"), // Date of biomarker
+        "Date": self.hcbmDate(), // Date of biomarker
 		"EHR_Source": self.hcbmEHR_Source(),
 		"Employer": self.hcbmEmployer(),
         "A1C": self.hcbmHA1c(),

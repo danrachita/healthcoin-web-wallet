@@ -1,8 +1,7 @@
 define(['knockout',
     'viewmodels/common/command',
     './profile-pulldown',
-    'lib/dateformat',
-    'viewmodels/wallet-status'], function(ko,Command,Pulldown,Dateformat){
+    'moment'], function(ko,Command,Pulldown,Moment){
     var profileType = function(options){
         var self = this;
         self.wallet = options.parent || {};
@@ -48,24 +47,24 @@ define(['knockout',
         self.email.subscribe(function (){self.dirtyFlag(true);});
         self.description.subscribe(function (){self.dirtyFlag(true);});
         self.dob.subscribe(function (){
-            if (self.dob() !== ""){
-                var curDateYY = Dateformat(Date.now(), "GMT:yyyy");
-                var curDateMM = Dateformat(Date.now(), "GMT:mm");
-                var curDateDD = Dateformat(Date.now(), "GMT:dd");
-                var dobDateYY = Dateformat(self.dob(), "GMT:yyyy");
-                var dobDateMM = Dateformat(self.dob(), "GMT:mm");
-                var dobDateDD = Dateformat(self.dob(), "GMT:dd");
-                var age = curDateYY - dobDateYY;
-                if (curDateMM < dobDateMM){
-                    age--;
-                } else {
-                    if (curDateMM === dobDateMM && curDateDD < dobDateDD){
-                        age--; // Almost birthday time!
-                    }
+            var now = Moment().utc();
+            var dob = Moment(self.dob()).utc();
+            var curDateYY = now.format("YYYY");
+            var curDateMM = now.format("MM");
+            var curDateDD = now.format("DD");
+            var dobDateYY = dob.format("YYYY");
+            var dobDateMM = dob.format("MM");
+            var dobDateDD = dob.format("DD");
+            var age = curDateYY - dobDateYY;
+            if (curDateMM < dobDateMM){
+                age--;
+            } else {
+                if (curDateMM === dobDateMM && curDateDD < dobDateDD){
+                    age--; // Almost birthday time!
                 }
-                self.age(age);
-                self.dirtyFlag(true);
             }
+            self.age(age);
+            self.dirtyFlag(true);
         });
         self.weight.subscribe(function (){self.dirtyFlag(true);});
         self.waist.subscribe(function (){self.dirtyFlag(true);});
@@ -76,8 +75,8 @@ define(['knockout',
         self.canSubmit = ko.computed(function(){
             var canSubmit = self.name() !== "" &&
                             self.email() !== "" &&
-                            self.age() >= 18 &&
                             self.dob() !== "" &&
+                            self.age() >= 18 &&
                             self.weight() >= 90 &&
                             self.waist() >= 20 &&
                             self.gender() !== "" &&
@@ -124,7 +123,7 @@ define(['knockout',
             self.description(self.wallet.User().profile.description);
             self.age(self.wallet.User().profile.age);
             if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
-                self.dob(Dateformat(self.wallet.User().profile.dob, "GMT:yyyy-mm-dd")); // Dates from db need conversion to GMT
+                self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             }
             self.weight(self.wallet.User().profile.weight);
             self.waist(self.wallet.User().profile.waist);
