@@ -62,8 +62,8 @@ app.use(express.static(path.join(__dirname, 'public' + coin.settings.chRoot)));
 app.use(favicon(path.join(__dirname, coin.settings.favicon)));
 app.use(morgan('dev'));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false, limit: '2mb'})); // TODO: Put this limit in settings.json
+app.use(bodyParser.json({limit: '2mb'})); // TODO: Put this limit in settings.json
 app.use(session({name: coin.settings.coinName,
                 secret: coin.settings.coinName + ' is the best ' + coin.settings.coinTitle,
                 genid: function(req) {
@@ -247,25 +247,23 @@ app.get(chRoot + '/getbalance/:account', function(req, res){
 });
 
 // Based on sendfrom. Note: The wallet is account based. Always use accounts!
-app.get(chRoot + '/sendbiomarker/:fromaccount/:toaddress/:amount/:minconf?/:comment?/:commentto?/:txcomment?/:verified?/:dataurlarray?', function(req, res){
-    var fromaccount = req.params.fromaccount || '';
-    var toaddress = req.params.toaddress || '';
-    var amount = parseFloat(req.params.amount) || 0.0;
+app.post(chRoot + '/sendbiomarker', function(req, res){
+    var fromaccount = req.body.fromaccount || '';
+    var toaddress = req.body.toaddress || '';
+    var amount = parseFloat(req.body.amount) || 0.0;
     var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
-    var minconf = parseInt(req.params.minconf || 1);
-    var comment = req.params.comment || '';
-    var commentto = req.params.commentto || '';
-    var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
-    var verified = req.params.verified || false;
-    var dataURLArray = decodeURIComponent(req.params.dataurlarray) || [];
-    console.log("DEBUG: dataURLArray = " + dataURLArray);
+    var minconf = parseInt(req.body.minconf || 1);
+    var comment = req.body.comment || '';
+    var commentto = req.body.commentto || '';
+    var txcomment = atob(req.body.txcomment) || {};
+    var verified = (req.body.verified === 'true') || false;
+    var dataURLArray = JSON.parse(atob(req.body.dataurlarray)) || [];
     if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
         var credit = amount * 2; // See Biomarkers
         // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
-        var txcommentObj = JSON.parse(txcomment) || {};
-        var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcommentObj, verified, dataURLArray);
+        var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcomment, verified, dataURLArray);
         if (Biomarker){
-            txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker.header)) + btoa(JSON.stringify(Biomarker.biomarker));
+            txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker.header) + txcomment);
         } else {
             txcomment = "text:" + "Error building biomarker.";
         }

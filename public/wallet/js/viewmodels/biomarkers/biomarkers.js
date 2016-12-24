@@ -118,6 +118,9 @@ define(['knockout',
         self.available = ko.observable(0.00);
 
         self.canSend = ko.computed(function(){
+            if (!self.isDirty()){
+                return false;
+            }
             var hcbmDate  = Dateformat(self.hcbmDate(), "GMT:yyyy-mm-dd"); // Remove timestamp
             var hcbmValid = hcbmDate <= Dateformat(Date.now(), "GMT:yyyy-mm-dd") &&
                             self.hcbmEHR_Source() !== "" &&
@@ -387,7 +390,7 @@ define(['knockout',
                             self.unlockWallet()
                                 .done(function(result){
                                     console.log("Wallet successfully unlocked, sending...");
-                                    self.sendToAddress(result);
+                                    self.sendBiomarker(result);
                                 })
                                 .fail(function(error){
                                     dialog.notification(error.message);
@@ -399,7 +402,7 @@ define(['knockout',
                 });
             } else {
                 console.log("Sending...");
-                self.sendToAddress(null);
+                self.sendBiomarker(null);
             }
         } else {
             console.log("Can't send. Form in invalid state.");
@@ -423,23 +426,32 @@ define(['knockout',
         return sendConfirmDeferred.promise();
     };
 
-    biomarkersType.prototype.sendToAddress = function(auth){
+    biomarkersType.prototype.sendBiomarker = function(auth){
         var self = this;
         // Encode to base64 before sending.
-        var hcbm = encodeURIComponent(btoa(self.txcommentBiomarker()));
-        // Except for the meta-data, this is already an array of base64 strings (no need to encode it)
-        var dataURLArray = encodeURIComponent(self.fileData().dataURLArray());
-        var sendCommand = new Command('sendbiomarker',
-                                      [self.wallet.account(), self.recipientAddress(), self.amount(), 1, "HCBM", self.recipientAddress(), hcbm, self.verified(), dataURLArray],
+        var hcbm = btoa(JSON.stringify(self.txcommentBiomarker()));
+        // Except for the meta-data, this is already an array of base64 strings
+        var dataURLArray = btoa(JSON.stringify(self.fileData().dataURLArray()));
+        var sendCommand = new Command('sendbiomarker', [{
+                                      fromaccount: self.wallet.account(),
+                                      toaddress: self.recipientAddress(),
+                                      amount: self.amount(),
+                                      minconf: 1,
+                                      comment: "HCBM",
+                                      commentto: self.recipientAddress(),
+                                      txcomment: hcbm,
+                                      verified: self.verified(),
+                                      dataurlarray: dataURLArray
+                                      }],
                                       self.wallet.settings().chRoot,
-                                      self.wallet.settings().env).execute()
+                                      self.wallet.settings().env).post()
             .done(function(txid){
                 if (self.wallet.settings().env !== 'production'){
                     console.log("TxId: " + txid);
                 }
-                self.statusMessage("Success!");
                 // Reset Send button
                 self.Reset();
+                self.statusMessage("Success!");
                 self.wallet.User().profile.credit = self.wallet.User().profile.credit + self.credit();
                 var saveUserProfileCommand = new Command('saveuserprofile',
                                                         [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
@@ -481,9 +493,9 @@ define(['knockout',
     biomarkersType.prototype.buildBiomarker = function(){
         var self = this;
         var hcbm = {
-        "Date": self.hcbmDate(), // Date of biomarker
+        "Date": Dateformat(self.hcbmDate(), "GMT:yyyy-mm-dd"), // Date of biomarker
 		"EHR_Source": self.hcbmEHR_Source(),
-		"EHR_Type": self.hcbmEmployer(),
+		"Employer": self.hcbmEmployer(),
         "A1C": self.hcbmHA1c(),
         "Triglycerides": self.hcbmTriglycerides(),
         "HDL": self.hcbmHDL(),
@@ -501,7 +513,7 @@ define(['knockout',
 		"Score": self.hcbmScore()
         };
 
-        return JSON.stringify(hcbm);
+        return hcbm;
     };
 
     return biomarkersType;
