@@ -67,7 +67,7 @@ define(['knockout',
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1.0)",
-                    data: ko.observable(self.dataAvg)
+                    data: ko.observable([])
                 }
             ]
         };
@@ -136,6 +136,7 @@ define(['knockout',
                                             self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
             .done(function(data){
+                var dataPoints = [], dp = 0, avg = 0;
                 if (data && data.length){
                     // Push the data to parallel dates[] and scores[] arrays
                     var dates = [];
@@ -150,7 +151,6 @@ define(['knockout',
                         }
                     }
                     // Determine which labels and data points to use.
-                    var dataPoints = [], dp = 0, avg = 0;
                     if (startYear < endYear){
                         // Build Year labels and data points
                         self.labelsYear = [];
@@ -199,6 +199,7 @@ define(['knockout',
                     // Reset labels depending on view
                     if (self.monthView()){
                         self.coinstreamData.labels(self.labelsMonth);
+                        self.coinstreamData.datasets[1].data(self.dataAvg);
                     } else {
                         self.labelsYear = [];
                         if (startYear === endYear) startYear--;
@@ -206,6 +207,11 @@ define(['knockout',
                             self.labelsYear.push(year);
                         }
                         self.coinstreamData.labels(self.labelsYear);
+                        // Load the average data for as many labels as we have
+                        self.coinstreamData.datasets[1].data([]);
+                        for (avg = 0; avg < self.labelsYear.length; avg++){
+                            self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
+                        }
                     }
                     // Reset user data
                     self.coinstreamData.datasets[0].data([]);
