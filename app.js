@@ -258,6 +258,7 @@ app.post(chRoot + '/sendbiomarker', function(req, res){
     var txcomment = atob(req.body.txcomment) || {};
     var verified = (req.body.verified === 'true') || false;
     var dataURLArray = JSON.parse(atob(req.body.dataurlarray)) || [];
+    //console.log("DEBUG: req.body = " + JSON.stringify(req.body));
     if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
         var credit = amount * 2; // See Biomarkers
         // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.

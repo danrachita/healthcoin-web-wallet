@@ -14,7 +14,7 @@ define(['knockout',
         self.name = ko.observable("");
         self.role = ko.observable("");
 
-        self.startDate = ko.observable(Moment(Date.now()).utc().format("YYYY"));
+        self.startDate = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.startDate.subscribe(function (){
             var currYear = Number(Moment(Date.now()).utc().format("YYYY"));
             var startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
@@ -121,9 +121,9 @@ define(['knockout',
     coinstreamType.prototype.getBiomarkerScores = function(){
         var self = this;
         var id = self.wallet.User()._id;
-        var startDate = Moment(self.startDate()).utc().format("YYYY-MM-DD");
+        var startDate = Moment(self.startDate()).utc().format("YYYY-01-01");
         var endDate   = (self.monthView() ?
-                        Moment(self.startDate()).utc().format("YYYY") + '-12-31' :
+                        Moment(self.startDate()).utc().format("YYYY-12-31") :
                         Moment(Date.now()).utc().format("YYYY-MM-DD"));
         var startYear = Number(Moment(startDate).utc().format("YYYY"));
         var endYear = Number(Moment(endDate).utc().format("YYYY"));
@@ -155,6 +155,8 @@ define(['knockout',
                         // Build Year labels and data points
                         self.labelsYear = [];
                         for (dp = 0; dp < dates.length; dp++){
+                             Number(Moment(startDate).utc().format("YYYY"));
+
                             year = Number(Moment(dates[dp]).utc().format("YYYY"));
                             // See if we already have this year
                             var idx = self.labelsYear.indexOf(year);
@@ -207,7 +209,7 @@ define(['knockout',
                     }
                     // Reset user data
                     self.coinstreamData.datasets[0].data([]);
-                    self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + Moment(self.startDate()).utc().format("YYYY") + ".");
+                    self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
                 }
             })
             .fail(function(error){

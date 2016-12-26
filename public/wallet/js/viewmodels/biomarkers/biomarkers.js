@@ -123,7 +123,7 @@ define(['knockout',
             if (!self.isDirty()){
                 return false;
             }
-            var isAfter = Moment().isAfter(self.hcbmDate());
+            var isAfter = Moment().utc().isAfter(Moment(self.hcbmDate()).utc());
             var hcbmValid = isAfter &&
                             self.hcbmEHR_Source() !== "" &&
                             self.hcbmEmployer() !== "" &&
@@ -498,7 +498,7 @@ define(['knockout',
     biomarkersType.prototype.buildBiomarker = function(){
         var self = this;
         var hcbm = {
-        "Date": self.hcbmDate(), // Date of biomarker
+        "Date": Moment(self.hcbmDate()).utc(), // Date of biomarker
 		"EHR_Source": self.hcbmEHR_Source(),
 		"Employer": self.hcbmEmployer(),
         "A1C": self.hcbmHA1c(),
