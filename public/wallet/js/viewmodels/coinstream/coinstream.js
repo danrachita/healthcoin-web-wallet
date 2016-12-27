@@ -160,9 +160,9 @@ define(['knockout',
                             var idx = self.labelsYear.indexOf(year);
                             if (idx < 0){
                                 // Fast forward years if needed
-                                var ffYears = year - startYear - dp;
+                                var ffYears = year - startYear;
                                 for (var ff = 1; ff < ffYears; ff++){
-                                    self.labelsYear.push(year + ff);
+                                    self.labelsYear.push(startYear + ff);
                                     dataPoints.push(0);
                                 }
                                 self.labelsYear.push(year);
