@@ -29,6 +29,7 @@ define(['knockout',
         self.name = ko.observable("");
         self.email = ko.observable("");
         self.description = ko.observable("");
+        self.employer = ko.observable("");
         self.age = ko.observable("");
         self.dob = ko.observable("");
         self.weight = ko.observable("");
@@ -36,6 +37,7 @@ define(['knockout',
         self.gender = ko.observable("");
         self.ethnicity = ko.observable("");
         self.country = ko.observable("");
+        self.terms = ko.observable(false);
 
         self.dirtyFlag = ko.observable(false);
         self.isDirty = ko.computed(function() {
@@ -46,6 +48,7 @@ define(['knockout',
         self.name.subscribe(function (){self.dirtyFlag(true);});
         self.email.subscribe(function (){self.dirtyFlag(true);});
         self.description.subscribe(function (){self.dirtyFlag(true);});
+        self.employer.subscribe(function (){self.dirtyFlag(true);});
         self.dob.subscribe(function (){
             var now = Moment().utc();
             var dob = Moment(self.dob()).utc();
@@ -71,20 +74,30 @@ define(['knockout',
         self.gender.subscribe(function (){self.dirtyFlag(true);});
         self.ethnicity.subscribe(function (){self.dirtyFlag(true);});
         self.country.subscribe(function (){self.dirtyFlag(true);});
+        self.terms.subscribe(function (){self.dirtyFlag(true);});
 
         self.canSubmit = ko.computed(function(){
             var canSubmit = self.name() !== "" &&
                             self.email() !== "" &&
                             self.dob() !== "" &&
+                            self.employer() !== "" &&
                             self.age() >= 18 &&
                             self.weight() >= 90 &&
                             self.waist() >= 20 &&
                             self.gender() !== "" &&
                             self.ethnicity() !== "" &&
                             self.country() !== "";
+            if (!self.terms()){
+                canSubmit = false;
+                self.statusMessage("Please agree to the Terms & Conditions to continue.");
+            }
             if (self.description().length > 1000){
                 canSubmit = false;
                 self.statusMessage("Please limit your description to 1000 characters.");
+            }
+            if (self.employer() === ""){
+                canSubmit = false;
+                self.statusMessage("Please select your employer or sponsor.");
             }
             if (canSubmit){
                 self.statusMessage("");
@@ -121,6 +134,7 @@ define(['knockout',
             self.name(self.wallet.User().profile.name);
             self.email(self.wallet.User().profile.email);
             self.description(self.wallet.User().profile.description);
+            self.employer(self.wallet.User().profile.employer);
             self.age(self.wallet.User().profile.age);
             if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
@@ -130,6 +144,7 @@ define(['knockout',
             self.gender(self.wallet.User().profile.gender);
             self.ethnicity(self.wallet.User().profile.ethnicity);
             self.country(self.wallet.User().profile.country);
+            self.terms(self.wallet.User().profile.terms || false);
             self.credit(self.wallet.User().profile.credit);
 
             // This has to be inside the !isDirty check
@@ -155,6 +170,7 @@ define(['knockout',
         self.wallet.User().profile.name = self.name();
         self.wallet.User().profile.email = self.email();
         self.wallet.User().profile.description = self.description();
+        self.wallet.User().profile.employer = self.employer();
         self.wallet.User().profile.age = self.age();
         self.wallet.User().profile.dob = self.dob();
         self.wallet.User().profile.weight = self.weight();
@@ -162,6 +178,7 @@ define(['knockout',
         self.wallet.User().profile.gender = self.gender();
         self.wallet.User().profile.ethnicity = self.ethnicity();
         self.wallet.User().profile.country = self.country();
+        self.wallet.User().profile.terms = self.terms();
         var saveUserProfileCommand = new Command('saveuserprofile',
                                                 [encodeURIComponent(btoa(JSON.stringify(self.wallet.User().profile)))],
                                                 self.wallet.settings().chRoot,

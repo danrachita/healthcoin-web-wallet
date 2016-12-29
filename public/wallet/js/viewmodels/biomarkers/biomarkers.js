@@ -36,7 +36,6 @@ define(['knockout',
         self.profileComplete = ko.observable(false);
         self.hcbmDate = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.hcbmEHR_Source = ko.observable("");
-        self.hcbmEmployer = ko.observable("");
         self.hcbmHA1c = ko.observable(0.00);
         self.hcbmTriglycerides = ko.observable(0);
         self.hcbmHDL = ko.observable(0);
@@ -45,6 +44,7 @@ define(['knockout',
 
         // These come from profile
         self.dob = ko.observable("");
+        self.hcbmEmployer = ko.observable("");
         self.hcbmAge = ko.observable(0);
         self.hcbmWeight = ko.observable(0);
         self.hcbmWaist = ko.observable(0);
@@ -62,6 +62,7 @@ define(['knockout',
         });
 
         // User changeables subscriptions
+        self.hcbmEmployer.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmDate.subscribe(function (){
             var now = Moment().utc();
             var dob = Moment(self.dob()).utc();
@@ -82,15 +83,15 @@ define(['knockout',
             self.hcbmAge(age);
             self.dirtyFlag(true);
         });
+        self.hcbmWeight.subscribe(function (){self.dirtyFlag(true);});
+        self.hcbmWaist.subscribe(function (){self.dirtyFlag(true);});
+
         self.hcbmEHR_Source.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmEmployer.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmHA1c.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmTriglycerides.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmHDL.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmBPS.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmBPD.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmWeight.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmWaist.subscribe(function (){self.dirtyFlag(true);});
 
         self.hcbmDevice_Source.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmDevice_Steps.subscribe(function (){self.dirtyFlag(true);});
@@ -126,12 +127,12 @@ define(['knockout',
             var isAfter = Moment().utc().isAfter(Moment(self.hcbmDate()).utc());
             var hcbmValid = isAfter &&
                             self.hcbmEHR_Source() !== "" &&
-                            self.hcbmEmployer() !== "" &&
                             self.hcbmHA1c() >= 2.00 && self.hcbmHA1c() <= 12.00 &&
                             self.hcbmTriglycerides() > 0 && self.hcbmTriglycerides() <= 400 &&
                             self.hcbmHDL() > 0 && self.hcbmHDL() <= 100 &&
                             self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
                             self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130 &&
+                            self.hcbmEmployer() !== "" &&
                             self.hcbmAge() >= 18 &&
                             self.hcbmWeight() >= 90 &&
                             self.hcbmWaist() >= 20;
@@ -296,6 +297,7 @@ define(['knockout',
         if (!self.isDirty()){
             self.role(self.wallet.User().profile.role);
             self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+            self.hcbmEmployer(self.wallet.User().profile.employer);
             self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmWeight(self.wallet.User().profile.weight);
             self.hcbmWaist(self.wallet.User().profile.waist);
@@ -319,12 +321,12 @@ define(['knockout',
         var self = this;
         self.hcbmDate(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.hcbmEHR_Source("");
-        self.hcbmEmployer("");
         self.hcbmHA1c(0.00);
         self.hcbmTriglycerides(0);
         self.hcbmHDL(0);
         self.hcbmBPS(0);
         self.hcbmBPD(0);
+        self.hcbmEmployer(self.wallet.User().profile.employer);
         self.hcbmAge(self.wallet.User().profile.age);
         self.hcbmWeight(self.wallet.User().profile.weight);
         self.hcbmWaist(self.wallet.User().profile.waist);
@@ -500,12 +502,12 @@ define(['knockout',
         var hcbm = {
         "Date": Moment(self.hcbmDate()).utc(), // Date of biomarker
 		"EHR_Source": self.hcbmEHR_Source(),
-		"Employer": self.hcbmEmployer(),
         "A1C": self.hcbmHA1c(),
         "Triglycerides": self.hcbmTriglycerides(),
         "HDL": self.hcbmHDL(),
         "BPS": self.hcbmBPS(),
         "BPD": self.hcbmBPD(),
+		"Employer": self.hcbmEmployer(),
         "Age": self.hcbmAge(),
         "Weight": self.hcbmWeight(),
         "Waist": self.hcbmWaist(),

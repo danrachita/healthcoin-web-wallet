@@ -74,7 +74,8 @@ define(['knockout',
                              self.User().profile.waist > 0 &&
                              self.User().profile.gender !== "" &&
                              self.User().profile.ethnicity !== "" &&
-                             self.User().profile.country !== "";
+                             self.User().profile.country !== "" &&
+                             self.User().profile.terms === true;
             }
             return isComplete;
         });

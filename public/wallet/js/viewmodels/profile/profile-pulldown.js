@@ -1,6 +1,29 @@
 define(['knockout'], function(ko){
     var pulldownType = function(){
 
+        this.employerValues =   ko.observableArray(["",
+            "American International Group",
+            "Bank of America Corp.",
+            "Berkshire Hathaway",
+            "Cardinal Health",
+            "Citigroup",
+            "ConocoPhillips",
+            "Exxon Mobil",
+            "Ford Motor",
+            "General Electric",
+            "General Motors",
+            "Hewlett-Packard",
+            "Home Depot",
+            "International Business Machines",
+            "J.P. Morgan Chase & Co.",
+            "McKesson",
+            "Morgan Stanley",
+            "Valero Energy",
+            "Verizon Communications",
+            "Wal-Mart Stores",
+            "Other"
+            ]);
+
         this.genderValues = ko.observableArray(["",
             "Female",
             "Male"
