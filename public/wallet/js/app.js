@@ -79,7 +79,7 @@ define( [
             this.get('#profile', function() {
                 wallet.currentView('profile');
             });
-        }).run(wallet.profileComplete() ? '#home' : '#profile');
+        }).run('#home');
     };
     return new App();
 });

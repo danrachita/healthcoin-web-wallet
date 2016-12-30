@@ -18,7 +18,7 @@ define(['knockout'], function(ko){
             self.last_name(self.wallet.User().profile.last_name);
         }
         if (!self.wallet.profileComplete()){
-            self.statusMessage("Please complete your profile before continuing.");
+            window.location = self.wallet.settings().chRoot + '/#profile';
         } else {
             self.statusMessage("You have " + self.wallet.walletStatus.totalFmt() + " " + self.wallet.settings().coinSymbol + " in your wallet!");
         }
