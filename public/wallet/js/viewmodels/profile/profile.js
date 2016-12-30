@@ -90,6 +90,7 @@ define(['knockout',
                             self.gender() !== "" &&
                             self.ethnicity() !== "" &&
                             self.country() !== "";
+            // Bottom to top messages
             if (!self.terms()){
                 canSubmit = false;
                 self.statusMessage("Please agree to the Terms & Conditions to continue.");

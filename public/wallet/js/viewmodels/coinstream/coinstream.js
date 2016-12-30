@@ -51,7 +51,7 @@ define(['knockout',
             labels: ko.observable(self.labelsMonth),
             datasets: [
                 {
-                    label: "Your Coinstream",
+                    label: ko.observable(""),
                     backgroundColor: "rgba(45,169,171,0.4)",
                     borderColor: "rgba(45,169,171,0.8)",
                     pointColor: "rgba(151,187,205,1.0)",
@@ -81,6 +81,9 @@ define(['knockout',
             self.role(self.wallet.User().profile.role);
             self.first_name(self.wallet.User().profile.first_name);
             self.last_name(self.wallet.User().profile.last_name);
+            if (self.coinstreamData.datasets[0].label() === ""){
+                self.coinstreamData.datasets[0].label(self.first_name() + "'s Coinstream");
+            }
             if (self.coinstreamData.datasets[0].data().length === 0){
                 self.getBiomarkerScores();
             }

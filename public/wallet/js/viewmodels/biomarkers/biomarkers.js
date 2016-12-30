@@ -144,9 +144,7 @@ define(['knockout',
                 amountValid = !isNaN(amount) && amount > 0.00 && amount < available && self.amount.isValid();
 
             self.statusMessage("");
-            if (!isAfter){
-                self.statusMessage("Please choose today or a date in the past.");
-            }
+            // Bottom to top messages
             if (self.role() === "Admin" && !self.verified()){
                 self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
             }
@@ -158,6 +156,16 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("Please limit your comment to 500 characters.");
             }
+            if (!self.hcbmHDL()){
+                self.statusMessage("Use the sliders to reflect your biomarker outputs.");
+            }
+            if (self.hcbmEHR_Source() === ""){
+                self.statusMessage("Please select an EHR source for your biomarker.");
+            }
+            if (!isAfter){
+                self.statusMessage("Please choose today or a date in the past.");
+            }
+            // Last
             if (!self.profileComplete()){
                 hcbmValid = false;
                 self.statusMessage("Please complete your profile before continuing.");
