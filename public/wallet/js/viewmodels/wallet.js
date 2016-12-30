@@ -66,16 +66,19 @@ define(['knockout',
 
         self.profileComplete = ko.computed(function(){
             var isComplete = false;
-            if (self.User().profile && self.User().profile.name !== 'undefined') {
-                isComplete = self.User().profile.name !== "" &&
-                             self.User().profile.age > 0 &&
+            if (self.User().profile && self.User().profile.first_name !== 'undefined') {
+                isComplete = self.User().profile.first_name && self.User().profile.first_name !== "" &&
+                             self.User().profile.last_name && self.User().profile.last_name !== "" &&
+                             self.User().profile.employer && self.User().profile.employer !== "" &&
+                             self.User().profile.email && self.User().profile.email !== "" &&
+                             self.User().profile.age && self.User().profile.age > 0 &&
                              self.User().profile.dob && self.User().profile.dob !== "" &&
-                             self.User().profile.weight > 0 &&
-                             self.User().profile.waist > 0 &&
-                             self.User().profile.gender !== "" &&
-                             self.User().profile.ethnicity !== "" &&
-                             self.User().profile.country !== "" &&
-                             self.User().profile.terms === true;
+                             self.User().profile.weight && self.User().profile.weight > 0 &&
+                             self.User().profile.waist && self.User().profile.waist > 0 &&
+                             self.User().profile.gender && self.User().profile.gender !== "" &&
+                             self.User().profile.ethnicity && self.User().profile.ethnicity !== "" &&
+                             self.User().profile.country && self.User().profile.country !== "" &&
+                             self.User().profile.terms && self.User().profile.terms === true;
             }
             return isComplete;
         });

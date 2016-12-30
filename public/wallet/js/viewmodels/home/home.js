@@ -5,15 +5,17 @@ define(['knockout'], function(ko){
 
         self.statusMessage = ko.observable("");
 
-        self.name = ko.observable("");
         self.role = ko.observable("");
+        self.first_name = ko.observable("");
+        self.last_name = ko.observable("");
     };
 
     homeType.prototype.refresh = function(){
         var self = this;
         if (self.wallet.User().profile){
-            self.name(self.wallet.User().profile.name);
             self.role(self.wallet.User().profile.role);
+            self.first_name(self.wallet.User().profile.first_name);
+            self.last_name(self.wallet.User().profile.last_name);
         }
         if (!self.wallet.profileComplete()){
             self.statusMessage("Please complete your profile before continuing.");

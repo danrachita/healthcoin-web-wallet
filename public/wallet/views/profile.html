@@ -6,13 +6,13 @@
         <form class="form-horizontal" role="form">
             <div class="form-group">
 				<!-- Personal data -->
-                <label class="control-label col-sm-2" for="name">Name</label>
+                <label class="control-label col-sm-2" for="name">First Name</label>
                 <div class="col-sm-4">
-	                <p><input class="form-control" type="text" id="name" data-bind="text, textInput: name" placeholder="Enter your full name."></input></p>
+	                <p><input class="form-control" type="text" id="first_name" data-bind="text, textInput: first_name" placeholder="Enter your first name."></input></p>
 	            </div>
-                <label class="control-label col-sm-2" for="email">Email</label>
+                <label class="control-label col-sm-2" for="email">Last Name</label>
                 <div class="col-sm-4">
-	                <p><input class="form-control" type="email" id="email" data-bind="email, textInput: email" placeholder="Enter your email address."></input></p>
+	                <p><input class="form-control" type="text" id="last_name" data-bind="text, textInput: last_name" placeholder="Enter your last name."></input></p>
 	            </div>
 			</div>
             <div class="form-group">
@@ -20,6 +20,10 @@
                 <div class="col-sm-4">
                     <p><select class="form-control" data-type="select" id="employer" data-bind="options: pulldown.employerValues, value: employer" data-title="Employer / Sponsor"></select></p>
                 </div>
+                <label class="control-label col-sm-2" for="email">Email</label>
+                <div class="col-sm-4">
+	                <p><input class="form-control" type="email" id="email" data-bind="email, textInput: email" placeholder="Enter your email address."></input></p>
+	            </div>
 			</div>
             <div class="form-group">
                 <label class="control-label col-sm-2" for="age">Date of Birth</label>

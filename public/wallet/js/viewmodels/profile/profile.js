@@ -26,10 +26,11 @@ define(['knockout',
         self.twitterUrl = ko.observable("https://twitter.com/");
 
         // User changeables
-        self.name = ko.observable("");
+        self.first_name = ko.observable("");
+        self.last_name = ko.observable("");
+        self.employer = ko.observable("");
         self.email = ko.observable("");
         self.description = ko.observable("");
-        self.employer = ko.observable("");
         self.age = ko.observable("");
         self.dob = ko.observable("");
         self.weight = ko.observable("");
@@ -45,10 +46,11 @@ define(['knockout',
         });
 
         // User changeables subscriptions
-        self.name.subscribe(function (){self.dirtyFlag(true);});
+        self.first_name.subscribe(function (){self.dirtyFlag(true);});
+        self.last_name.subscribe(function (){self.dirtyFlag(true);});
+        self.employer.subscribe(function (){self.dirtyFlag(true);});
         self.email.subscribe(function (){self.dirtyFlag(true);});
         self.description.subscribe(function (){self.dirtyFlag(true);});
-        self.employer.subscribe(function (){self.dirtyFlag(true);});
         self.dob.subscribe(function (){
             var now = Moment().utc();
             var dob = Moment(self.dob()).utc();
@@ -77,10 +79,11 @@ define(['knockout',
         self.terms.subscribe(function (){self.dirtyFlag(true);});
 
         self.canSubmit = ko.computed(function(){
-            var canSubmit = self.name() !== "" &&
+            var canSubmit = self.first_name() !== "" &&
+                            self.last_name() !== "" &&
+                            self.employer() !== "" &&
                             self.email() !== "" &&
                             self.dob() !== "" &&
-                            self.employer() !== "" &&
                             self.age() >= 18 &&
                             self.weight() >= 90 &&
                             self.waist() >= 20 &&
@@ -131,10 +134,11 @@ define(['knockout',
             self.address(self.wallet.address());
 
             self.role(self.wallet.User().profile.role);
-            self.name(self.wallet.User().profile.name);
+            self.first_name(self.wallet.User().profile.first_name);
+            self.last_name(self.wallet.User().profile.last_name);
+            self.employer(self.wallet.User().profile.employer);
             self.email(self.wallet.User().profile.email);
             self.description(self.wallet.User().profile.description);
-            self.employer(self.wallet.User().profile.employer);
             self.age(self.wallet.User().profile.age);
             if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
@@ -167,10 +171,11 @@ define(['knockout',
     profileType.prototype.Submit = function(){
         var self = this;
         // Save User changeables
-        self.wallet.User().profile.name = self.name();
+        self.wallet.User().profile.first_name = self.first_name();
+        self.wallet.User().profile.last_name = self.last_name();
+        self.wallet.User().profile.employer = self.employer();
         self.wallet.User().profile.email = self.email();
         self.wallet.User().profile.description = self.description();
-        self.wallet.User().profile.employer = self.employer();
         self.wallet.User().profile.age = self.age();
         self.wallet.User().profile.dob = self.dob();
         self.wallet.User().profile.weight = self.weight();

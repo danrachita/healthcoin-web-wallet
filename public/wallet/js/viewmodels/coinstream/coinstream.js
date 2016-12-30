@@ -11,8 +11,9 @@ define(['knockout',
         // Source value arrays for pulldown menues
         self.pulldown = new Pulldown();
 
-        self.name = ko.observable("");
         self.role = ko.observable("");
+        self.first_name = ko.observable("");
+        self.last_name = ko.observable("");
 
         self.startDate = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.startDate.subscribe(function (){
@@ -77,8 +78,9 @@ define(['knockout',
         var self = this;
         self.updateCharts();
         if (self.wallet.User().profile){
-            self.name(self.wallet.User().profile.name);
             self.role(self.wallet.User().profile.role);
+            self.first_name(self.wallet.User().profile.first_name);
+            self.last_name(self.wallet.User().profile.last_name);
             if (self.coinstreamData.datasets[0].data().length === 0){
                 self.getBiomarkerScores();
             }
