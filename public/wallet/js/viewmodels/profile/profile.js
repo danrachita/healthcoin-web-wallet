@@ -133,23 +133,23 @@ define(['knockout',
             self.account(self.wallet.account());
             self.address(self.wallet.address());
 
-            self.role(self.wallet.User().profile.role);
-            self.first_name(self.wallet.User().profile.first_name);
-            self.last_name(self.wallet.User().profile.last_name);
-            self.employer(self.wallet.User().profile.employer);
-            self.email(self.wallet.User().profile.email);
-            self.description(self.wallet.User().profile.description);
-            self.age(self.wallet.User().profile.age);
+            self.role(self.wallet.User().profile.role || "User");
+            self.first_name(self.wallet.User().profile.first_name || "");
+            self.last_name(self.wallet.User().profile.last_name || "");
+            self.employer(self.wallet.User().profile.employer || "");
+            self.email(self.wallet.User().profile.email || "");
+            self.description(self.wallet.User().profile.description || "");
+            self.age(self.wallet.User().profile.age || 0);
             if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             }
-            self.weight(self.wallet.User().profile.weight);
-            self.waist(self.wallet.User().profile.waist);
-            self.gender(self.wallet.User().profile.gender);
-            self.ethnicity(self.wallet.User().profile.ethnicity);
-            self.country(self.wallet.User().profile.country);
+            self.weight(self.wallet.User().profile.weight || 0);
+            self.waist(self.wallet.User().profile.waist || 0);
+            self.gender(self.wallet.User().profile.gender || "");
+            self.ethnicity(self.wallet.User().profile.ethnicity || "");
+            self.country(self.wallet.User().profile.country || "");
             self.terms(self.wallet.User().profile.terms || false);
-            self.credit(self.wallet.User().profile.credit);
+            self.credit(self.wallet.User().profile.credit || 0);
 
             // This has to be inside the !isDirty check
             if (!self.wallet.profileComplete()){
