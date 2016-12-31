@@ -101,8 +101,7 @@ define(['knockout',
             }
             if (!canSubmit){
                 self.statusMessage("Please complete all of the profile inputs.");
-            }
-            if (canSubmit){
+            } else {
                 self.statusMessage("");
             }
             return canSubmit;
