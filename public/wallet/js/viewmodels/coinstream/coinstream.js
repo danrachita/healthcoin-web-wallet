@@ -201,7 +201,7 @@ define(['knockout',
                     self.statusMessage("You've got Biomarkers!");
                 } else {
                     // Reset labels depending on view
-                    if (self.monthView()){
+                    if (self.monthView() || startYear === endYear){
                         self.coinstreamData.labels(self.labelsMonth);
                         self.coinstreamData.datasets[1].data(self.dataAvg);
                     } else {
