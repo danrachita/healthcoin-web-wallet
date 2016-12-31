@@ -159,6 +159,7 @@ define(['knockout',
                     if (startYear < endYear){
                         // Build Year labels and data points
                         self.labelsYear = [];
+                        self.labelsYear.push(startYear);
                         for (dp = 0; dp < dates.length; dp++){
                             year = Number(Moment(dates[dp]).utc().format("YYYY"));
                             // See if we already have this year
