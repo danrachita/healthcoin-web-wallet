@@ -152,14 +152,12 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("Please agree to the Terms & Conditions to continue.");
             }
-            if (!hcbmValid){
-                self.statusMessage("Please complete all of the biomarker inputs.");
-            }
             if (self.hcbmComment().length > 500){
                 hcbmValid = false;
                 self.statusMessage("Please limit your comment to 500 characters.");
             }
             if (!isAfter){
+                hcbmValid = false;
                 self.statusMessage("Please enter the date the biomarker was taken.");
             }
             // Last
