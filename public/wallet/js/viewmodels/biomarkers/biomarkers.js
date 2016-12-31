@@ -152,18 +152,15 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("Please agree to the Terms & Conditions to continue.");
             }
+            if (!hcbmValid){
+                self.statusMessage("Please complete all of the biomarker inputs.");
+            }
             if (self.hcbmComment().length > 500){
                 hcbmValid = false;
                 self.statusMessage("Please limit your comment to 500 characters.");
             }
-            if (!self.hcbmHDL()){
-                self.statusMessage("Use the sliders to reflect your biomarker outputs.");
-            }
-            if (self.hcbmEHR_Source() === ""){
-                self.statusMessage("Please select an EHR source for your biomarker.");
-            }
             if (!isAfter){
-                self.statusMessage("Please choose today or a date in the past.");
+                self.statusMessage("Please enter the date the biomarker was taken.");
             }
             // Last
             if (!self.profileComplete()){

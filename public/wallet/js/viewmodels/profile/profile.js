@@ -99,9 +99,8 @@ define(['knockout',
                 canSubmit = false;
                 self.statusMessage("Please limit your description to 1000 characters.");
             }
-            if (self.employer() === ""){
-                canSubmit = false;
-                self.statusMessage("Please select your employer or sponsor.");
+            if (!canSubmit){
+                self.statusMessage("Please complete all of the profile inputs.");
             }
             if (canSubmit){
                 self.statusMessage("");
