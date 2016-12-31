@@ -142,6 +142,30 @@ define(['knockout',
         $.when(getBiomarkerScoresCommand.execute())
             .done(function(data){
                 var dataPoints = [], dp = 0, avg = 0;
+                // Set labels and avg data points depending on view
+                if (startYear < endYear){
+                    // Build Year labels and initialize data points
+                    self.labelsYear = [];
+                    for (year = startYear; year <= endYear; year++){
+                        self.labelsYear.push(year);
+                        dataPoints.push(0);
+                    }
+                    self.coinstreamData.labels(self.labelsYear);
+                    // Load the average data for as many labels as we have
+                    self.coinstreamData.datasets[1].data([]);
+                    for (avg = 0; avg < self.labelsYear.length; avg++){
+                        if (avg < self.dataAvg.length){
+                            self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
+                        } else {
+                            // Just repeat last one if neccessary
+                            self.coinstreamData.datasets[1].data().push(self.dataAvg[self.dataAvg.length - 1]);
+                        }
+                    }
+                } else {
+                    // Month view
+                    self.coinstreamData.labels(self.labelsMonth);
+                    self.coinstreamData.datasets[1].data(self.dataAvg);
+                }
                 if (data && data.length){
                     // Push the data to parallel dates[] and scores[] arrays
                     var dates = [];
@@ -151,72 +175,31 @@ define(['knockout',
                         var header = data[i].header;
                         if (biomarker && header && header.user_id === id){
                             // Dates returned oldest to newest.
-                            dates.push(biomarker.Date); // Dates from db need conversion to GMT
+                            dates.push(biomarker.Date);
                             scores.push(biomarker.Score);
                         }
                     }
                     // Determine which labels and data points to use.
                     if (startYear < endYear){
-                        // Build Year labels and data points
-                        self.labelsYear = [];
-                        self.labelsYear.push(startYear);
                         for (dp = 0; dp < dates.length; dp++){
                             year = Number(Moment(dates[dp]).utc().format("YYYY"));
-                            // See if we already have this year
                             var idx = self.labelsYear.indexOf(year);
-                            if (idx < 0){
-                                self.labelsYear.push(year);
-                                dataPoints.push(scores[dp]);
-                            } else {
-                                // Already have this year
-                                dataPoints[idx] = scores[dp]; // Always use the latest score if multiples
+                            if (idx >= 0){
+                                dataPoints[idx] = scores[dp]; // Always uses the latest score if duplicate years
                             }
                         }
-                        // Load the average data for as many labels as we have
-                        self.coinstreamData.datasets[1].data([]);
-                        for (avg = 0; avg < self.labelsYear.length; avg++){
-                            self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
-                        }
-                        // Make sure we have the current year label and a data point
-                        if (self.labelsYear.indexOf(endYear) < 0){
-                            self.labelsYear.push(endYear);
-                            dataPoints.push(0);
-                            self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
-                        }
-                        // Load the new Years labels
-                        self.coinstreamData.labels(self.labelsYear);
                     } else {
-                        // Using static Month labels and average data points.
-                        self.coinstreamData.labels(self.labelsMonth);
-                        self.coinstreamData.datasets[1].data(self.dataAvg);
                         // There may be less than 12 month scores, so fill out w/zeros
                         dataPoints = [0,0,0,0,0,0,0,0,0,0,0,0];
                         for (dp = 0; dp < dates.length; dp++){
                             var mm = Number(Moment(dates[dp]).utc().format("MM"));
-                            dataPoints[mm - 1] = scores[dp]; // Always use the latest score if multiples
+                            dataPoints[mm - 1] = scores[dp]; // Always uses the latest score if duplicate months
                         }
                     }
                     // Load the new user data points
                     self.coinstreamData.datasets[0].data(dataPoints);
                     self.statusMessage("You've got Biomarkers!");
                 } else {
-                    // Reset labels depending on view
-                    if (self.monthView() || startYear === endYear){
-                        self.coinstreamData.labels(self.labelsMonth);
-                        self.coinstreamData.datasets[1].data(self.dataAvg);
-                    } else {
-                        self.labelsYear = [];
-                        if (startYear === endYear) startYear--;
-                        for (year = startYear; year <= endYear; year++){
-                            self.labelsYear.push(year);
-                        }
-                        self.coinstreamData.labels(self.labelsYear);
-                        // Load the average data for as many labels as we have
-                        self.coinstreamData.datasets[1].data([]);
-                        for (avg = 0; avg < self.labelsYear.length; avg++){
-                            self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
-                        }
-                    }
                     // Reset user data
                     self.coinstreamData.datasets[0].data([]);
                     self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
