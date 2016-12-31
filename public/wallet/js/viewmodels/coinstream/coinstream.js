@@ -153,13 +153,11 @@ define(['knockout',
                     self.coinstreamData.labels(self.labelsYear);
                     // Load the average data for as many labels as we have
                     self.coinstreamData.datasets[1].data([]);
+                    var avglen = self.dataAvg.length;
                     for (avg = 0; avg < self.labelsYear.length; avg++){
-                        if (avg < self.dataAvg.length){
-                            self.coinstreamData.datasets[1].data().push(self.dataAvg[avg]);
-                        } else {
-                            // Just repeat last one if neccessary
-                            self.coinstreamData.datasets[1].data().push(self.dataAvg[self.dataAvg.length - 1]);
-                        }
+                        var mod = Math.floor(avg / avglen);
+                        // This will repeat averages for as long at the labels length
+                        self.coinstreamData.datasets[1].data().push(self.dataAvg[avg - (avglen * mod)]);
                     }
                 } else {
                     // Month view
