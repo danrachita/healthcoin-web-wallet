@@ -16,14 +16,26 @@
 				</div>
 				<label class="form-control-addon control-label col-sm-2">Month View <input type="checkbox" data-bind="checked: monthView"></label>
 				<label class="form-control-addon control-label col-sm-1"> Style</label>
-				<select class="form-control-addon control-label col-sm-1" data-type="select" id="chartStyle" data-bind="options: pulldown.chartStyleValues, value: chartStyle" data-title="Select your chart style."></select>
+				<select class="form-control-addon control-label col-sm-1" data-type="select" id="chartStyle" data-bind="options: coinstreamPulldown.chartStyleValues, value: chartStyle" data-title="Select your chart style."></select>
 			</div>
+	<!-- ko if: role() === 'Admin' -->
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="employer">Employer</label>
+                <div class="col-sm-4">
+                    <p><select class="form-control" data-type="select" id="employer" data-bind="options: profilePulldown.employerValues, value: employer" data-title="Employer / Sponsor"></select></p>
+                </div>
+                <label class="control-label col-sm-2" for="email">Employee</label>
+                <div class="col-sm-4">
+	                <p><input class="form-control" type="text" id="employee" data-bind="text: employee" placeholder="Employee Name. (Optional)"></input></p>
+	            </div>
+			</div>
+	<!-- /ko -->
 		</form>
 
 		<!-- Stacked charts -->
 		<div id="coinstreamCharts">
-			<canvas id="coinstreamChartLine" data-bind="chart: { type: 'line', data: coinstreamData, options: { observeChanges: true, throttle: 500 } }"></canvas>
-			<canvas id="coinstreamChartBar" data-bind="chart: { type: 'bar', data: coinstreamData, options: { observeChanges: true, throttle: 500 } }"></canvas>
+			<canvas id="coinstreamChartLine" data-bind="chart: { type: 'line', data: coinstreamData, options: coinstreamOptions }"></canvas>
+			<canvas id="coinstreamChartBar" data-bind="chart: { type: 'bar', data: coinstreamData, options: coinstreamOptions }"></canvas>
 		</div>
 
         <p>&nbsp;</p>

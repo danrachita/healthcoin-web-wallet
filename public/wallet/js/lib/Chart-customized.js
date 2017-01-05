@@ -3967,8 +3967,15 @@ module.exports = function(Chart) {
 		// Do NOT use configMerge() for the data object because this method merges arrays
 		// and so would change references to labels and datasets, preventing data updates.
 		var data = config.data = config.data || {};
-      data.datasets = data.datasets || [];
-      data.labels = data.labels || [];
+      // SDW - Apply reverse to datasets, too
+      if (config.options.reverse){
+         console.log("DEBUG: datasets = " + JSON.stringify(data.datasets));
+         data.datasets = data.datasets.reverse() || [];
+         console.log("DEBUG: datasets REVERSED = " + JSON.stringify(data.datasets));
+      } else {
+         data.datasets = data.datasets || [];
+      }
+      data.labels = data.labels || []; // SDW - Labels are reversed later
 
 		config.options = helpers.configMerge(
 			Chart.defaults.global,

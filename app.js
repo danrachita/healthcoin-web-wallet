@@ -174,26 +174,6 @@ app.get(chRoot + '/getuseraccount', function(req,res){
     }
 });
 
-// Gets user's biomarkers.
-app.get(chRoot + '/getbiomarkerscores/:id/:startdate/:enddate', function(req,res){
-    var id = atob(decodeURIComponent(req.params.id)) || '*',
-        startdate = atob(decodeURIComponent(req.params.startdate)) || '*',
-        enddate = atob(decodeURIComponent(req.params.enddate)) || '*';
-
-    mdb.getBiomarkerScores(id, startdate, enddate, function(err, data){
-        if (err) {
-            res.status(500).send(JSON.stringify(err));
-        } else {
-            //console.log("DEBUG: data = " + JSON.stringify(data));
-            var response = {
-                error: null,
-                result: data
-            };
-            res.send(JSON.stringify(response));
-        }
-    });
-});
-
 // Saves user profile.
 app.get(chRoot + '/saveuserprofile/:profile', function(req,res){
     var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.user.profile,
@@ -207,6 +187,65 @@ app.get(chRoot + '/saveuserprofile/:profile', function(req,res){
         result: result
     };
     res.send(JSON.stringify(response));
+});
+
+// Gets user's biomarkers.
+app.get(chRoot + '/getbiomarkerscores/:employee/:employer/:startdate/:enddate', function(req,res){
+    var employee = atob(decodeURIComponent(req.params.employee)) || '',
+        employer = atob(decodeURIComponent(req.params.employer)) || '',
+        startdate = atob(decodeURIComponent(req.params.startdate)) || '',
+        enddate = atob(decodeURIComponent(req.params.enddate)) || '';
+
+    var version = coin.settings.version;
+    mdb.getBiomarkerScores(version, employee, employer, startdate, enddate, function(err, data){
+        if (err) {
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            //console.log("DEBUG: data = " + JSON.stringify(data));
+            var response = {
+                error: null,
+                result: data
+            };
+            res.send(JSON.stringify(response));
+        }
+    });
+});
+
+// Based on sendfrom. Note: The wallet is account based. Always use accounts!
+app.post(chRoot + '/sendbiomarker', function(req, res){
+    var fromaccount = req.body.fromaccount || '';
+    var toaddress = req.body.toaddress || '';
+    var amount = parseFloat(req.body.amount) || 0.0;
+    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
+    var minconf = parseInt(req.body.minconf || 1);
+    var comment = req.body.comment || '';
+    var commentto = req.body.commentto || '';
+    var txcomment = atob(req.body.txcomment) || {};
+    var verified = (req.body.verified === 'true') || false;
+    var dataURLArray = JSON.parse(atob(req.body.dataurlarray)) || [];
+    //console.log("DEBUG: req.body = " + JSON.stringify(req.body));
+    if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
+        var credit = amount * 2; // See Biomarkers
+        var version = coin.settings.version;
+        // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
+        var Biomarker = new Biomarkers().buildBiomarker(version, credit, req.user._id, txcomment, verified, dataURLArray);
+        if (Biomarker){
+            txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker.header) + txcomment);
+        } else {
+            txcomment = "text:" + "Error building biomarker.";
+        }
+        if (verified){
+            callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
+        } else {
+            console.log("Info: Biomarker not submitted to blockchain until verified.");
+            res.send(JSON.stringify("Info: Biomarker will be submitted to blockchain when verified."));
+        }
+    } else {
+        if (amount > maxSendAmount)
+            res.send(JSON.stringify("Error: Amount is greater than the maximum of " + maxSendAmount + "."));
+        else
+            res.send(JSON.stringify("Error: Invalid sendbiomarker parameters."));
+    }
 });
 
 
@@ -244,42 +283,6 @@ app.get(chRoot + '/getbalance/:account', function(req, res){
         callCoin('getbalance', res, coinHandler, account);
     else
         res.send(JSON.stringify("Error: Invalid Account."));
-});
-
-// Based on sendfrom. Note: The wallet is account based. Always use accounts!
-app.post(chRoot + '/sendbiomarker', function(req, res){
-    var fromaccount = req.body.fromaccount || '';
-    var toaddress = req.body.toaddress || '';
-    var amount = parseFloat(req.body.amount) || 0.0;
-    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
-    var minconf = parseInt(req.body.minconf || 1);
-    var comment = req.body.comment || '';
-    var commentto = req.body.commentto || '';
-    var txcomment = atob(req.body.txcomment) || {};
-    var verified = (req.body.verified === 'true') || false;
-    var dataURLArray = JSON.parse(atob(req.body.dataurlarray)) || [];
-    //console.log("DEBUG: req.body = " + JSON.stringify(req.body));
-    if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
-        var credit = amount * 2; // See Biomarkers
-        // Add user's biomarker using schema and encode back to hcbm:txcomment before sending.
-        var Biomarker = new Biomarkers().buildBiomarker(credit, req.user._id, txcomment, verified, dataURLArray);
-        if (Biomarker){
-            txcomment = "hcbm:" + btoa(JSON.stringify(Biomarker.header) + txcomment);
-        } else {
-            txcomment = "text:" + "Error building biomarker.";
-        }
-        if (verified){
-            callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
-        } else {
-            console.log("Info: Biomarker not submitted to blockchain until verified.");
-            res.send(JSON.stringify("Info: Biomarker will be submitted to blockchain when verified."));
-        }
-    } else {
-        if (amount > maxSendAmount)
-            res.send(JSON.stringify("Error: Amount is greater than the maximum of " + maxSendAmount + "."));
-        else
-            res.send(JSON.stringify("Error: Invalid sendbiomarker parameters."));
-    }
 });
 
 // Note: The wallet is account based. Always use accounts!

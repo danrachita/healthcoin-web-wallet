@@ -3,7 +3,7 @@ require.config({
         jquery: 'lib/jquery.min', // 2.2.4
         sammy: "lib/sammy",
         moment: "lib/moment.min",
-        chart: "lib/Chart.min",
+        chart: "lib/Chart-customized",
         bootstrap: 'lib/bootstrap/dist/js/bootstrap.min',
         npm: 'lib/npm',
         "bootstrap-editable": 'lib/bootstrap-editable-customized.min',

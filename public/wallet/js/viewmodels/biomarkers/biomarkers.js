@@ -3,16 +3,16 @@ define(['knockout',
     'viewmodels/common/confirmation-dialog',
     'viewmodels/common/wallet-passphrase',
     'viewmodels/common/command',
-    './biomarkers-pulldown',
+    '../common/biomarkers-pulldown',
     'moment',
-    'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, Pulldown, Moment, patterns){
+    'patterns'], function(ko, dialog, ConfirmationDialog, WalletPassphrase, Command, BiomarkersPulldown, Moment, patterns){
     var biomarkersType = function(options){
         var self = this;
         self.wallet = options.parent || {};
 
         self.statusMessage = ko.observable("");
 
-        self.pulldown = new Pulldown(); // Source value arrays for pulldown menues
+        self.biomarkersPulldown = new BiomarkersPulldown(); // Source value arrays for pulldown menues
 
         self.role = ko.observable("");
 

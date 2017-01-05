@@ -5,6 +5,9 @@
 //  Do not modify settings.json.template!
 //
 {
+  // Version
+  "version": "1.0.2",
+
   // Runtime environment: 'development' or 'production'
   "env": "development",
 

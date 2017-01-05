@@ -1,5 +1,5 @@
 define(['knockout'], function(ko){
-    var pulldownType = function(){
+    var biomarkersPulldownType = function(){
 
         this.hcbmEHR_SourceValues = ko.observableArray(["",
             "Columbia South Valley Hospital, Gilroy",
@@ -76,5 +76,5 @@ define(['knockout'], function(ko){
             ]);
 
     };
-    return pulldownType; 
+    return biomarkersPulldownType; 
 });

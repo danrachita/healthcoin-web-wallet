@@ -1,5 +1,5 @@
 define(['knockout'], function(ko){
-    var pulldownType = function(){
+    var profilePulldownType = function(){
 
         this.employerValues =   ko.observableArray(["",
             "American International Group",
@@ -288,5 +288,5 @@ define(['knockout'], function(ko){
             ]);
 
     };
-    return pulldownType; 
+    return profilePulldownType; 
 });

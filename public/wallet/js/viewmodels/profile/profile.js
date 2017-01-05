@@ -1,7 +1,7 @@
 define(['knockout',
     'viewmodels/common/command',
-    './profile-pulldown',
-    'moment'], function(ko,Command,Pulldown,Moment){
+    '../common/profile-pulldown',
+    'moment'], function(ko,Command,ProfilePulldown,Moment){
     var profileType = function(options){
         var self = this;
         self.wallet = options.parent || {};
@@ -9,7 +9,7 @@ define(['knockout',
         self.statusMessage = ko.observable("");
 
         // Source value arrays for pulldown menues
-        self.pulldown = new Pulldown();
+        self.profilePulldown = new ProfilePulldown();
 
         self.node_id = ko.observable("");
         self.account = ko.observable("");
