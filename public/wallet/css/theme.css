@@ -294,11 +294,11 @@ sup {
 }
 #coinstreamChartLine {
     position: absolute;
-    visibility: visible;
+    visibility: hidden;
 }
 #coinstreamChartBar {
     position: absolute;
-    visibility: hidden;
+    visibility: visible;
 }
 
 /*** Overrides ***/

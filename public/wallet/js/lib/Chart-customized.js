@@ -3969,9 +3969,7 @@ module.exports = function(Chart) {
 		var data = config.data = config.data || {};
       // SDW - Apply reverse to datasets, too
       if (config.options.reverse){
-         console.log("DEBUG: datasets = " + JSON.stringify(data.datasets));
          data.datasets = data.datasets.reverse() || [];
-         console.log("DEBUG: datasets REVERSED = " + JSON.stringify(data.datasets));
       } else {
          data.datasets = data.datasets || [];
       }

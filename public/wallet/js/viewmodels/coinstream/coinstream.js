@@ -17,7 +17,7 @@ define(['knockout',
         // Source value arrays for pulldown menues
         self.coinstreamPulldown = new CoinstreamPulldown();
         self.profilePulldown = new ProfilePulldown();
-        self.profilePulldown.employerValues()[0] = 'All';  // Visible to Admin
+        self.profilePulldown.employerValues()[0] = 'All';  // Admin view only
 
         self.role = ko.observable("");
         self.user_id = ko.observable("");
@@ -32,34 +32,29 @@ define(['knockout',
             var startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
             if (startYear <= currYear && startYear >= 1900){
                 self.statusMessage("");
-                self.getBiomarkerScores();
+                // Ignored if before first change to startDate (refresh)
+                if (self.isDirty()){
+                    self.getBiomarkerScores();
+                }
             } else {
                 self.statusMessage("Invalid year...");
             }
-            self.dirtyFlag(true);
         });
         self.monthView = ko.observable(false);
         self.monthView.subscribe(function (){
-            var currYear = Number(Moment(Date.now()).utc().format("YYYY"));
-            var startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
-            if (startYear <= currYear && startYear >= 1900){
-                self.statusMessage("");
+            self.statusMessage("");
+            // Ignored if before first change to startDate (refresh)
+            if (self.isDirty()){
                 self.getBiomarkerScores();
-            } else {
-                self.statusMessage("Invalid year...");
             }
-            self.dirtyFlag(true);
         });
-        self.chartStyle = ko.observable("Line");
-        self.chartStyle.subscribe(function (){
-            self.updateCharts();
-            self.dirtyFlag(true);
-        });
-
-        // Admin
+        // Admin view only
         self.employer.subscribe(function (){
-            self.updateCharts();
-            self.dirtyFlag(true);
+            self.statusMessage("");
+            // Ignored if before first change to startDate (refresh)
+            if (self.isDirty()){
+                self.getBiomarkerScores();
+            }
         });
 
         self.labelsMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -90,7 +85,7 @@ define(['knockout',
                 {
                     label: "Average Coinstream",
                     backgroundColor: "rgba(220,220,220,0.4)",
-                    borderColor: "rgba(220,220,220,1.0)",
+                    borderColor: "rgba(220,220,220,0.8)",
                     pointBackgroundColor: "rgba(220,220,220,1.0)",
                     pointRadius: 4,
                     pointStrokeColor: "#fff",
@@ -106,7 +101,7 @@ define(['knockout',
                     pointRadius: 4,
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
-                    pointHighlightStroke: ko.observable(self.colorApproved),
+                    pointHighlightStroke: "rgba(45,169,171,1.0)",
                     data: ko.observable([])
                 }
             ]
@@ -118,23 +113,22 @@ define(['knockout',
         if (!self.isDirty()){
             self.role(self.wallet.User().profile.role);
             self.user_id(self.wallet.User()._id);
-            if (self.role() === 'Admin'){
-                self.employer('All');
-                self.employee('All');
-            } else {
-                self.employee(self.user_id());
-                self.employer(self.wallet.User().profile.employer);
-            }
             self.first_name(self.wallet.User().profile.first_name);
             self.last_name(self.wallet.User().profile.last_name);
             if (self.coinstreamData.datasets[1].label() === ""){
                 self.coinstreamData.datasets[1].label(self.first_name() + "'s Coinstream");
             }
-            if (self.coinstreamData.datasets[1].data().length === 0){
-                self.getBiomarkerScores();
+            if (self.role() === 'Admin'){
+                self.employee('All');
+                self.employer('All');
+                self.startDate(Moment("1900-01-01").utc().format("YYYY-MM-DD"));
+            } else {
+                self.employee(self.user_id());
+                self.employer(self.wallet.User().profile.employer);
+                self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             }
+            self.getBiomarkerScores();
         }
-        self.updateCharts();
     };
 
     coinstreamType.prototype.Refresh = function(){
@@ -143,31 +137,7 @@ define(['knockout',
     };
 
     coinstreamType.prototype.updateCharts = function(){
-        var self = this;
-        var canvasLine = document.getElementById('coinstreamChartLine');
-        var canvasBar = document.getElementById('coinstreamChartBar');
-        if (canvasLine && canvasBar){
-            switch(self.chartStyle()){
-                case ("Line"):
-                    $('#coinstreamChartLine').css('visibility', 'visible');
-                    $('#coinstreamChartBar').css('visibility', 'hidden');
-                    //canvasLine.style.visibility = 'visible';
-                    //canvasBar.style.visibility = 'hidden';
-                    break;
-                case ("Bar"):
-                    $('#coinstreamChartLine').css('visibility', 'hidden');
-                    $('#coinstreamChartBar').css('visibility', 'visible');
-                    //canvasLine.style.visibility = 'hidden';
-                    //canvasBar.style.visibility = 'visible';
-                    break;
-                default:
-                    $('#coinstreamChartLine').css('visibility', 'visible');
-                    $('#coinstreamChartBar').css('visibility', 'hidden');
-                    //canvasLine.style.visibility = 'visible';
-                    //canvasBar.style.visibility = 'hidden';
-                    break;
-            }
-        }
+        $('#coinstreamChartBar').css('visibility', 'visible');
     };
 
     coinstreamType.prototype.getBiomarkerScores = function(){
@@ -178,9 +148,6 @@ define(['knockout',
         var endDate   = (self.monthView() ?
                         Moment(self.startDate()).utc().format("YYYY-12-31") :
                         Moment(Date.now()).utc().format("YYYY-MM-DD"));
-        var startYear = Number(Moment(startDate).utc().format("YYYY"));
-        var endYear = Number(Moment(endDate).utc().format("YYYY"));
-        var year = 1900;
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
                                             [encodeURIComponent(btoa(employee)), // User or All
                                             encodeURIComponent(btoa(employer)),  // User's employer or All
@@ -190,7 +157,15 @@ define(['knockout',
                                             self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
             .done(function(data){
-                var dataPoints = [], pointColors = [], dp = 0, avg = 0;
+                var startYear = Number(Moment(startDate).utc().format("YYYY"));
+                var endYear = Number(Moment(endDate).utc().format("YYYY"));
+                var dataPoints = [], pointColors = [], year = 0, dp = 0, avg = 0;
+                // Adjust startYear to first datapoint found
+                if (!self.isDirty() && data && data.length){
+                    self.startDate(Moment(data[0].biomarker.Date).utc().format("YYYY-MM-DD"));
+                    startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
+                    console.log("DEBUG: startYear = " + startYear);
+                }
                 // Set labels and avg data points depending on view
                 if (startYear < endYear){
                     // Build Year labels and initialize data points
@@ -223,7 +198,7 @@ define(['knockout',
                     for(var i = 0; i < data.length; i++) {
                         var biomarker = data[i].biomarker;
                         var header = data[i].header;
-                        if (biomarker && header && (header.user_id === self.user_id() || self.role() === 'Admin')){
+                        if (biomarker && header && (header.user_id === employee || self.role() === 'Admin')){
                             // Dates returned oldest to newest.
                             dates.push(biomarker.Date);
                             scores.push(biomarker.Score);
@@ -259,6 +234,7 @@ define(['knockout',
                     self.coinstreamData.datasets[1].data([]);
                     self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
                 }
+                self.dirtyFlag(true);
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());

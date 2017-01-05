@@ -64,19 +64,19 @@ define(['knockout',
         // User changeables subscriptions
         self.hcbmEmployer.subscribe(function (){self.dirtyFlag(true);});
         self.hcbmDate.subscribe(function (){
-            var now = Moment().utc();
+            var bmd = Moment(self.hcbmDate()).utc();
             var dob = Moment(self.dob()).utc();
-            var curDateYY = now.format("YYYY");
-            var curDateMM = now.format("MM");
-            var curDateDD = now.format("DD");
-            var dobDateYY = dob.format("YYYY");
-            var dobDateMM = dob.format("MM");
-            var dobDateDD = dob.format("DD");
-            var age = curDateYY - dobDateYY;
-            if (curDateMM < dobDateMM){
+            var bmdYY = bmd.format("YYYY");
+            var bmdMM = bmd.format("MM");
+            var bmdDD = bmd.format("DD");
+            var dobYY = dob.format("YYYY");
+            var dobMM = dob.format("MM");
+            var dobDD = dob.format("DD");
+            var age = bmdYY - dobYY;
+            if (bmdMM < dobMM){
                 age--;
             } else {
-                if (curDateMM === dobDateMM && curDateDD < dobDateDD){
+                if (bmdMM === dobMM && bmdDD < dobDD){
                     age--; // Almost birthday time!
                 }
             }
@@ -133,7 +133,7 @@ define(['knockout',
                             self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
                             self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130 &&
                             self.hcbmEmployer() !== "" &&
-                            self.hcbmAge() >= 18 &&
+                            self.hcbmAge() > 0 &&
                             self.hcbmWeight() >= 90 &&
                             self.hcbmWaist() >= 20;
 
@@ -156,9 +156,9 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("Please limit your comment to 500 characters.");
             }
-            if (!isAfter){
+            if (!isAfter || self.hcbmAge() < 1){
                 hcbmValid = false;
-                self.statusMessage("Please enter the date the biomarker was taken.");
+                self.statusMessage("Please enter a valid date for when the biomarker was taken.");
             }
             // Last
             if (!self.profileComplete()){
