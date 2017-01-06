@@ -60,13 +60,12 @@ define(['knockout',
         self.labelsMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         self.labelsYear = [];
 
-        self.dataAvg = [56.52, 55.33, 53.7, 56.07, 59.44, 60.78, 61.44, 64.07, 63.26, 61.63, 58.33, 58.13];
+        self.coinstreamAvg = [56.52, 55.33, 53.7, 56.07, 59.44, 60.78, 61.44, 64.07, 63.26, 61.63, 58.33, 58.13];
 
-        self.colorApproved = "rgba(151,187,205,1.0)";
-        self.colorUnapproved = "rgba(251,199,30,1.0)";
+        self.colorUnapproved = "rgba(251,199,30,0.6)";
+        self.colorApproved = "rgba(45,169,171,0.6)";
 
         self.coinstreamOptions = {
-				reverse: true,
 				scales: {
                     yAxes: [{
 					    ticks: {
@@ -86,22 +85,14 @@ define(['knockout',
                     label: "Average Coinstream",
                     backgroundColor: "rgba(220,220,220,0.4)",
                     borderColor: "rgba(220,220,220,0.8)",
-                    pointBackgroundColor: "rgba(220,220,220,1.0)",
-                    pointRadius: 4,
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1.0)",
+                    borderWidth: 1,
                     data: ko.observable([])
                 },
                 {
                     label: ko.observable(""),
-                    backgroundColor: "rgba(45,169,171,0.4)",
+                    backgroundColor: ko.observable([]),
                     borderColor: "rgba(45,169,171,0.8)",
-                    pointBackgroundColor: ko.observable([]),
-                    pointRadius: 4,
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(45,169,171,1.0)",
+                    borderWidth: 1,
                     data: ko.observable([])
                 }
             ]
@@ -140,6 +131,18 @@ define(['knockout',
         $('#coinstreamChartBar').css('visibility', 'visible');
     };
 
+    coinstreamType.prototype.coinsEarned = function(dates, scores, dp){
+        var improvement = (scores[dp] > scores[dp - 1] ? scores[dp] - scores[dp - 1] : 0);
+        var duration = Moment(dates[dp]).diff(Moment(dates[dp - 1]),'days') / 365;
+        var improvementAward = improvement * duration;
+        var stasisAward = (scores[dp] + scores[dp - 1]) / 2;
+        var stasisDurationAward = stasisAward * improvementAward;
+
+        var coins = stasisAward + stasisDurationAward;
+
+        return coins;
+    };
+
     coinstreamType.prototype.getBiomarkerScores = function(){
         var self = this;
         var employer  = (self.employer() === 'All' ? '.*' : self.employer());
@@ -159,12 +162,11 @@ define(['knockout',
             .done(function(data){
                 var startYear = Number(Moment(startDate).utc().format("YYYY"));
                 var endYear = Number(Moment(endDate).utc().format("YYYY"));
-                var dataPoints = [], pointColors = [], year = 0, dp = 0, avg = 0;
+                var dataPoints = [], backgroundColors = [], year = 0, dp = 0, avg = 0;
                 // Adjust startYear to first datapoint found
                 if (!self.isDirty() && data && data.length){
                     self.startDate(Moment(data[0].biomarker.Date).utc().format("YYYY-MM-DD"));
                     startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
-                    console.log("DEBUG: startYear = " + startYear);
                 }
                 // Set labels and avg data points depending on view
                 if (startYear < endYear){
@@ -173,21 +175,24 @@ define(['knockout',
                     for (year = startYear; year <= endYear; year++){
                         self.labelsYear.push(year);
                         dataPoints.push(0);
-                        pointColors.push(self.colorUnapproved);
+                        backgroundColors.push(self.colorUnapproved);
                     }
                     self.coinstreamData.labels(self.labelsYear);
-                    // Load the average data for as many labels as we have
+                    // Load the average scores for as many labels as we have
                     self.coinstreamData.datasets[0].data([]);
-                    var avglen = self.dataAvg.length;
+                    var avglen = self.coinstreamAvg.length;
                     for (avg = 0; avg < self.labelsYear.length; avg++){
                         var mod = Math.floor(avg / avglen);
                         // This will repeat averages for as long at the labels length
-                        self.coinstreamData.datasets[0].data().push(self.dataAvg[avg - (avglen * mod)]);
+                        self.coinstreamData.datasets[0].data().push(self.coinstreamAvg[avg - (avglen * mod)]);
                     }
                 } else {
                     // Month view
                     self.coinstreamData.labels(self.labelsMonth);
-                    self.coinstreamData.datasets[0].data(self.dataAvg);
+                    self.coinstreamData.datasets[0].data(self.coinstreamAvg);
+                    for (var mo = 0; mo < 12; mo++){
+                        backgroundColors.push(self.colorUnapproved);
+                    }
                 }
                 if (data && data.length){
                     // Push the data to parallel dates[], scores[], approve[] arrays
@@ -210,11 +215,16 @@ define(['knockout',
                         for (dp = 0; dp < dates.length; dp++){
                             year = Number(Moment(dates[dp]).utc().format("YYYY"));
                             var idx = self.labelsYear.indexOf(year);
-                            if (idx >= 0){
-                                dataPoints[idx] = scores[dp]; // Always uses the latest score if duplicate years
-                                if (approved[idx]){
-                                    pointColors[idx] = self.colorApproved;
-                                }
+                            var coins = 0;
+                            // Convert scores to coins.
+                            // Always uses the latest score if duplicate years
+                            // Must have minimum 2 datapoints
+                            if (idx > 0){
+                                coins = self.coinsEarned(dates, scores, dp);
+                            }
+                            dataPoints[idx] = coins;
+                            if (approved[dp]){
+                                backgroundColors[idx] = self.colorApproved;
                             }
                         }
                     } else {
@@ -223,11 +233,14 @@ define(['knockout',
                         for (dp = 0; dp < dates.length; dp++){
                             var mm = Number(Moment(dates[dp]).utc().format("MM"));
                             dataPoints[mm - 1] = scores[dp]; // Always uses the latest score if duplicate months
+                            if (approved[dp]){
+                                backgroundColors[mm - 1] = self.colorApproved;
+                            }
                         }
                     }
                     // Load the new user data points
                     self.coinstreamData.datasets[1].data(dataPoints);
-                    self.coinstreamData.datasets[1].pointBackgroundColor(pointColors);
+                    self.coinstreamData.datasets[1].backgroundColor(backgroundColors);
                     self.statusMessage("You've got Biomarkers!");
                 } else {
                     // Reset user data
