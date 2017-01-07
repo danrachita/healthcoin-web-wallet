@@ -14,7 +14,11 @@ define(['knockout',
 
         self.biomarkersPulldown = new BiomarkersPulldown(); // Source value arrays for pulldown menues
 
+        self.profileComplete = ko.observable(false);
         self.role = ko.observable("");
+        self.verified = ko.observable(false);
+        self.terms = ko.observable(false);
+
 
         self.fileData = ko.observable({
             file: ko.observable(), dataURL: ko.observable(),
@@ -30,10 +34,6 @@ define(['knockout',
             }                            
         };
 
-        self.verified = ko.observable(false);
-        self.terms = ko.observable(false);
-
-        self.profileComplete = ko.observable(false);
         self.hcbmDate = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.hcbmEHR_Source = ko.observable("");
         self.hcbmHA1c = ko.observable(0.00);
@@ -160,12 +160,6 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("Please enter a valid date for when the biomarker was taken.");
             }
-            // Last
-            if (!self.profileComplete()){
-                hcbmValid = false;
-                self.statusMessage("Please complete your profile before continuing.");
-            }
-
             return (hcbmValid && addressValid && amountValid);
         });
 
@@ -297,25 +291,25 @@ define(['knockout',
         self.amount(self.wallet.settings().minTxFee);
         self.credit(self.wallet.settings().minTxFee * 2);
 
-        if (!self.isDirty()){
-            self.role(self.wallet.User().profile.role);
-            self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
-            self.hcbmEmployer(self.wallet.User().profile.employer);
-            self.hcbmAge(self.wallet.User().profile.age);
-            self.hcbmWeight(self.wallet.User().profile.weight);
-            self.hcbmWaist(self.wallet.User().profile.waist);
-            self.hcbmGender(self.wallet.User().profile.gender);
-            self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
-            self.hcbmCountry(self.wallet.User().profile.country);
-            self.recipientAddress(self.wallet.address()); // Send to self
-            self.dirtyFlag(false);
-        }
-        if (!self.wallet.profileComplete()){
-            self.profileComplete(false);
+        if (!self.profileComplete() && !self.wallet.profileComplete()){
+            self.statusMessage("Please complete your profile before continuing.");
         } else {
             if (!self.profileComplete()){
                 self.profileComplete(true);
                 self.statusMessage("");
+            }
+            if (!self.isDirty()){
+                self.role(self.wallet.User().profile.role);
+                self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+                self.hcbmEmployer(self.wallet.User().profile.employer);
+                self.hcbmAge(self.wallet.User().profile.age);
+                self.hcbmWeight(self.wallet.User().profile.weight);
+                self.hcbmWaist(self.wallet.User().profile.waist);
+                self.hcbmGender(self.wallet.User().profile.gender);
+                self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
+                self.hcbmCountry(self.wallet.User().profile.country);
+                self.recipientAddress(self.wallet.address()); // Send to self
+                self.dirtyFlag(false);
             }
         }
     };

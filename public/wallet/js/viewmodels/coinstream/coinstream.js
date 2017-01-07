@@ -17,13 +17,13 @@ define(['knockout',
         // Source value arrays for pulldown menues
         self.coinstreamPulldown = new CoinstreamPulldown();
         self.profilePulldown = new ProfilePulldown();
-        self.profilePulldown.employerValues()[0] = 'All';  // Admin view only
 
+        self.profileComplete = ko.observable(false);
         self.role = ko.observable("");
         self.user_id = ko.observable("");
         self.employer = ko.observable("");
         self.employee = ko.observable("");
-        self.first_name = ko.observable("");
+        self.first_name = ko.observable("Guest");
         self.last_name = ko.observable("");
 
         self.startDate = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
@@ -32,8 +32,7 @@ define(['knockout',
             var startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
             if (startYear <= currYear && startYear >= 1900){
                 self.statusMessage("");
-                // Ignored if before first change to startDate (refresh)
-                if (self.isDirty()){
+                if (self.employer() !== "" && self.employee() !== "" && self.isDirty()){
                     self.getBiomarkerScores();
                 }
             } else {
@@ -43,17 +42,25 @@ define(['knockout',
         self.monthView = ko.observable(false);
         self.monthView.subscribe(function (){
             self.statusMessage("");
-            // Ignored if before first change to startDate (refresh)
-            if (self.isDirty()){
+            if (self.employer() !== "" && self.employee() !== "" && self.isDirty()){
+                self.getBiomarkerScores();
+            }
+        });
+        // Admin/Employer view only
+        self.employee.subscribe(function (){
+            self.statusMessage("");
+            if (self.employer() !== "" && self.isDirty()){
                 self.getBiomarkerScores();
             }
         });
         // Admin view only
         self.employer.subscribe(function (){
             self.statusMessage("");
-            // Ignored if before first change to startDate (refresh)
             if (self.isDirty()){
-                self.getBiomarkerScores();
+                self.dirtyFlag(false); // Temp reset
+                self.getEmployees();
+                self.employee("");
+                self.dirtyFlag(true);
             }
         });
 
@@ -82,7 +89,7 @@ define(['knockout',
             labels: ko.observable(self.labelsMonth),
             datasets: [
                 {
-                    // Biomarkers
+                    // Biomarker Healthscores
                     label: ko.observable(""),
                     backgroundColor: ko.observable([]),
                     borderColor: "rgba(97,75,175,0.8)",
@@ -103,31 +110,43 @@ define(['knockout',
 
     coinstreamType.prototype.refresh = function(){
         var self = this;
-        if (!self.isDirty()){
-            self.role(self.wallet.User().profile.role);
-            self.user_id(self.wallet.User()._id);
-            self.first_name(self.wallet.User().profile.first_name);
-            self.last_name(self.wallet.User().profile.last_name);
-            if (self.coinstreamData.datasets[0].label() === ""){
-                self.coinstreamData.datasets[0].label(self.first_name() + "'s Biomarkers");
-                self.coinstreamData.datasets[1].label(self.first_name() + "'s Coinstream");
+        if (!self.profileComplete() && !self.wallet.profileComplete()){
+            self.statusMessage("Please complete your profile before continuing.");
+        } else {
+            if (!self.profileComplete()){
+                self.profileComplete(true);
+                self.statusMessage("");
             }
-            if (self.role() === 'Admin'){
-                self.employee('All');
-                self.employer('All');
-                self.startDate(Moment("1900-01-01").utc().format("YYYY-MM-DD"));
-            } else {
-                self.employee(self.user_id());
-                self.employer(self.wallet.User().profile.employer);
-                self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+            if (!self.isDirty()){
+                self.role(self.wallet.User().profile.role);
+                self.user_id(self.wallet.User()._id);
+                self.first_name(self.wallet.User().profile.first_name);
+                self.last_name(self.wallet.User().profile.last_name);
+                if (self.coinstreamData.datasets[0].label() === ""){
+                    self.coinstreamData.datasets[0].label("Health Score");
+                    self.coinstreamData.datasets[1].label("Coins Earned");
+                }
+                if (self.role() === 'Admin'){
+                    self.employee('All');
+                    self.employer('All');
+                    self.profilePulldown.employerValues()[0] = 'All';
+                } else {
+                    if (self.role() === 'Employer'){
+                        self.employee('All');
+                        self.employer(self.wallet.User().profile.employer);
+                        self.profilePulldown.employerValues([self.employer()]);
+                        self.getEmployees();
+                    } else {
+                        self.employee(self.user_id());
+                        self.employer(self.wallet.User().profile.employer);
+                        self.profilePulldown.employerValues([self.employer()]);
+                        self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+                        self.getBiomarkerScores(); // Only auto-get scores if User
+                    }
+                }
+                self.dirtyFlag(true);
             }
-            self.getBiomarkerScores();
         }
-    };
-
-    coinstreamType.prototype.Refresh = function(){
-        var self = this;
-        self.updateCharts();
     };
 
     coinstreamType.prototype.updateCharts = function(){
@@ -144,7 +163,6 @@ define(['knockout',
         var stasisAward = stasis * duration;
 
         var coins = improvementAward + stasisAward;
-        //console.log("DEBUG: improvement=" + improvement + " duration=" + duration + " improvementAward=" + improvementAward + " stasis=" + stasis + " stasisAward=" + stasisAward + " coins=" + coins);
         return (coins <= 100 ? self.wallet.formatNumber(coins, 4, '.', ',') : 100.0000);
     };
 
@@ -167,7 +185,7 @@ define(['knockout',
             .done(function(data){
                 var startYear = Number(Moment(startDate).utc().format("YYYY"));
                 var endYear = Number(Moment(endDate).utc().format("YYYY"));
-                var biomarkerPoints = [], coinPoints = [], backgroundCoins = [], backgroundBiomarkers = [], year = 0, dp = 0;
+                var scorePoints = [], coinPoints = [], backgroundCoins = [], backgroundScores = [], year = 0, dp = 0;
                 // Adjust startYear to first datapoint found
                 if (!self.isDirty() && data && data.length){
                     self.startDate(Moment(data[0].biomarker.Date).utc().format("YYYY-MM-DD"));
@@ -179,8 +197,8 @@ define(['knockout',
                     self.labelsYear = [];
                     for (year = startYear; year <= endYear; year++){
                         self.labelsYear.push(year);
-                        biomarkerPoints.push(0);
-                        backgroundBiomarkers.push(self.colorApproved); // TODO: Change default bg to colorUnapproved
+                        scorePoints.push(0);
+                        backgroundScores.push(self.colorApproved); // TODO: Change default bg to colorUnapproved
                         coinPoints.push(0);
                         backgroundCoins.push(self.colorCoins); // TODO: Change default bg to colorNoCoins
                     }
@@ -188,8 +206,8 @@ define(['knockout',
                 } else {
                     // Month view
                     for (var mo = 0; mo < 12; mo++){
-                        biomarkerPoints.push(0);
-                        backgroundBiomarkers.push(self.colorApproved); // TODO: Change default bg to colorUnapproved
+                        scorePoints.push(0);
+                        backgroundScores.push(self.colorApproved); // TODO: Change default bg to colorUnapproved
                         coinPoints.push(0);
                         backgroundCoins.push(self.colorCoins); // TODO: Change default bg to colorNoCoins
                     }
@@ -217,10 +235,10 @@ define(['knockout',
                             var idx = self.labelsYear.indexOf(year);
                             // Always uses the best score if duplicate years
                             if (idx >= 0){
-                                if (scores[dp] > biomarkerPoints[idx]){
-                                    biomarkerPoints[idx] = scores[dp];
+                                if (scores[dp] > scorePoints[idx]){
+                                    scorePoints[idx] = scores[dp];
                                     if (approved[dp]){ // TODO: Later
-                                        backgroundBiomarkers[idx] = self.colorApproved;
+                                        backgroundScores[idx] = self.colorApproved;
                                     }
                                 }
                             }
@@ -241,10 +259,10 @@ define(['knockout',
                         for (dp = 0; dp < dates.length; dp++){
                             var mm = Number(Moment(dates[dp]).utc().format("MM"));
                             // Always uses the best score if duplicate months
-                            if (scores[dp] > biomarkerPoints[mm - 1]){
-                                biomarkerPoints[mm - 1] = scores[dp];
+                            if (scores[dp] > scorePoints[mm - 1]){
+                                scorePoints[mm - 1] = scores[dp];
                                 if (approved[dp]){ // TODO: Later
-                                    backgroundBiomarkers[mm - 1] = self.colorApproved;
+                                    backgroundScores[mm - 1] = self.colorApproved;
                                 }
                             }
                             // Convert scores to coins. Must have minimum 2 datapoints
@@ -261,22 +279,22 @@ define(['knockout',
                         }
                     }
                     // Load the user data/coin points
-                    self.coinstreamData.datasets[0].data(biomarkerPoints);
-                    self.coinstreamData.datasets[0].backgroundColor(backgroundBiomarkers);
+                    self.coinstreamData.datasets[0].data(scorePoints);
+                    self.coinstreamData.datasets[0].backgroundColor(backgroundScores);
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
-                    self.statusMessage("You've got Biomarkers!");
+                    self.statusMessage("You've earned healthcoins!");
                 } else {
                     // Reset user data
+                    self.coinstreamData.labels(self.labelsMonth);
                     self.coinstreamData.datasets[0].data([]);
                     self.coinstreamData.datasets[1].data([]);
-                    self.statusMessage("No Biomarkers were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
+                    self.statusMessage("No Healthscores were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
                 }
-                self.dirtyFlag(true);
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());
-                self.statusMessage("Biomarker Retrieval Error!");
+                self.statusMessage("Healthscore Retrieval Error!");
             });
     };
 
