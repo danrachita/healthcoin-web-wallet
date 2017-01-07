@@ -194,11 +194,12 @@ define(['knockout',
                                             self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
             .done(function(data){
+                self.dirtyFlag(false);
                 var startYear = Number(Moment(startDate).utc().format("YYYY"));
                 var endYear = Number(Moment(endDate).utc().format("YYYY"));
                 var scorePoints = [], coinPoints = [], backgroundCoins = [], backgroundScores = [], year = 0, dp = 0;
                 // Adjust startYear to first datapoint found
-                if (!self.isDirty() && data && data.length){
+                if (data && data.length){
                     self.startDate(Moment(data[0].biomarker.Date).utc().format("YYYY-MM-DD"));
                     startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
                 }
@@ -323,6 +324,7 @@ define(['knockout',
                                             self.wallet.settings().env);
         $.when(getEmployeesCommand.execute())
             .done(function(data){
+                self.dirtyFlag(false);
                 // Re-init to blanks
                 var employeeValues = [{id: "", dob: "", name: ""}];
                 // Build the dropdown
