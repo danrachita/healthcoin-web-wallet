@@ -32,7 +32,7 @@ define(['knockout',
             var startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
             if (startYear <= currYear && startYear >= 1900){
                 self.statusMessage("");
-                if (self.employer() !== "" && self.employee() !== "" && self.isDirty()){
+                if (self.isDirty() && self.employer() !== "" && self.employee() !== ""){
                     self.getBiomarkerScores();
                 }
             } else {
@@ -42,25 +42,29 @@ define(['knockout',
         self.monthView = ko.observable(false);
         self.monthView.subscribe(function (){
             self.statusMessage("");
-            if (self.employer() !== "" && self.employee() !== "" && self.isDirty()){
+            if (self.isDirty() && self.employer() !== "" && self.employee() !== ""){
                 self.getBiomarkerScores();
             }
         });
         // Admin/Employer view only
-        self.employee.subscribe(function (){
+        self.employee.subscribe(function (employee){
+            console.log("DEBUG: employee=" + employee + " isDirty=" + self.isDirty());
             self.statusMessage("");
-            if (self.employer() !== "" && self.isDirty()){
+            if (self.isDirty() && self.employer() !== "" && employee && employee !== ""){
+                var idx = self.profilePulldown.employeeValues().map(function(e){ return e.id; }).indexOf(employee);
+                var dob = self.profilePulldown.employeeValues()[idx].dob;
+                self.dirtyFlag(false); // Temp reset
+                self.startDate(Moment(dob).utc().format("YYYY-MM-DD"));
                 self.getBiomarkerScores();
             }
         });
         // Admin view only
         self.employer.subscribe(function (employer){
+            console.log("DEBUG: employer=" + employer + " isDirty=" + self.isDirty());
             self.statusMessage("");
-            if (self.isDirty()){
+            if (self.isDirty() && employer && employer !== ""){
                 self.dirtyFlag(false); // Temp reset
                 self.getEmployees(employer);
-                self.employee("");
-                self.dirtyFlag(true);
             }
         });
 
@@ -126,25 +130,32 @@ define(['knockout',
                     self.coinstreamData.datasets[0].label("Health Score");
                     self.coinstreamData.datasets[1].label("Coins Earned");
                 }
+                // Init to self
+                self.employee(self.user_id());
+                self.employer(self.wallet.User().profile.employer);
+                self.profilePulldown.employeeValues([{id: "", dob: "", name: ""}]);
+                self.profilePulldown.employeeValues().push({
+                    id: self.employee(),
+                    dob: self.wallet.User().profile.dob,
+                    name: self.last_name() + ", " + self.first_name()
+                    });
                 if (self.role() === 'Admin'){
-                    self.employee('All');
-                    self.employer('All');
-                    self.profilePulldown.employerValues()[0] = 'All'; // All options available
+                    // Set empty slot to Admin's employer (MASTER_ACCOUNT's may not be in list)
+                    self.profilePulldown.employerValues()[0] = self.employer();
                 } else {
                     if (self.role() === 'Employer'){
-                        self.employee('All');
-                        self.employer(self.wallet.User().profile.employer);
-                        self.profilePulldown.employerValues([self.employer()]); // One option available
+                        // Only one option available to Employer
+                        self.profilePulldown.employerValues([self.employer()]);
+                        // Get the list of employees
                         self.getEmployees(self.employer());
                     } else {
-                        self.employee(self.user_id());
-                        self.employer(self.wallet.User().profile.employer);
+                        // Only one option available to User (pulldown is invisible tho)
                         self.profilePulldown.employerValues([self.employer()]);
-                        self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
-                        self.getBiomarkerScores(); // Only auto-get scores if User
                     }
                 }
-                self.dirtyFlag(true);
+                // Init chart to whoever is logged in
+                self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+                self.getBiomarkerScores();
             }
         }
     };
@@ -168,15 +179,15 @@ define(['knockout',
 
     coinstreamType.prototype.getBiomarkerScores = function(){
         var self = this;
-        var employer  = (self.employer() === 'All' ? '.*' : self.employer());
-        var employee  = (self.employee() === 'All' ? '.*' : self.employee());
+        var employer  = self.employer();
+        var employee  = self.employee();
         var startDate = Moment(self.startDate()).utc().format("YYYY-01-01");
         var endDate   = (self.monthView() ?
                         Moment(self.startDate()).utc().format("YYYY-12-31") :
                         Moment(Date.now()).utc().format("YYYY-MM-DD"));
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
-                                            [encodeURIComponent(btoa(employee)), // User or All
-                                            encodeURIComponent(btoa(employer)),  // User's employer or All
+                                            [encodeURIComponent(btoa(employee)),
+                                            encodeURIComponent(btoa(employer)),
                                             encodeURIComponent(btoa(startDate)),
                                             encodeURIComponent(btoa(endDate))],
                                             self.wallet.settings().chRoot,
@@ -278,7 +289,7 @@ define(['knockout',
                             }
                         }
                     }
-                    // Load the user data/coin points
+                    // Load the user's scores/coins
                     self.coinstreamData.datasets[0].data(scorePoints);
                     self.coinstreamData.datasets[0].backgroundColor(backgroundScores);
                     self.coinstreamData.datasets[1].data(coinPoints);
@@ -291,6 +302,8 @@ define(['knockout',
                     self.coinstreamData.datasets[1].data([]);
                     self.statusMessage("No Health Scores were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
                 }
+                // Set dirty after return from command
+                self.dirtyFlag(true);
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());
@@ -306,16 +319,25 @@ define(['knockout',
                                             self.wallet.settings().env);
         $.when(getEmployeesCommand.execute())
             .done(function(data){
+                // Re-init to blanks
+                var employeeValues = [{id: "", dob: "", name: ""}];
                 // Build the dropdown
                 if (data && data.length){
                     //console.log("DEBUG: employees = " + JSON.stringify(data));
-                    var eids = [], names = [];
                     for(var i = 0; i < data.length; i++) {
-                        eids.push(data[i]._id);
-                        names.push(data[i].profile.last_name + ", " + data[i].profile.first_name);
+                        employeeValues.push({
+                            id: data[i]._id,
+                            dob: data[i].profile.dob,
+                            name: data[i].profile.last_name + ", " + data[i].profile.first_name
+                            });
                     }
-                    self.profilePulldown.employeeValues(names);
+                    self.profilePulldown.employeeValues(employeeValues);
+                    console.log("DEBUG: employeeValues = " + JSON.stringify(self.profilePulldown.employeeValues()));
+                } else {
+                    self.statusMessage("No Employees were found.");
                 }
+                // Set dirty after return from command
+                self.dirtyFlag(true);
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());

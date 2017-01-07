@@ -20,11 +20,11 @@
             <div class="form-group">
                 <label class="control-label col-sm-2" for="employer">Employer</label>
                 <div class="col-sm-4">
-                    <p><select class="form-control" data-type="select" id="employer" data-bind="options: profilePulldown.employerValues, value: employer" data-title="Employer / Sponsor"></select></p>
+                    <p><select class="form-control" data-type="select" id="employer" data-bind="options: profilePulldown.employerValues, value: employer"></select></p>
                 </div>
                 <label class="control-label col-sm-2" for="employee">Employee</label>
                 <div class="col-sm-4">
-                    <p><select class="form-control" data-type="select" id="employee" data-bind="options: profilePulldown.employeeValues, value: employer" data-title="Employee"></select></p>
+	                <p><select class="form-control" data-type="select" id="employee" data-bind="options: profilePulldown.employeeValues, optionsText: 'name', optionsValue: 'id', value: employee"></select></p>
                 </div>
 			</div>
 	<!-- /ko -->
