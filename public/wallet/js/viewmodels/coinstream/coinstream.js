@@ -23,7 +23,7 @@ define(['knockout',
         self.user_id = ko.observable("");
         self.employer = ko.observable("");
         self.employee = ko.observable("");
-        self.first_name = ko.observable("Guest");
+        self.first_name = ko.observable("");
         self.last_name = ko.observable("");
 
         self.startDate = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
@@ -54,11 +54,11 @@ define(['knockout',
             }
         });
         // Admin view only
-        self.employer.subscribe(function (){
+        self.employer.subscribe(function (employer){
             self.statusMessage("");
             if (self.isDirty()){
                 self.dirtyFlag(false); // Temp reset
-                self.getEmployees();
+                self.getEmployees(employer);
                 self.employee("");
                 self.dirtyFlag(true);
             }
@@ -89,7 +89,7 @@ define(['knockout',
             labels: ko.observable(self.labelsMonth),
             datasets: [
                 {
-                    // Biomarker Healthscores
+                    // Biomarker Health Scores
                     label: ko.observable(""),
                     backgroundColor: ko.observable([]),
                     borderColor: "rgba(97,75,175,0.8)",
@@ -129,13 +129,13 @@ define(['knockout',
                 if (self.role() === 'Admin'){
                     self.employee('All');
                     self.employer('All');
-                    self.profilePulldown.employerValues()[0] = 'All';
+                    self.profilePulldown.employerValues()[0] = 'All'; // All options available
                 } else {
                     if (self.role() === 'Employer'){
                         self.employee('All');
                         self.employer(self.wallet.User().profile.employer);
-                        self.profilePulldown.employerValues([self.employer()]);
-                        self.getEmployees();
+                        self.profilePulldown.employerValues([self.employer()]); // One option available
+                        self.getEmployees(self.employer());
                     } else {
                         self.employee(self.user_id());
                         self.employer(self.wallet.User().profile.employer);
@@ -289,12 +289,37 @@ define(['knockout',
                     self.coinstreamData.labels(self.labelsMonth);
                     self.coinstreamData.datasets[0].data([]);
                     self.coinstreamData.datasets[1].data([]);
-                    self.statusMessage("No Healthscores were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
+                    self.statusMessage("No Health Scores were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
                 }
             })
             .fail(function(error){
                 console.log("Error:" + error.toString());
-                self.statusMessage("Healthscore Retrieval Error!");
+                self.statusMessage("Health Score Retrieval Error!");
+            });
+    };
+
+    coinstreamType.prototype.getEmployees = function(employer){
+        var self = this;
+        var getEmployeesCommand = new Command('getemployees',
+                                            [encodeURIComponent(btoa(employer))],
+                                            self.wallet.settings().chRoot,
+                                            self.wallet.settings().env);
+        $.when(getEmployeesCommand.execute())
+            .done(function(data){
+                // Build the dropdown
+                if (data && data.length){
+                    //console.log("DEBUG: employees = " + JSON.stringify(data));
+                    var eids = [], names = [];
+                    for(var i = 0; i < data.length; i++) {
+                        eids.push(data[i]._id);
+                        names.push(data[i].profile.last_name + ", " + data[i].profile.first_name);
+                    }
+                    self.profilePulldown.employeeValues(names);
+                }
+            })
+            .fail(function(error){
+                console.log("Error:" + error.toString());
+                self.statusMessage("Employees Retrieval Error!");
             });
     };
 

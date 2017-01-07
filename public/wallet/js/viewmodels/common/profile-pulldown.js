@@ -24,6 +24,8 @@ define(['knockout'], function(ko){
             "Other"
             ]);
 
+        this.employeeValues =   ko.observableArray([""]);
+
         this.genderValues = ko.observableArray(["",
             "Female",
             "Male"

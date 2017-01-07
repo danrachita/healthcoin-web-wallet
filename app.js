@@ -189,6 +189,23 @@ app.get(chRoot + '/saveuserprofile/:profile', function(req,res){
     res.send(JSON.stringify(response));
 });
 
+// Gets Employer's Employees.
+app.get(chRoot + '/getemployees/:employer', function(req,res){
+    var employer = atob(decodeURIComponent(req.params.employer)) || '';
+    mdb.getEmployees(employer, function(err, data){
+        if (err) {
+            res.status(500).send(JSON.stringify(err));
+        } else {
+            //console.log("DEBUG: data = " + JSON.stringify(data));
+            var response = {
+                error: null,
+                result: data
+            };
+            res.send(JSON.stringify(response));
+        }
+    });
+});
+
 // Gets user's biomarkers.
 app.get(chRoot + '/getbiomarkerscores/:employee/:employer/:startdate/:enddate', function(req,res){
     var employee = atob(decodeURIComponent(req.params.employee)) || '',
