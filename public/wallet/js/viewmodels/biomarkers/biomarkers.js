@@ -148,7 +148,7 @@ define(['knockout',
             if (self.role() === "Admin" && !self.verified()){
                 self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
             }
-            if (self.role() === "User" && !self.terms()){
+            if ((self.role() === "User" || self.role() === "Employer") && !self.terms()){
                 hcbmValid = false;
                 self.statusMessage("Please agree to the Terms & Conditions to continue.");
             }
