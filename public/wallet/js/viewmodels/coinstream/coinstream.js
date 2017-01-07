@@ -294,7 +294,11 @@ define(['knockout',
                     self.coinstreamData.datasets[0].backgroundColor(backgroundScores);
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
-                    self.statusMessage("You've earned healthcoins!");
+                    if (data.length > 1){
+                        self.statusMessage("You've earned healthcoins!");
+                    } else {
+                        self.statusMessage("You're on the way to earning healthcoins!");
+                    }
                 } else {
                     // Reset user data
                     self.coinstreamData.labels(self.labelsMonth);
