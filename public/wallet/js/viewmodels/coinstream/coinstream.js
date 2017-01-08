@@ -227,7 +227,7 @@ define(['knockout',
                 // Build the datapoints
                 if (data && data.length){
                     // Push the data to parallel dates[], scores[], approve[] arrays
-                    var dates = [], scores = [], approved = [], coins = 0;
+                    var dates = [], scores = [], approved = [], coins = 0, coinsTotal = 0;
                     for(var i = 0; i < data.length; i++) {
                         var biomarker = data[i].biomarker;
                         var header = data[i].header;
@@ -258,6 +258,7 @@ define(['knockout',
                                 coins = self.coinsEarned(dates, scores, dp);
                                 if (coins > coinPoints[idx]){
                                     coinPoints[idx] = coins;
+                                    coinsTotal += Number(coins);
                                     if (approved[dp]){ // TODO: Later
                                         backgroundCoins[idx] = self.colorCoins;
                                     }
@@ -281,6 +282,7 @@ define(['knockout',
                                 coins = self.coinsEarned(dates, scores, dp);
                                 if (coins > coinPoints[mm - 1]){
                                     coinPoints[mm - 1] = coins;
+                                    coinsTotal += Number(coins);
                                     if (approved[dp]){ // TODO: Later
                                         backgroundCoins[mm - 1] = self.colorCoins;
                                     }
@@ -294,7 +296,7 @@ define(['knockout',
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
                     if (data.length > 1){
-                        self.statusMessage("You've earned healthcoins!");
+                        self.statusMessage("You've earned " + self.wallet.formatNumber(coinsTotal, 4, '.', ',') + " healthcoins!");
                     } else {
                         self.statusMessage("You're on the way to earning healthcoins!");
                     }
