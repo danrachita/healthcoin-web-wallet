@@ -73,8 +73,6 @@ define(['knockout',
                              self.User().profile.email && self.User().profile.email !== "" &&
                              self.User().profile.age && self.User().profile.age > 0 &&
                              self.User().profile.dob && self.User().profile.dob !== "" &&
-                             self.User().profile.weight && self.User().profile.weight > 0 &&
-                             self.User().profile.waist && self.User().profile.waist > 0 &&
                              self.User().profile.gender && self.User().profile.gender !== "" &&
                              self.User().profile.ethnicity && self.User().profile.ethnicity !== "" &&
                              self.User().profile.country && self.User().profile.country !== "" &&

@@ -145,11 +145,11 @@ define(['knockout',
             if (self.role() === "Admin" && !self.verified()){
                 self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
             }
-            if ((self.role() === "User" || self.role() === "Employer") && !self.terms() && self.isDirty()){
+            if (hcbmValid && (self.role() === "User" || self.role() === "Employer") && !self.terms()){
                 hcbmValid = false;
                 self.statusMessage("Please agree to the Terms & Conditions to continue.");
             }
-            if (self.hcbmComment().length > 500){
+            if (hcbmValid && self.hcbmComment().length > 500){
                 hcbmValid = false;
                 self.statusMessage("Please limit your comment to 500 characters.");
             }
@@ -300,8 +300,6 @@ define(['knockout',
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
                 self.hcbmEmployer(self.wallet.User().profile.employer);
                 self.hcbmAge(self.wallet.User().profile.age);
-                self.hcbmWeight(self.wallet.User().profile.weight);
-                self.hcbmWaist(self.wallet.User().profile.waist);
                 self.hcbmGender(self.wallet.User().profile.gender);
                 self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
                 self.hcbmCountry(self.wallet.User().profile.country);

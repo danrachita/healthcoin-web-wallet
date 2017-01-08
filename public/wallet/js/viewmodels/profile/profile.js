@@ -33,8 +33,6 @@ define(['knockout',
         self.description = ko.observable("");
         self.age = ko.observable("");
         self.dob = ko.observable("");
-        self.weight = ko.observable("");
-        self.waist = ko.observable("");
         self.gender = ko.observable("");
         self.ethnicity = ko.observable("");
         self.country = ko.observable("");
@@ -71,8 +69,6 @@ define(['knockout',
             self.age(age);
             self.dirtyFlag(true);
         });
-        self.weight.subscribe(function (){self.dirtyFlag(true);});
-        self.waist.subscribe(function (){self.dirtyFlag(true);});
         self.gender.subscribe(function (){self.dirtyFlag(true);});
         self.ethnicity.subscribe(function (){self.dirtyFlag(true);});
         self.country.subscribe(function (){self.dirtyFlag(true);});
@@ -85,8 +81,6 @@ define(['knockout',
                             self.email() !== "" &&
                             self.dob() !== "" &&
                             self.age() >= 18 &&
-                            self.weight() >= 90 &&
-                            self.waist() >= 20 &&
                             self.gender() !== "" &&
                             self.ethnicity() !== "" &&
                             self.country() !== "";
@@ -140,8 +134,6 @@ define(['knockout',
             if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             }
-            self.weight(self.wallet.User().profile.weight || 0);
-            self.waist(self.wallet.User().profile.waist || 0);
             self.gender(self.wallet.User().profile.gender || "");
             self.ethnicity(self.wallet.User().profile.ethnicity || "");
             self.country(self.wallet.User().profile.country || "");
@@ -179,8 +171,6 @@ define(['knockout',
         self.wallet.User().profile.description = self.description();
         self.wallet.User().profile.age = self.age();
         self.wallet.User().profile.dob = self.dob();
-        self.wallet.User().profile.weight = self.weight();
-        self.wallet.User().profile.waist = self.waist();
         self.wallet.User().profile.gender = self.gender();
         self.wallet.User().profile.ethnicity = self.ethnicity();
         self.wallet.User().profile.country = self.country();
