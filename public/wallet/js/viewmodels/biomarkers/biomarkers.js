@@ -320,8 +320,8 @@ define(['knockout',
         self.hcbmBPD(0);
         self.hcbmEmployer(self.wallet.User().profile.employer);
         self.hcbmAge(self.wallet.User().profile.age);
-        self.hcbmWeight(self.wallet.User().profile.weight);
-        self.hcbmWaist(self.wallet.User().profile.waist);
+        self.hcbmWeight(0);
+        self.hcbmWaist(0);
         self.hcbmDevice_Source("");
         self.hcbmDevice_Steps(0);
         self.hcbmComment("");
