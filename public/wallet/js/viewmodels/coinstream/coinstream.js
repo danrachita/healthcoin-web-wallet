@@ -177,7 +177,6 @@ define(['knockout',
 
     coinstreamType.prototype.getBiomarkerScores = function(){
         var self = this;
-        var employer  = self.employer();
         var employee  = self.employee();
         var startDate = Moment(self.startDate()).utc().format("YYYY-01-01");
         var endDate   = (self.monthView() ?
@@ -185,7 +184,6 @@ define(['knockout',
                         Moment(Date.now()).utc().format("YYYY-MM-DD"));
         var getBiomarkerScoresCommand = new Command('getbiomarkerscores',
                                             [encodeURIComponent(btoa(employee)),
-                                            encodeURIComponent(btoa(employer)),
                                             encodeURIComponent(btoa(startDate)),
                                             encodeURIComponent(btoa(endDate))],
                                             self.wallet.settings().chRoot,

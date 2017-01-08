@@ -207,14 +207,13 @@ app.get(chRoot + '/getemployees/:employer', function(req,res){
 });
 
 // Gets user's biomarkers.
-app.get(chRoot + '/getbiomarkerscores/:employee/:employer/:startdate/:enddate', function(req,res){
+app.get(chRoot + '/getbiomarkerscores/:employee/:startdate/:enddate', function(req,res){
     var employee = atob(decodeURIComponent(req.params.employee)) || '',
-        employer = atob(decodeURIComponent(req.params.employer)) || '',
         startdate = atob(decodeURIComponent(req.params.startdate)) || '',
         enddate = atob(decodeURIComponent(req.params.enddate)) || '';
 
     var version = coin.settings.version;
-    mdb.getBiomarkerScores(version, employee, employer, startdate, enddate, function(err, data){
+    mdb.getBiomarkerScores(version, employee, startdate, enddate, function(err, data){
         if (err) {
             res.status(500).send(JSON.stringify(err));
         } else {
