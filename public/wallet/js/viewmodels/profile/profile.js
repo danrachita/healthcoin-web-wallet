@@ -85,11 +85,11 @@ define(['knockout',
                             self.ethnicity() !== "" &&
                             self.country() !== "";
             // Bottom to top messages
-            if (!self.terms()){
+            if (canSubmit && !self.terms()){
                 canSubmit = false;
                 self.statusMessage("Please agree to the Terms & Conditions to continue.");
             }
-            if (self.description().length > 1000){
+            if (canSubmit && self.description().length > 1000){
                 canSubmit = false;
                 self.statusMessage("Please limit your description to 1000 characters.");
             }
