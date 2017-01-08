@@ -164,14 +164,14 @@ define(['knockout',
 
     coinstreamType.prototype.coinsEarned = function(dates, scores, dp){
         var self = this;
-        var improvement = (scores[dp] > scores[dp - 1] ? scores[dp] - scores[dp - 1] : 0);
-        var duration = Moment(dates[dp]).diff(Moment(dates[dp - 1]),'days') / 365;
+        var improvement = Number((scores[dp] > scores[dp - 1] ? scores[dp] - scores[dp - 1] : 0));
+        var duration = Number(Moment(dates[dp]).diff(Moment(dates[dp - 1]),'days') / 365);
         if (duration >= 2.0) duration = 1.0; // Only allow for one+ year but no more than 2 (reset)
-        var improvementAward = improvement * duration;
-        var stasis = (scores[dp] + scores[dp - 1]) / 2;
-        var stasisAward = stasis * duration;
+        var improvementAward = Number(improvement * duration);
+        var stasis = Number((scores[dp] + scores[dp - 1]) / 2);
+        var stasisAward = Number(stasis * duration);
 
-        var coins = improvementAward + stasisAward;
+        var coins = Number(improvementAward + stasisAward);
         return (coins <= 100 ? self.wallet.formatNumber(coins, 4, '.', ',') : 100.0000);
     };
 
