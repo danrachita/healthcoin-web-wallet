@@ -121,9 +121,6 @@ define(['knockout',
         self.available = ko.observable(0.00);
 
         self.canSend = ko.computed(function(){
-            if (!self.isDirty()){
-                return false;
-            }
             var isAfter = Moment().utc().isAfter(Moment(self.hcbmDate()).utc());
             var hcbmValid = isAfter &&
                             self.hcbmEHR_Source() !== "" &&
@@ -148,7 +145,7 @@ define(['knockout',
             if (self.role() === "Admin" && !self.verified()){
                 self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
             }
-            if ((self.role() === "User" || self.role() === "Employer") && !self.terms()){
+            if ((self.role() === "User" || self.role() === "Employer") && !self.terms() && self.isDirty()){
                 hcbmValid = false;
                 self.statusMessage("Please agree to the Terms & Conditions to continue.");
             }

@@ -48,7 +48,6 @@ define(['knockout',
         });
         // Admin/Employer view only
         self.employee.subscribe(function (employee){
-            console.log("DEBUG: employee=" + employee + " isDirty=" + self.isDirty());
             self.statusMessage("");
             if (self.isDirty() && self.employer() !== "" && employee && employee !== ""){
                 var idx = self.profilePulldown.employeeValues().map(function(e){ return e.id; }).indexOf(employee);
@@ -60,7 +59,6 @@ define(['knockout',
         });
         // Admin view only
         self.employer.subscribe(function (employer){
-            console.log("DEBUG: employer=" + employer + " isDirty=" + self.isDirty());
             self.statusMessage("");
             if (self.isDirty() && employer && employer !== ""){
                 self.dirtyFlag(false); // Temp reset
@@ -338,7 +336,7 @@ define(['knockout',
                             });
                     }
                     self.profilePulldown.employeeValues(employeeValues);
-                    console.log("DEBUG: employeeValues = " + JSON.stringify(self.profilePulldown.employeeValues()));
+                    //console.log("DEBUG: employeeValues = " + JSON.stringify(self.profilePulldown.employeeValues()));
                 } else {
                     self.statusMessage("No Employees were found.");
                 }
