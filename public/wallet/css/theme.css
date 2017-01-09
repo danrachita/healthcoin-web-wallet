@@ -316,6 +316,7 @@ sup {
     background-color: inherit;
     padding: 20px;
     margin-bottom: 0px;
+    border: 1px solid white;
     border-radius: 18px;
     overflow: visible !important;
 }

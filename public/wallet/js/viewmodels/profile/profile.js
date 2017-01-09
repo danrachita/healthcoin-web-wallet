@@ -32,7 +32,7 @@ define(['knockout',
         self.email = ko.observable("");
         self.description = ko.observable("");
         self.age = ko.observable("");
-        self.dob = ko.observable("");
+        self.dob = ko.observable(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.gender = ko.observable("");
         self.ethnicity = ko.observable("");
         self.country = ko.observable("");
@@ -133,6 +133,8 @@ define(['knockout',
             self.age(self.wallet.User().profile.age || 0);
             if (self.wallet.User().profile.dob && self.wallet.User().profile.dob !== ""){
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+            } else {
+                self.dob(Moment(Date.now()).utc().format("YYYY-MM-DD"));
             }
             self.gender(self.wallet.User().profile.gender || "");
             self.ethnicity(self.wallet.User().profile.ethnicity || "");

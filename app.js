@@ -232,13 +232,13 @@ app.post(chRoot + '/sendbiomarker', function(req, res){
     var fromaccount = req.body.fromaccount || '';
     var toaddress = req.body.toaddress || '';
     var amount = parseFloat(req.body.amount) || 0.0;
-    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     var minconf = parseInt(req.body.minconf || 1);
     var comment = req.body.comment || '';
     var commentto = req.body.commentto || '';
-    var txcomment = atob(req.body.txcomment) || {};
+    var txcomment = (req.params.txcomment ? atob(decodeURIComponent(req.params.txcomment)) : '');
+    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     var verified = (req.body.verified === 'true') || false;
-    var dataURLArray = JSON.parse(atob(req.body.dataurlarray)) || [];
+    var dataURLArray = (req.params.dataURLArray ? JSON.parse(atob(req.body.dataurlarray)) : []);
     //console.log("DEBUG: req.body = " + JSON.stringify(req.body));
     if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
         var credit = amount * 2; // See Biomarkers
@@ -306,11 +306,11 @@ app.get(chRoot + '/sendfrom/:fromaccount/:toaddress/:amount/:minconf?/:comment?/
     var fromaccount = req.params.fromaccount || '';
     var toaddress = req.params.toaddress || '';
     var amount = parseFloat(req.params.amount) || 0.0;
-    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     var minconf = parseInt(req.params.minconf || 1);
     var comment = req.params.comment || '';
     var commentto = req.params.commentto || '';
-    var txcomment = atob(decodeURIComponent(req.params.txcomment)) || '';
+    var txcomment = (req.params.txcomment ? atob(decodeURIComponent(req.params.txcomment)) : '');
+    var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount){
         callCoin('sendfrom', res, coinHandler, fromaccount, toaddress, amount, minconf, comment, commentto, txcomment);
     } else {
