@@ -25,7 +25,7 @@ define(['knockout',
         if (self.account() === ""){
             self.account(self.wallet.account());
             if (self.account() === self.wallet.settings().masterAccount){
-                self.statusMessage("Global Receive Addresses View");
+                self.statusMessage("Master Receive Addresses View");
             }
         }
         self.getReceiveAddresses();

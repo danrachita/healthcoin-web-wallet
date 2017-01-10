@@ -155,7 +155,7 @@ define(['knockout',
             }
             if (!isAfter || self.hcbmAge() < 1){
                 hcbmValid = false;
-                self.statusMessage("Please enter a valid date for when the biomarker was taken.");
+                self.statusMessage("Please enter a valid date for when biomarker was taken.");
             }
             return (hcbmValid && addressValid && amountValid);
         });
