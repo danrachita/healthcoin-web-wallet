@@ -58,53 +58,38 @@
 			</div>
 	        <!-- /ko -->
 			<p>&nbsp;</p>
-			<div class="form-group">
+			<div class="form-group" style="text-align: right">
 				<div class="col-sm-12">
+			        <h3 align="center" data-bind="text:statusMessage"></h3>
 					<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty(), click: Reset">Reset</button> &nbsp;
 					<button type="submit" class="btn btn-primary btn-lg" data-bind="disable: !$data.isDirty() || !$data.canSubmit(), click: Submit">Submit</button>
 				</div>
 			</div>
         </form>
-        <h3 align="center" data-bind="text:statusMessage"></h3>
-	</div>
 
-	<div class="floatleft">
-		<h3 class="text-primary"><span class="fa fa-money"></span> Wallet Info</h3>
-		<table width="100%">
-			<tr><td width="15%"><strong>Node_ID</strong>: </td><td><span data-bind="text: node_id"></span></td></tr>
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span data-bind="text: account"></span></td></tr>
-			<tr><td width="15%"><strong>Address</strong>: </td><td><span data-bind="text: address"></span></td></tr>
-		</table>
-	</div>
-	<div class="floatright">
-	<!-- LOCAL -->
-	<!-- ko if: login_type() === 'local' -->
-		<h3 class="text-primary"><span class="fa fa-database"></span> Signed in As</h3>
-		<table width="100%">
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span data-bind="text: login_id"></span></td></tr>
-			<tr><td width="15%"><strong>Password</strong>: </td><td><span>[<a href="/password">change</a>]</span></td></tr>
-		</table>
-	<!-- /ko -->
-	<!-- FACEBOOK -->
-	<!-- ko if: login_type() === 'facebook' -->
-		<h3 class="text-primary"><span class="fa fa-facebook"></span> Signed in with Facebook</h3>
-		<table width="100%">
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: facebookUrl().concat(login_id())}" target="_blank">Facebook</a></span></td></tr>
-		</table>
-	<!-- /ko -->
-	<!-- GOOGLE -->
-	<!-- ko if: login_type() === 'google' -->
-		<h3 class="text-primary"><span class="fa fa-google-plus"></span> Signed in with Google</h3>
-		<table width="100%">
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: googleUrl().concat(login_id())}" target="_blank">Google</a></span></td></tr>
-		</table>
-	<!-- /ko -->
-	<!-- TWITTER -->
-	<!-- ko if: login_type() === 'twitter' -->
-		<h3 class="text-primary"><span class="fa fa-twitter"></span> Signed in with Twitter</h3>
-		<table width="100%">
-			<tr><td width="15%"><strong>Account</strong>: </td><td><span><a data-bind="attr: {href: twitterUrl().concat(login_id())}" target="_blank">Twitter</a></span></td></tr>
-		</table>
-	<!-- /ko -->
+		<div class="small">
+		<!-- LOCAL -->
+		<!-- ko if: login_type() === 'local' -->
+			<h4 class="text-primary"><span class="fa fa-database"></span> Signed in with Account: <span data-bind="text: login_id"></span> <span class="small">[<a href="/password">change password</a>]</span></h4>
+		<!-- /ko -->
+		<!-- FACEBOOK -->
+		<!-- ko if: login_type() === 'facebook' -->
+			<h4 class="text-primary"><span class="fa fa-facebook"></span> Signed in with Facebook</h4>
+		<!-- /ko -->
+		<!-- GOOGLE -->
+		<!-- ko if: login_type() === 'google' -->
+			<h4 class="text-primary"><span class="fa fa-google-plus"></span> Signed in with Google</h4>
+		<!-- /ko -->
+		<!-- TWITTER -->
+		<!-- ko if: login_type() === 'twitter' -->
+			<h4 class="text-primary"><span class="fa fa-twitter"></span> Signed in with Twitter</h4>
+		<!-- /ko -->
+			<table width="100%">
+				<th width="25"></th><th colspan=2 class="text-primary"><span class="fa fa-money"></span> Wallet Info</th>
+				<tr><td></td><td width="10%"><strong>Node_ID</strong>: </td><td><span data-bind="text: node_id"></span></td></tr>
+				<tr><td></td><td width="10%"><strong>Account</strong>: </td><td><span data-bind="text: account"></span></td></tr>
+				<tr><td></td><td width="10%"><strong>Address</strong>: </td><td><span data-bind="text: address"></span></td></tr>
+			</table>
+		</div>
 	</div>
 </div>
