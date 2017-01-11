@@ -52,6 +52,9 @@
   // favicon
   "favicon": "./public/wallet/favicon.ico",
 
+  // Show stats in navigation
+  "showStats": true,
+
   // History rows per page
   "historyRowsPP": 10,
 

@@ -49,6 +49,7 @@ define(['knockout',
 
         self.currentView = ko.observable('home');
         self.sidebarToggled = ko.observable(true);
+        self.showStats = ko.observable(false);
 
         this.home = new Home({parent: self});
         this.biomarkers = new Biomarkers({parent: self}); // Unique to Healthcoin
@@ -105,6 +106,7 @@ define(['knockout',
                     self.node_id(getNodeInfoData.node_id);
                     self.isLocalWallet(getNodeInfoData.isLocal);
                     self.settings(getNodeInfoData.settings);
+                    self.showStats(self.settings().showStats || false);
                     if (self.settings().env !== 'production'){
                         console.log("WARNING: Not running in production mode!\n  (settings.env=" + self.settings().env + ")");
                     }
