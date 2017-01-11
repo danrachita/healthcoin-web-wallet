@@ -293,8 +293,8 @@ define(['knockout',
             });
     };
 
-    walletType.prototype.formatNumber = function(value, precision, decimalPoint, commaSeparator){
-        return value.formatNumber(precision, decimalPoint, commaSeparator);
+    walletType.prototype.formatNumber = function(value, decimalPlaces, decimalPoint, commaSeparator){
+        return value.formatNumber(decimalPlaces, decimalPoint, commaSeparator);
     };
 
     walletType.prototype.toggleSidebar = function(){

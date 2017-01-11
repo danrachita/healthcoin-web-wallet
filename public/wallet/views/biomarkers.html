@@ -2,7 +2,7 @@
 
     <!-- BIOMARKER -->
     <div class="well">
-        <h1 class="text-primary"><span class="fa fa-heartbeat"></span> Submit a <span data-bind="text: wallet.settings().coinName"></span> Biomarker</h1>
+        <h1 class="text-primary"><span class="fa fa-heartbeat"></span> Submit a Biomarker</h1>
         <form class="form-horizontal" role="form">
             <div class="form-group">
                 <label class="control-label col-sm-2" for="hcbmDate"><span class="fa fa-calendar"></span> Marker Date *</label>
@@ -12,34 +12,6 @@
                 <label class="control-label col-sm-2" for="hcbmEHR_Source">EHR Source</label>
                 <div class="col-sm-4">
                     <p><select class="form-control" data-type="select" id="hcbmEHR_Source" data-bind="options: biomarkersPulldown.hcbmEHR_SourceValues, value: hcbmEHR_Source" data-title="Electronic Health Record Source"></select></p>
-                </div>
-            </div>
-            <div class="form-group">
-            </div>
-            <div class="form-group" data-bind="fileDrag: fileData">
-                <div class="row">
-                    <div class="col-md-8">
-                    <!-- ko foreach: {data: fileData().dataURLArray, as: 'dataURL'} -->
-                        <!-- ko if: dataURL.indexOf('application/pdf') > 0 -->
-                        <object height=50 style="margin: 5px; vertical-align: top;" class="img-rounded thumb" data-bind="attr: {data: dataURL}"></object>
-                        <!-- /ko -->
-                        <!-- ko if: dataURL.indexOf('application/pdf') < 0 -->
-                        <img style="height: 50px; margin: 5px; vertical-align: top;" class="img-rounded thumb" data-bind="attr: {src: dataURL}, visible: dataURL"></img>
-                        <!-- /ko -->
-                    <!-- /ko -->
-                        <label class="drag-label">Drag Proof of Biomarker files here...<br>
-                        <span class="small">Types allowed: PDF or Scanned Images<br></span>
-                        <span class="small"><i>(Drag multiple files all at once. 2MB Limit.)</i></span></label>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="file" multiple data-bind="fileInput: fileData,
-                            customFileInput: {
-                            noFileText: 'No files selected',
-                            buttonText: 'Select Files',
-                            buttonClass: 'btn btn-primary',
-                            fileNameClass: 'disabled form-control',
-                            onClear: onClear }" accept="image/*">
-                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -95,6 +67,34 @@
                 <label class="control-label col-sm-2" for="hcbmComment">Comments</label>
                 <div class="col-sm-10">
 	                <p><input class="form-control" type="text" id="hcbmComment" data-bind="text, textInput: hcbmComment" placeholder="Biomarker remarks. (Optional)"></input></p>
+                </div>
+            </div>
+            <div class="form-group">
+            </div>
+            <div class="form-group" data-bind="fileDrag: fileData">
+                <div class="row">
+                    <div class="col-md-8">
+                    <!-- ko foreach: {data: fileData().dataURLArray, as: 'dataURL'} -->
+                        <!-- ko if: dataURL.indexOf('application/pdf') > 0 -->
+                        <object height=50 style="margin: 5px; vertical-align: top;" class="img-rounded thumb" data-bind="attr: {data: dataURL}"></object>
+                        <!-- /ko -->
+                        <!-- ko if: dataURL.indexOf('application/pdf') < 0 -->
+                        <img style="height: 50px; margin: 5px; vertical-align: top;" class="img-rounded thumb" data-bind="attr: {src: dataURL}, visible: dataURL"></img>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                        <label class="drag-label">Drag Proof of Biomarker files here...<br>
+                        <span class="small">Types allowed: PDF or Scanned Images<br></span>
+                        <span class="small"><i>(Drag multiple files all at once. 2MB Limit.)</i></span></label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="file" multiple data-bind="fileInput: fileData,
+                            customFileInput: {
+                            noFileText: 'No files selected',
+                            buttonText: 'Select Files',
+                            buttonClass: 'btn btn-primary',
+                            fileNameClass: 'disabled form-control',
+                            onClear: onClear }" accept="image/*">
+                    </div>
                 </div>
             </div>
             <div class="form-group">

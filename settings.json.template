@@ -29,6 +29,9 @@
   // Coin addresses start with this character
   "coinChar": "H",
 
+  // How many decimale places to display for coin fractions
+  "decimalPlaces": 4,
+
   // Coin has transaction txcomment feature
   "txComment": false,
 

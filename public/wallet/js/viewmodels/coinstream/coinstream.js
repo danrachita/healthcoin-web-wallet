@@ -172,7 +172,7 @@ define(['knockout',
         var stasisAward = Number(stasis * duration);
 
         var coins = Number(improvementAward + stasisAward);
-        return (coins <= 100 ? self.wallet.formatNumber(coins, 4, '.', ',') : 100.0000);
+        return (coins <= 100 ? self.wallet.formatNumber(coins, self.wallet.settings().decimalPlaces, '.', ',') : 100);
     };
 
     coinstreamType.prototype.getBiomarkerScores = function(){
@@ -294,7 +294,7 @@ define(['knockout',
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
                     if (data.length > 1){
-                        self.statusMessage("You've earned " + self.wallet.formatNumber(coinsTotal, 4, '.', ',') + " healthcoins!");
+                        self.statusMessage("You've earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins!");
                     } else {
                         self.statusMessage("You're on the way to earning healthcoins!");
                     }
