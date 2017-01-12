@@ -235,10 +235,10 @@ app.post(chRoot + '/sendbiomarker', function(req, res){
     var minconf = parseInt(req.body.minconf || 1);
     var comment = req.body.comment || '';
     var commentto = req.body.commentto || '';
-    var txcomment = (req.params.txcomment ? atob(decodeURIComponent(req.params.txcomment)) : '');
+    var txcomment = atob(req.body.txcomment) || {};
     var maxSendAmount = parseFloat(coin.settings.maxSendAmount) || 0.0001; // Haha
     var verified = (req.body.verified === 'true') || false;
-    var dataURLArray = (req.params.dataURLArray ? JSON.parse(atob(req.body.dataurlarray)) : []);
+    var dataURLArray = JSON.parse(atob(req.body.dataurlarray)) || [];
     //console.log("DEBUG: req.body = " + JSON.stringify(req.body));
     if(fromaccount.length && toaddress.length && amount && amount <= maxSendAmount && txcomment !== '' && comment === 'HCBM'){
         var credit = amount * 2; // See Biomarkers
