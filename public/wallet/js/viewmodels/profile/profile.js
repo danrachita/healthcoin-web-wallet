@@ -100,9 +100,9 @@ define(['knockout',
         });
     };
 
-    profileType.prototype.refresh = function(){
+    profileType.prototype.refresh = function(timerRefresh){
         var self = this;
-        if (!self.isDirty()){
+        if (timerRefresh && !self.isDirty()){
             self.login_type(self.wallet.User().profile.login_type);
             switch(self.login_type()){
                 case ("local"):
@@ -160,7 +160,7 @@ define(['knockout',
     profileType.prototype.Reset = function(){
         var self = this;
         self.dirtyFlag(false);
-        this.refresh();
+        this.refresh(true);
     };
 
     profileType.prototype.Submit = function(){

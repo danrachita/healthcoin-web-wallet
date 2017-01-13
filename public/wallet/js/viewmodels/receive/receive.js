@@ -20,7 +20,7 @@ define(['knockout',
         self.showNewAddressDialog = ko.observable(false);
     };
 
-    receiveType.prototype.refresh = function(){
+    receiveType.prototype.refresh = function(timerRefresh){
         var self = this;
         if (self.account() === ""){
             self.account(self.wallet.account());

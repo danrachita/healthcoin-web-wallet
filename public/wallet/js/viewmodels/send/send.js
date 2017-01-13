@@ -46,7 +46,7 @@ define(['knockout',
         });
     };
 
-    sendType.prototype.refresh = function(){
+    sendType.prototype.refresh = function(timerRefresh){
         var self = this;
         self.available(self.wallet.walletStatus.available());
         self.maxSendAmount(self.wallet.settings().maxSendAmount);

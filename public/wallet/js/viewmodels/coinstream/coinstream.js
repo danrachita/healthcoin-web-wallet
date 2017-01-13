@@ -122,7 +122,7 @@ define(['knockout',
         };
     };
 
-    coinstreamType.prototype.refresh = function(){
+    coinstreamType.prototype.refresh = function(timerRefresh){
         var self = this;
         if (!self.profileComplete() && !self.wallet.profileComplete()){
             self.statusMessage("Please complete your profile before continuing.");
@@ -131,7 +131,7 @@ define(['knockout',
                 self.profileComplete(true);
                 self.statusMessage("");
             }
-            if (!self.isDirty()){
+            if (timerRefresh && !self.isDirty()){
                 self.role(self.wallet.User().profile.role);
                 self.user_id(self.wallet.User()._id);
                 self.first_name(self.wallet.User().profile.first_name);
@@ -168,7 +168,9 @@ define(['knockout',
                 // Init chart to whoever is logged in
                 self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             }
-            self.getBiomarkerScores();
+            if (!timerRefresh){
+                self.getBiomarkerScores();
+            }
         }
     };
 

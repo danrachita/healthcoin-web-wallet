@@ -61,9 +61,39 @@ define(['knockout',
         this.console = new Console({parent: self});
         this.profile = new Profile({parent: self});
 
-        self.currentView.subscribe(function (){
+        self.currentView.subscribe(function (view){
             self.sessionExpires(Date.now() + self.sessionTimeout());
-            self.refresh();
+            switch(view){
+                case ("home"):
+                    self.home.refresh(false);
+                    break;
+                case ("biomarkers"):
+                    self.biomarkers.refresh(false);
+                    break;
+                case ("coinstream"):
+                    self.coinstream.refresh(false);
+                    break;
+                case ("send"):
+                    self.send.refresh(false);
+                    break;
+                case ("receive"):
+                    self.receive.refresh(false);
+                    break;
+                case ("history"):
+                    self.history.refresh(false);
+                    break;
+                case ("explore"):
+                    self.explore.refresh(false);
+                    break;
+                case ("console"):
+                    self.console.refresh(false);
+                    break;
+                case ("profile"):
+                    self.profile.refresh(false);
+                    break;
+                default:
+                    break;
+            }
         });
 
         self.profileComplete = ko.computed(function(){
@@ -179,7 +209,7 @@ define(['knockout',
             } else {
                 // Normal polling
                 if (Date.now() <= self.sessionExpires()){
-                    $.when(self.refresh()).done(function(){
+                    $.when(self.refresh(true)).done(function(){
                         if (self.timeout < 60000){ // First timeout
                             self.timeout = 60000;
                             // Turn off initial loading icon
@@ -202,20 +232,20 @@ define(['knockout',
         },self.timeout);
     };
 
-    // Refresh the universe.
-    walletType.prototype.refresh = function(){
+    // Refresh the universe. If timerRefresh is false it's a manual refresh.
+    walletType.prototype.refresh = function(timerRefresh){
         var self = this;
         var refreshPromise = $.when(self.walletStatus.refresh())
             .done(function(){
-                self.home.refresh();
-                self.biomarkers.refresh();
-                self.coinstream.refresh();
-                self.send.refresh();
-                self.receive.refresh();
-                self.history.refresh();
-                self.explore.refresh();
-                self.console.refresh();
-                self.profile.refresh();
+                self.home.refresh(timerRefresh);
+                self.biomarkers.refresh(timerRefresh);
+                self.coinstream.refresh(timerRefresh);
+                self.send.refresh(timerRefresh);
+                self.receive.refresh(timerRefresh);
+                self.history.refresh(timerRefresh);
+                self.explore.refresh(timerRefresh);
+                self.console.refresh(timerRefresh);
+                self.profile.refresh(timerRefresh);
 	    });
         return refreshPromise;
     };
@@ -243,13 +273,13 @@ define(['knockout',
             new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Unlock Wallet', 'This action will unlock the wallet for sending or staking','OK')
             .done(function(result){
                 //console.log(result);
-                self.walletStatus.refresh(self.account());
+                self.walletStatus.refresh(false);
                 result.passphrase = "XXXXXXXX"; // Clear password in memory
             })
             .fail(function(error){
                 console.log(error);
                 dialog.notification(error.message);
-                self.walletStatus.refresh(self.account());
+                self.walletStatus.refresh(false);
             });
         }
     };
@@ -262,11 +292,11 @@ define(['knockout',
                                                 self.settings().env).execute()
             .done(function(){
                 dialog.notification("Wallet is now locked. To send transactions or stake you must unlock the wallet.");
-                self.walletStatus.refresh(self.account());
+                self.walletStatus.refresh(false);
             })
             .fail(function(){
                 dialog.notification("Wallet is already locked.");
-                self.walletStatus.refresh(self.account());
+                self.walletStatus.refresh(false);
             });
             return walletLockCommand;
         }

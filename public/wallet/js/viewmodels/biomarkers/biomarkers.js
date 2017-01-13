@@ -287,7 +287,7 @@ define(['knockout',
         });
     };
 
-    biomarkersType.prototype.refresh = function(){
+    biomarkersType.prototype.refresh = function(timerRefresh){
         var self = this;
         self.available(self.wallet.walletStatus.available());
         self.amount(self.wallet.settings().minTxFee);
@@ -300,7 +300,7 @@ define(['knockout',
                 self.profileComplete(true);
                 self.statusMessage("");
             }
-            if (!self.isDirty()){
+            if (timerRefresh && !self.isDirty()){
                 self.role(self.wallet.User().profile.role);
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
                 self.hcbmEmployer(self.wallet.User().profile.employer);

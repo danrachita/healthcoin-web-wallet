@@ -22,7 +22,7 @@ define(['knockout',
         });
     };
 
-    historyType.prototype.refresh = function(){
+    historyType.prototype.refresh = function(timerRefresh){
         var self = this;
         var account = self.wallet.account();
         if (account !== ""){

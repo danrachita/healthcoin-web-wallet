@@ -9,7 +9,7 @@ define(['knockout'], function(ko){
         self.explorerURL = ko.observable("https://explorer.healthcoin.com/");
     };
 
-    exploreType.prototype.refresh = function(){
+    exploreType.prototype.refresh = function(timerRefresh){
         var self = this;
         if (self.wallet.User().profile){
             self.role(self.wallet.User().profile.role);
