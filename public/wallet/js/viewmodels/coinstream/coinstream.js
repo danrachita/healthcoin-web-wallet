@@ -75,9 +75,20 @@ define(['knockout',
         //self.colorUnapproved = "rgba(251,199,30,0.6)"; // Orangeish
         self.colorUnapproved = "rgba(220,220,220,0.6)"; // Grey
         self.coinstreamOptions = {
+				legend: {
+                    labels: {
+                        fontSize: 16
+                    }
+				},
 				scales: {
+                    xAxes: [{
+					    ticks: {
+                            fontSize: 14
+					    }
+					}],
                     yAxes: [{
 					    ticks: {
+                            fontSize: 16,
 					        max: 100,
 					        min: 0,
 					        stepSize: 10
