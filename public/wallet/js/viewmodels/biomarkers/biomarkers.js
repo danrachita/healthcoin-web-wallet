@@ -21,7 +21,7 @@ define(['knockout',
 
 
         self.fileData = ko.observable({
-            file: ko.observable(), dataURL: ko.observable(),
+            dataURL: ko.observable(),
             dataURLArray: ko.observableArray()
         });
         self.fileData().dataURL.subscribe(function (){
@@ -63,9 +63,9 @@ define(['knockout',
 
         // User changeables subscriptions
         self.hcbmEmployer.subscribe(function (){self.dirtyFlag(true);});
-        self.hcbmDate.subscribe(function (){
-            var bmd = Moment(self.hcbmDate()).utc();
-            var dob = Moment(self.dob()).utc();
+        self.hcbmDate.subscribe(function (date){
+            var bmd = Moment(date).utc();
+            var dob = Moment(self.dob());
             var bmdYY = bmd.format("YYYY");
             var bmdMM = bmd.format("MM");
             var bmdDD = bmd.format("DD");
