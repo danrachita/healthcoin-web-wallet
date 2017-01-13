@@ -51,9 +51,10 @@ define(['knockout',
             self.statusMessage("");
             if (self.isDirty() && self.employer() !== "" && employee && employee !== ""){
                 var idx = self.profilePulldown.employeeValues().map(function(e){ return e.id; }).indexOf(employee);
-                var dob = self.profilePulldown.employeeValues()[idx].dob;
                 self.dirtyFlag(false); // Temp reset
-                self.startDate(Moment(dob).utc().format("YYYY-MM-DD"));
+                self.first_name(self.profilePulldown.employeeValues()[idx].first_name);
+                self.last_name(self.profilePulldown.employeeValues()[idx].last_name);
+                self.startDate(Moment(self.profilePulldown.employeeValues()[idx].dob).utc().format("YYYY-MM-DD"));
                 self.getBiomarkerScores();
             }
         });
@@ -146,7 +147,9 @@ define(['knockout',
                 self.profilePulldown.employeeValues().push({
                     id: self.employee(),
                     dob: self.wallet.User().profile.dob,
-                    name: self.last_name() + ", " + self.first_name()
+                    first_name: self.first_name(),
+                    last_name: self.last_name(),
+                    full_name: self.last_name() + ", " + self.first_name()
                     });
                 if (self.role() === 'Admin'){
                     // Set empty slot to Admin's employer (MASTER_ACCOUNT's may not be in list)
@@ -164,8 +167,8 @@ define(['knockout',
                 }
                 // Init chart to whoever is logged in
                 self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
-                self.getBiomarkerScores();
             }
+            self.getBiomarkerScores();
         }
     };
 
@@ -304,11 +307,10 @@ define(['knockout',
                     self.coinstreamData.datasets[0].backgroundColor(backgroundScores);
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
-                    var who = (self.first_name() === self.wallet.User().profile.first_name ? "You've" : self.first_name() + "'s" );
                     if (data.length > 1){
-                        self.statusMessage(who + " earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins!");
+                        self.statusMessage(self.first_name() + "'s earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins!");
                     } else {
-                        self.statusMessage("You're on the way to earning healthcoins!");
+                        self.statusMessage(self.first_name() + "'s on the way to earning healthcoins!");
                     }
                 } else {
                     // Reset user data
@@ -344,7 +346,9 @@ define(['knockout',
                         employeeValues.push({
                             id: data[i]._id,
                             dob: data[i].profile.dob,
-                            name: data[i].profile.last_name + ", " + data[i].profile.first_name
+                            first_name: data[i].profile.first_name,
+                            last_name: data[i].profile.last_name,
+                            full_name: data[i].profile.last_name + ", " + data[i].profile.first_name
                             });
                     }
                     self.profilePulldown.employeeValues(employeeValues);
