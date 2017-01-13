@@ -1,7 +1,7 @@
 define(['knockout'], function(ko){
     var biomarkersPulldownType = function(){
 
-        this.hcbmEHR_SourceValues = ko.observableArray(["",
+        this.hcbmEHR_SourceValues = ko.observableArray(["--- Self Reported ---",
             "Columbia South Valley Hospital, Gilroy",
             "Community Hospital of Los Gatos, Los Gatos",
             "El Camino Hospital, Mountain View",

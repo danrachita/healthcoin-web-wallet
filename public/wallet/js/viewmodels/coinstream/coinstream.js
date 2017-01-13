@@ -293,8 +293,9 @@ define(['knockout',
                     self.coinstreamData.datasets[0].backgroundColor(backgroundScores);
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
+                    var who = (self.first_name() === self.wallet.User().profile.first_name ? "You've" : self.first_name() + "'s" );
                     if (data.length > 1){
-                        self.statusMessage("You've earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins!");
+                        self.statusMessage(who + " earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins!");
                     } else {
                         self.statusMessage("You're on the way to earning healthcoins!");
                     }

@@ -121,6 +121,7 @@ define(['knockout',
         self.available = ko.observable(0.00);
 
         self.canSend = ko.computed(function(){
+            var role = self.role();
             var isAfter = Moment().utc().isAfter(Moment(self.hcbmDate()).utc());
             var hcbmValid = isAfter &&
                             self.hcbmEHR_Source() !== "" &&
@@ -135,25 +136,29 @@ define(['knockout',
                             self.hcbmWaist() >= 20;
 
             var address = self.recipientAddress(),
-                addressValid = address.length && self.recipientAddress.isValid(),
+                addressValid = (address.length > 0 && self.recipientAddress.isValid()),
                 amount = self.amount(),
                 available = self.available(),
                 amountValid = !isNaN(amount) && amount > 0.00 && amount < available && self.amount.isValid();
 
             self.statusMessage("");
             // Bottom to top messages
-            if (self.role() === "Admin" && !self.verified()){
-                self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
+            if (role === "Admin"){
+                if (!self.verified()){
+                  self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
+                }
             }
-            if (hcbmValid && (self.role() === "User" || self.role() === "Employer") && !self.terms()){
-                hcbmValid = false;
-                self.statusMessage("Please agree to the Terms & Conditions to continue.");
+            if (role === "User" || role === "Employer"){
+                if (hcbmValid && !self.terms()){
+                    hcbmValid = false;
+                    self.statusMessage("Please agree to the Terms & Conditions to continue.");
+                }
             }
             if (hcbmValid && self.hcbmComment().length > 500){
                 hcbmValid = false;
                 self.statusMessage("Please limit your comment to 500 characters.");
             }
-            if (!isAfter || self.hcbmAge() < 1){
+            if (hcbmValid && !isAfter || self.hcbmAge() < 1){
                 hcbmValid = false;
                 self.statusMessage("Please enter a valid date for when biomarker was taken.");
             }

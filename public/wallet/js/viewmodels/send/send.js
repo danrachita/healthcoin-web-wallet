@@ -32,7 +32,7 @@ define(['knockout',
 
         self.canSend = ko.computed(function(){
             var address = self.recipientAddress(),
-                addressValid = address.length && self.recipientAddress.isValid(),
+                addressValid = (address.length > 0 && self.recipientAddress.isValid()),
                 //label = self.label,
                 amount = self.amount(),
                 available = self.available(),

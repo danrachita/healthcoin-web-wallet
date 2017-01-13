@@ -63,6 +63,7 @@ define(['knockout',
 
         self.currentView.subscribe(function (){
             self.sessionExpires(Date.now() + self.sessionTimeout());
+            self.refresh();
         });
 
         self.profileComplete = ko.computed(function(){
