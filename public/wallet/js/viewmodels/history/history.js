@@ -24,12 +24,13 @@ define(['knockout',
 
     historyType.prototype.refresh = function(timerRefresh){
         var self = this;
-        var account = self.wallet.account();
-        if (account !== ""){
-            if (account === self.wallet.settings().masterAccount){
+        if (self.wallet.account() !== ""){
+            if (self.wallet.account === self.wallet.settings().masterAccount){
                 self.statusMessage("Master Transaction History View");
             }
-            self.getTransactions(account, self.page());
+        }
+        if (!timerRefresh){
+            self.getTransactions(self.wallet.account(), self.page());
         }
     };
 

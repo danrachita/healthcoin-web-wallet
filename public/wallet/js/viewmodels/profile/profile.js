@@ -143,7 +143,7 @@ define(['knockout',
             self.credit(self.wallet.User().profile.credit || 0);
 
             // Do not allow MASTER_ACCOUNT to change Employer. It's set in init-wallet.
-            if (self.account() === self.wallet.settings().masterAccount){
+            if (self.wallet.account() === self.wallet.settings().masterAccount){
                 self.profilePulldown.employerValues([self.employer()]);
             }
             // This has to be inside the !isDirty check

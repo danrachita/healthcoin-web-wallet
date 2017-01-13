@@ -9,7 +9,6 @@ define(['knockout',
 
         self.statusMessage = ko.observable("");
 
-        self.account = ko.observable("");
         self.addresses = ko.observableArray([]);
         self.isLoadingReceiveAddresses = ko.observable(false);
         self.isLoading = ko.computed(function(){
@@ -22,13 +21,14 @@ define(['knockout',
 
     receiveType.prototype.refresh = function(timerRefresh){
         var self = this;
-        if (self.account() === ""){
-            self.account(self.wallet.account());
-            if (self.account() === self.wallet.settings().masterAccount){
+        if (self.wallet.account() !== ""){
+            if (self.wallet.account() === self.wallet.settings().masterAccount){
                 self.statusMessage("Master Receive Addresses View");
             }
         }
-        self.getReceiveAddresses();
+        if (!timerRefresh){
+            self.getReceiveAddresses();
+        }
     };
 
     receiveType.prototype.newAddress = function(){
@@ -37,14 +37,14 @@ define(['knockout',
 
     receiveType.prototype.newAddressConfirm = function(){
         var self = this,
-            getNewAddressCommand = new Command('getnewaddress', [self.account()],
+            getNewAddressCommand = new Command('getnewaddress', [self.wallet.account()],
                                                self.wallet.settings().chRoot,
                                                self.wallet.settings().env);
 
         getNewAddressCommand.execute()
             .done(function(address){
                 if (address && address.length === 34){
-                    self.addresses.push(new ReceiveAddress({addressObj:{address: address, account: self.account()}}));
+                    self.addresses.push(new ReceiveAddress({addressObj:{address: address, account: self.wallet.account()}}));
                 } else {
                     self.statusMessage("There was a problem creating a new address.");
                 }
@@ -69,7 +69,7 @@ define(['knockout',
         self.isLoadingReceiveAddresses(true);
         var receivePromise = listReceivedByAddressesCommand.execute()
             .done(function(data){
-                if (self.account() !== self.wallet.settings().masterAccount){
+                if (self.wallet.account() !== self.wallet.settings().masterAccount){
                     for (var k in data){
                         //console.log("data[k]:" + JSON.stringify(data[k]));
                         if (data[k].account !== self.wallet.account()){

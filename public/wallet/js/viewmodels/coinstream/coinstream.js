@@ -165,17 +165,12 @@ define(['knockout',
                         self.profilePulldown.employerValues([self.employer()]);
                     }
                 }
-                // Init chart to whoever is logged in
                 self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             }
             if (!timerRefresh){
                 self.getBiomarkerScores();
             }
         }
-    };
-
-    coinstreamType.prototype.updateCharts = function(){
-        $('#coinstreamChartBar').css('visibility', 'visible');
     };
 
     coinstreamType.prototype.coinsEarned = function(dates, scores, dp){

@@ -233,7 +233,7 @@ define(['knockout',
     };
 
     // Refresh the universe. If timerRefresh is false it's a manual refresh.
-    walletType.prototype.refresh = function(timerRefresh){
+    walletType.prototype.refresh = function(timerRefresh = false){
         var self = this;
         var refreshPromise = $.when(self.walletStatus.refresh())
             .done(function(){
@@ -273,13 +273,13 @@ define(['knockout',
             new WalletPassphrase({canSpecifyStaking: true}).userPrompt(false, 'Unlock Wallet', 'This action will unlock the wallet for sending or staking','OK')
             .done(function(result){
                 //console.log(result);
-                self.walletStatus.refresh(false);
+                self.walletStatus.refresh();
                 result.passphrase = "XXXXXXXX"; // Clear password in memory
             })
             .fail(function(error){
                 console.log(error);
                 dialog.notification(error.message);
-                self.walletStatus.refresh(false);
+                self.walletStatus.refresh();
             });
         }
     };
@@ -292,11 +292,11 @@ define(['knockout',
                                                 self.settings().env).execute()
             .done(function(){
                 dialog.notification("Wallet is now locked. To send transactions or stake you must unlock the wallet.");
-                self.walletStatus.refresh(false);
+                self.walletStatus.refresh();
             })
             .fail(function(){
                 dialog.notification("Wallet is already locked.");
-                self.walletStatus.refresh(false);
+                self.walletStatus.refresh();
             });
             return walletLockCommand;
         }
