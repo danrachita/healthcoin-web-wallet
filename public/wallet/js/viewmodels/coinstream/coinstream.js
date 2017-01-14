@@ -78,21 +78,21 @@ define(['knockout',
         self.coinstreamOptions = {
 				legend: {
                     labels: {
-                        fontSize: 16
+                        fontSize: 20
                     }
 				},
 				scales: {
                     xAxes: [{
 					    ticks: {
-                            fontSize: 14
+                            fontSize: 16
 					    }
 					}],
                     yAxes: [{
 					    ticks: {
-                            fontSize: 16,
+                            fontSize: 20,
 					        max: 100,
 					        min: 0,
-					        stepSize: 10
+					        stepSize: 20
 					    }
 					}]
 				},
@@ -305,7 +305,7 @@ define(['knockout',
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
                     if (data.length > 1){
-                        self.statusMessage(self.first_name() + "'s earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins!");
+                        self.statusMessage(self.first_name() + "'s earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins " + (self.monthView() ? "for " : "since ") + startYear + ".");
                     } else {
                         self.statusMessage(self.first_name() + "'s on the way to earning healthcoins!");
                     }
