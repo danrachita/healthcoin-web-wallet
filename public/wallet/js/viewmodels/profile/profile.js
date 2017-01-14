@@ -93,6 +93,10 @@ define(['knockout',
                 canSubmit = false;
                 self.statusMessage("Please limit your description to 1000 characters.");
             }
+            if (self.age() < 18){
+                canSubmit = false;
+                self.statusMessage("You must be 18 years-old or older.");
+            }
             if (canSubmit){
                 self.statusMessage("");
             }
