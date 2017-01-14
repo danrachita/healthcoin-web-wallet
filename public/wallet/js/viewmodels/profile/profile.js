@@ -159,6 +159,9 @@ define(['knockout',
             }
             self.dirtyFlag(false);
         }
+        if (!timerRefresh && !self.isDirty()){
+            self.statusMessage("");
+        }
     };
 
     profileType.prototype.Reset = function(){

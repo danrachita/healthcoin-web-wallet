@@ -129,8 +129,6 @@ define(['knockout',
                             self.hcbmHDL() > 0 && self.hcbmHDL() <= 100 &&
                             self.hcbmBPS() >= 90 && self.hcbmBPS() <= 180 &&
                             self.hcbmBPD() >= 60 && self.hcbmBPD() <= 130 &&
-                            self.hcbmEmployer() !== "" &&
-                            self.hcbmAge() > 0 &&
                             self.hcbmWeight() >= 90 &&
                             self.hcbmWaist() >= 20;
 
