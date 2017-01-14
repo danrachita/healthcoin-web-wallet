@@ -144,7 +144,7 @@ define(['knockout',
             // Bottom to top messages
             if (self.role() === "Admin"){
                 if (!self.verified()){
-                  self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
+                    self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
                 }
             } else {
                 if (hcbmValid && !self.terms()){
@@ -291,6 +291,7 @@ define(['knockout',
 
     biomarkersType.prototype.refresh = function(timerRefresh){
         var self = this;
+        self.role(self.wallet.User().profile.role || "User");
         self.available(self.wallet.walletStatus.available());
         self.amount(self.wallet.settings().minTxFee);
         self.credit(self.wallet.settings().minTxFee * 2);
@@ -303,7 +304,6 @@ define(['knockout',
                 self.statusMessage("");
             }
             if (timerRefresh && !self.isDirty()){
-                self.role(self.wallet.User().profile.role);
                 self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
                 self.hcbmEmployer(self.wallet.User().profile.employer);
                 self.hcbmAge(self.wallet.User().profile.age);
@@ -314,7 +314,7 @@ define(['knockout',
                 self.dirtyFlag(false);
             }
         }
-        console.log("DEBUG: role = " + self.role());
+        console.log("DEBUG: biomarker role = " + self.role());
     };
 
     biomarkersType.prototype.Reset = function(){
