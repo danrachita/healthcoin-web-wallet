@@ -159,7 +159,6 @@ define(['knockout',
             }
             self.dirtyFlag(false);
         }
-        console.log("DEBUG: profile role = " + self.role());
     };
 
     profileType.prototype.Reset = function(){

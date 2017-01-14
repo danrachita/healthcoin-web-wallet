@@ -134,13 +134,6 @@ define(['knockout',
                             self.hcbmWeight() >= 90 &&
                             self.hcbmWaist() >= 20;
 
-            var address = self.recipientAddress(),
-                addressValid = (address.length > 0 && self.recipientAddress.isValid()),
-                amount = self.amount(),
-                available = self.available(),
-                amountValid = !isNaN(amount) && amount > 0.00 && amount < available && self.amount.isValid();
-
-            self.statusMessage("");
             // Bottom to top messages
             if (self.role() === "Admin"){
                 if (!self.verified()){
@@ -160,11 +153,14 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("Please enter a valid date for when biomarker was taken.");
             }
-            if (available <= 0){
+            if (self.available() <= 0){
                 hcbmValid = false;
                 self.statusMessage("You do not have enough funds to submit a biomarker.");
             }
-            return (hcbmValid && addressValid && amountValid);
+            if (hcbmValid){
+                self.statusMessage("");
+            }
+            return hcbmValid;
         });
 
         // Helper functions for calculating health score
@@ -314,7 +310,6 @@ define(['knockout',
                 self.dirtyFlag(false);
             }
         }
-        console.log("DEBUG: biomarker role = " + self.role());
     };
 
     biomarkersType.prototype.Reset = function(){
