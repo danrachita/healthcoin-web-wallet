@@ -83,11 +83,17 @@ define(['knockout',
 				},
 				scales: {
                     xAxes: [{
+                        gridLines: {
+                            display: false
+                        },
 					    ticks: {
                             fontSize: 16
 					    }
 					}],
                     yAxes: [{
+                        gridLines: {
+                            display: false
+                        },
 					    ticks: {
                             fontSize: 20,
 					        max: 100,
