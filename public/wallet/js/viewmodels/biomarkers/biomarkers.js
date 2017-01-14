@@ -156,7 +156,7 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("Please limit your comment to 500 characters.");
             }
-            if (hcbmValid && !isAfter || self.hcbmAge() < 1){
+            if (hcbmValid && (!isAfter || self.hcbmAge() < 1)){
                 hcbmValid = false;
                 self.statusMessage("Please enter a valid date for when biomarker was taken.");
             }
