@@ -301,7 +301,6 @@ define(['knockout',
         if (timerRefresh && !self.isDirty()){
             self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             self.hcbmEmployer(self.wallet.User().profile.employer);
-            self.hcbmAge(self.wallet.User().profile.age);
             self.hcbmGender(self.wallet.User().profile.gender);
             self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
             self.hcbmCountry(self.wallet.User().profile.country);
@@ -312,7 +311,6 @@ define(['knockout',
 
     biomarkersType.prototype.Reset = function(){
         var self = this;
-        self.hcbmDate(Moment(Date.now()).utc().format("YYYY-MM-DD"));
         self.hcbmEHR_Source("");
         self.hcbmHA1c(0.00);
         self.hcbmTriglycerides(0);
@@ -320,13 +318,15 @@ define(['knockout',
         self.hcbmBPS(0);
         self.hcbmBPD(0);
         self.hcbmEmployer(self.wallet.User().profile.employer);
-        self.hcbmAge(self.wallet.User().profile.age);
+        self.hcbmAge(0);
         self.hcbmWeight(0);
         self.hcbmWaist(0);
         self.hcbmDevice_Source("");
         self.hcbmDevice_Steps(0);
         self.hcbmComment("");
         self.txcommentBiomarker("");
+
+        self.hcbmDate(Moment(Date.now()).utc().format("YYYY-MM-DD"));
 
         self.fileData().clear();
         self.terms(false);
