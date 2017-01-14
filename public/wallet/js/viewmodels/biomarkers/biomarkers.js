@@ -121,7 +121,6 @@ define(['knockout',
         self.available = ko.observable(0.00);
 
         self.canSend = ko.computed(function(){
-            var role = self.role();
             var isAfter = Moment().utc().isAfter(Moment(self.hcbmDate()).utc());
             var hcbmValid = isAfter &&
                             self.hcbmEHR_Source() !== "" &&
@@ -143,12 +142,11 @@ define(['knockout',
 
             self.statusMessage("");
             // Bottom to top messages
-            if (role === "Admin"){
+            if (self.role() === "Admin"){
                 if (!self.verified()){
                   self.statusMessage("Warning! Biomarkers only submit to the blockchain if verified.");
                 }
-            }
-            if (role === "User" || role === "Employer"){
+            } else {
                 if (hcbmValid && !self.terms()){
                     hcbmValid = false;
                     self.statusMessage("Please agree to the Terms & Conditions to continue.");
@@ -161,6 +159,10 @@ define(['knockout',
             if (hcbmValid && !isAfter || self.hcbmAge() < 1){
                 hcbmValid = false;
                 self.statusMessage("Please enter a valid date for when biomarker was taken.");
+            }
+            if (available <= 0){
+                hcbmValid = false;
+                self.statusMessage("You do not have enough funds to submit a biomarker.");
             }
             return (hcbmValid && addressValid && amountValid);
         });
@@ -312,6 +314,7 @@ define(['knockout',
                 self.dirtyFlag(false);
             }
         }
+        console.log("DEBUG: role = " + self.role());
     };
 
     biomarkersType.prototype.Reset = function(){
