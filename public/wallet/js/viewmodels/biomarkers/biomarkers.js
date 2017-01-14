@@ -155,6 +155,10 @@ define(['knockout',
                 hcbmValid = false;
                 self.statusMessage("You do not have enough funds to submit a biomarker.");
             }
+            if (!self.profileComplete()){
+                hcbmValid = false;
+                self.statusMessage("Please complete your profile before continuing.");
+            }
             if (hcbmValid){
                 self.statusMessage("");
             }
@@ -290,23 +294,19 @@ define(['knockout',
         self.amount(self.wallet.settings().minTxFee);
         self.credit(self.wallet.settings().minTxFee * 2);
 
-        if (!self.profileComplete() && !self.wallet.profileComplete()){
-            self.statusMessage("Please complete your profile before continuing.");
-        } else {
-            if (!self.profileComplete()){
-                self.profileComplete(true);
-                self.statusMessage("");
-            }
-            if (timerRefresh && !self.isDirty()){
-                self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
-                self.hcbmEmployer(self.wallet.User().profile.employer);
-                self.hcbmAge(self.wallet.User().profile.age);
-                self.hcbmGender(self.wallet.User().profile.gender);
-                self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
-                self.hcbmCountry(self.wallet.User().profile.country);
-                self.recipientAddress(self.wallet.address()); // Send to self
-                self.dirtyFlag(false);
-            }
+        if (!self.profileComplete() && self.wallet.profileComplete()){
+            self.profileComplete(true);
+            self.statusMessage("");
+        }
+        if (timerRefresh && !self.isDirty()){
+            self.dob(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+            self.hcbmEmployer(self.wallet.User().profile.employer);
+            self.hcbmAge(self.wallet.User().profile.age);
+            self.hcbmGender(self.wallet.User().profile.gender);
+            self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
+            self.hcbmCountry(self.wallet.User().profile.country);
+            self.recipientAddress(self.wallet.address()); // Send to self
+            self.dirtyFlag(false);
         }
     };
 
