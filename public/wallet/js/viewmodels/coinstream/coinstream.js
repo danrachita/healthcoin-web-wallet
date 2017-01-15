@@ -92,7 +92,7 @@ define(['knockout',
 					}],
                     yAxes: [{
                         gridLines: {
-                            display: false
+                            display: true
                         },
 					    ticks: {
                             fontSize: 20,
