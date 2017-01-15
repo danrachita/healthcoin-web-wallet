@@ -137,7 +137,7 @@ define(['knockout',
                 self.profileComplete(true);
                 self.statusMessage("");
             }
-            if (timerRefresh && !self.isDirty()){
+            if (!self.isDirty()){
                 self.role(self.wallet.User().profile.role);
                 self.user_id(self.wallet.User()._id);
                 self.first_name(self.wallet.User().profile.first_name);
