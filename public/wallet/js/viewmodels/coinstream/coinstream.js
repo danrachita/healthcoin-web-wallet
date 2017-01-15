@@ -137,7 +137,7 @@ define(['knockout',
                 self.profileComplete(true);
                 self.statusMessage("");
             }
-            if (!self.isDirty()){
+            if (timerRefresh && !self.isDirty()){
                 self.role(self.wallet.User().profile.role);
                 self.user_id(self.wallet.User()._id);
                 self.first_name(self.wallet.User().profile.first_name);
@@ -172,13 +172,11 @@ define(['knockout',
                     }
                 }
                 self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
+                self.getBiomarkerScores();
             }
             if (!timerRefresh){
                 self.dirtyFlag(false); // Temp reset
                 self.getBiomarkerScores();
-            } else {
-                // Set dirty flag
-                self.dirtyFlag(true);
             }
         }
     };
