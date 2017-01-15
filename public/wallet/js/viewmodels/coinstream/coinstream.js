@@ -176,6 +176,9 @@ define(['knockout',
             if (!timerRefresh){
                 self.dirtyFlag(false); // Temp reset
                 self.getBiomarkerScores();
+            } else {
+                // Set dirty flag
+                self.dirtyFlag(true);
             }
         }
     };
