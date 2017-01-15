@@ -41,15 +41,15 @@ define(['knockout',
         });
         self.monthView = ko.observable(false);
         self.monthView.subscribe(function (){
-            self.statusMessage("");
             if (self.isDirty() && self.employer() !== "" && self.employee() !== ""){
+                self.statusMessage("");
                 self.getBiomarkerScores();
             }
         });
         // Admin/Employer view only
         self.employee.subscribe(function (employee){
-            self.statusMessage("");
             if (self.isDirty() && self.employer() !== "" && employee && employee !== ""){
+                self.statusMessage("");
                 var idx = self.profilePulldown.employeeValues().map(function(e){ return e.id; }).indexOf(employee);
                 self.dirtyFlag(false); // Temp reset
                 self.first_name(self.profilePulldown.employeeValues()[idx].first_name);
@@ -60,8 +60,8 @@ define(['knockout',
         });
         // Admin view only
         self.employer.subscribe(function (employer){
-            self.statusMessage("");
             if (self.isDirty() && employer && employer !== ""){
+                self.statusMessage("");
                 self.dirtyFlag(false); // Temp reset
                 self.getEmployees(employer);
             }
@@ -207,7 +207,6 @@ define(['knockout',
                                             self.wallet.settings().env);
         $.when(getBiomarkerScoresCommand.execute())
             .done(function(data){
-                self.dirtyFlag(false);
                 var startYear = Number(Moment(startDate).utc().format("YYYY"));
                 var endYear = Number(Moment(endDate).utc().format("YYYY"));
                 var scorePoints = [], coinPoints = [], backgroundCoins = [], backgroundScores = [], year = 0, dp = 0;
@@ -349,7 +348,6 @@ define(['knockout',
                                             self.wallet.settings().env);
         $.when(getEmployeesCommand.execute())
             .done(function(data){
-                self.dirtyFlag(false);
                 // Re-init to blanks
                 var employeeValues = [{id: "", dob: "", name: ""}];
                 // Build the dropdown
@@ -365,6 +363,7 @@ define(['knockout',
                             });
                     }
                     //console.log("DEBUG: employeeValues = " + JSON.stringify(self.profilePulldown.employeeValues()));
+                    self.statusMessage("Found " + data.length + " Employee" + (data.length > 1 ? "s" : "") + ".");
                 } else {
                     self.statusMessage("No Employees were found.");
                 }
