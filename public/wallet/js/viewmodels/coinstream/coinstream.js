@@ -326,7 +326,11 @@ define(['knockout',
                     }
                 } else {
                     // Reset user data
-                    self.coinstreamData.labels(self.labelsMonth);
+                    if (startYear < endYear){
+                        self.coinstreamData.labels(self.labelsYear);
+                    } else {
+                        self.coinstreamData.labels(self.labelsMonth);
+                    }
                     self.coinstreamData.datasets[0].data([]);
                     self.coinstreamData.datasets[1].data([]);
                     self.statusMessage("No Health Scores were found " + (self.monthView() ? "for " : "since ") + startYear + ".");
