@@ -313,13 +313,13 @@ define(['knockout',
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
                     if (!self.monthView()){
-                        if (data.length > 1){
+                        if (scores.length > 1){
                             self.statusMessage(self.first_name() + " has earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins since " + startYear + ".");
                         } else {
                             self.statusMessage(self.first_name() + "'s health score since " + startYear + ".");
                         }
                     } else {
-                        if (data.length > 1){
+                        if (scores.length > 1){
                             self.statusMessage(self.first_name() + "'s health scores in " + startYear + ". (Best score used.)");
                         } else {
                             self.statusMessage(self.first_name() + "'s health score in " + startYear + ".");
