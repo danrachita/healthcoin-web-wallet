@@ -364,11 +364,11 @@ define(['knockout',
                             full_name: data[i].profile.last_name + ", " + data[i].profile.first_name
                             });
                     }
-                    self.profilePulldown.employeeValues(employeeValues);
                     //console.log("DEBUG: employeeValues = " + JSON.stringify(self.profilePulldown.employeeValues()));
                 } else {
                     self.statusMessage("No Employees were found.");
                 }
+                self.profilePulldown.employeeValues(employeeValues);
                 // Set dirty after return from command
                 self.dirtyFlag(true);
             })
