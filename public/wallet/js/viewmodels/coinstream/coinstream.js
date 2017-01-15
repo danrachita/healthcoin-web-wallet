@@ -233,8 +233,8 @@ define(['knockout',
                     for (var mo = 0; mo < 12; mo++){
                         scorePoints.push(0);
                         backgroundScores.push(self.colorApproved); // TODO: Change default bg to colorUnapproved
-                        coinPoints.push(0);
-                        backgroundCoins.push(self.colorCoins); // TODO: Change default bg to colorNoCoins
+                        //coinPoints.push(0);
+                        //backgroundCoins.push(self.colorCoins); // TODO: Change default bg to colorNoCoins
                     }
                     self.coinstreamData.labels(self.labelsMonth);
                 }
@@ -281,7 +281,7 @@ define(['knockout',
                             }
                         }
                     } else {
-                        // There should be less than 12 month scores, so use MM for index
+                        // There can be no more than 12 month scores, so use MM for index
                         for (dp = 0; dp < dates.length; dp++){
                             var mm = Number(Moment(dates[dp]).utc().format("MM"));
                             // Always uses the best score if duplicate months
@@ -292,6 +292,7 @@ define(['knockout',
                                 }
                             }
                             // Convert scores to coins. Must have minimum 2 datapoints
+                            /*** Don't calculate coins in monthView. ***
                             if (dp > 0){
                                 // Always uses the most coins if duplicate years
                                 coins = self.coinsEarned(dates, scores, dp);
@@ -303,6 +304,7 @@ define(['knockout',
                                     }
                                 }
                             }
+                            */
                         }
                     }
                     // Load the user's scores/coins
@@ -310,10 +312,18 @@ define(['knockout',
                     self.coinstreamData.datasets[0].backgroundColor(backgroundScores);
                     self.coinstreamData.datasets[1].data(coinPoints);
                     self.coinstreamData.datasets[1].backgroundColor(backgroundCoins);
-                    if (data.length > 1){
-                        self.statusMessage(self.first_name() + "'s earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins " + (self.monthView() ? "for " : "since ") + startYear + ".");
+                    if (!self.monthView()){
+                        if (data.length > 1){
+                            self.statusMessage(self.first_name() + " has earned " + self.wallet.formatNumber(coinsTotal, self.wallet.settings().decimalPlaces, '.', ',') + " healthcoins since " + startYear + ".");
+                        } else {
+                            self.statusMessage(self.first_name() + "'s health score since " + startYear + ".");
+                        }
                     } else {
-                        self.statusMessage(self.first_name() + "'s on the way to earning healthcoins!");
+                        if (data.length > 1){
+                            self.statusMessage(self.first_name() + "'s health scores in " + startYear + ". (Best score used.)");
+                        } else {
+                            self.statusMessage(self.first_name() + "'s health score in " + startYear + ".");
+                        }
                     }
                 } else {
                     // Reset user data
