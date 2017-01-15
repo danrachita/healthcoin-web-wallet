@@ -327,6 +327,7 @@ define(['knockout',
                 } else {
                     // Reset user data
                     if (startYear < endYear){
+                        self.labelsYear = [startYear + "-" + endYear];
                         self.coinstreamData.labels(self.labelsYear);
                     } else {
                         self.coinstreamData.labels(self.labelsMonth);
