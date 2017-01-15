@@ -174,7 +174,11 @@ define(['knockout',
                 self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
             }
             if (!timerRefresh){
+                self.dirtyFlag(false); // Temp reset
                 self.getBiomarkerScores();
+            } else {
+                // Set dirty flag
+                self.dirtyFlag(true);
             }
         }
     };
