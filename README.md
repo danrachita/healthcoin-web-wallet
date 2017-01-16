@@ -3,13 +3,13 @@
 
 ## Prerequisites:
 
-A running RPC coin daemon. See: https://github.com/onsightit/healthcoin
+A running RPC coin daemon. See: https://github.com/onsightit/solarcoin
 
-Mongo DB for storing account info and biomarker data. See: https://www.mongodb.com/
+Mongo DB for storing account info. See: https://www.mongodb.com/
 
  Create DB and user:
- > use healthcoin
- > db.createUser( { user: "healthcoin", pwd: "{password}", roles: [ "readWrite" ] } )
+ > use solarcoin
+ > db.createUser( { user: "solarcoin", pwd: "{password}", roles: [ { role: "readWrite" } ] } )
 
 Node.js 6.x for running the Web Wallet. For debian installations:
 
@@ -37,15 +37,15 @@ Configure the Web Wallet and daemon for local or non-local operation, or a combi
 If the daemon is running on the same machine as the Web Wallet, the daemon's config file will be used. It can be found at:
 
  // Mac OS
- '$HOME/Library/Application Support/Healthcoin/healthcoin.conf'
+ '$HOME/Library/Application Support/SolarCoin/solarcoin.conf'
 
  // Linux
- '$HOME/.healthcoin/healthcoin.conf'
+ '$HOME/.solarcoin/solarcoin.conf'
 
  // Windows
- '$APPDATA/Healthcoin/healthcoin.conf'
+ '$APPDATA/SolarCoin/solarcoin.conf'
 
-(Substitute your coin's name for 'Healthcoin' above.)
+(Substitute your coin's name for 'SolarCoin' above.)
 
 If the daemon is running on another machine, you will need to configure node.js's coin.conf file to match the daemon's config file. coin.conf is found in: lib/coin.conf
 
@@ -54,7 +54,8 @@ Either way, the config file will need at a minimum the following parameters:
  > rpcuser=rpcuser
  > rpcpassword=password  # Change me!
  > rpcconnect=localhost  # RPC daemon
- > rpcport=18184
+ > rpcport=18181
+ > server=1              # If not running a daemon
 
 Local vs Not-Local configuration:
 

@@ -498,7 +498,7 @@ function startApp(app) {
         //    });
             process.on('uncaughtException', function (err) {
         //      socket.emit('news', { news: 'Wallet connection error.' });
-              console.log('Caught exception: ' + err);
+              console.log('Caught exception: ' + JSON.stringify(err));
               tryReconnect();
             });
         //});
