@@ -137,12 +137,27 @@ function callCoin(command, res, handler){
 }
 
 function coinHandler(err, result){
+    var Error = null;
+    if (err) {
+        //console.log("DEBUG: err=" + err);
+        try {
+            Error = JSON.parse(err);
+        } catch (e) {
+            Error = JSON.stringify(err);
+        }
+    }
     var response = {
-        error: JSON.parse(err ? err.message : null),
+        error: Error,
         result: result
     };
-    if (typeof this.res.send !== 'undefined' && this.res.send){
-        this.res.send(JSON.stringify(response));
+    if (Error && typeof Error.code !== 'undefined'){
+        if (Error.code === "ECONNREFUSED"){
+            process.emit('rpc_connect_error', Error.code);
+        }
+    } else {
+        if (typeof this.res.send !== 'undefined' && this.res.send){
+            this.res.send(response);
+        }
     }
 }
 
@@ -484,24 +499,32 @@ function startApp(app) {
         // Init MASTER_ACCOUNT in wallet and database for this node_id (Requires exported 'coin')
         require('./lib/init-wallet')();
 
-        //var io = require('socket.io')(server, {
-        //        port: port
-        //    });
-        //io.on('connection', function (socket) {
-        //    socket.emit('news', { news: 'Socket.io connected!' });
-        //    socket.on('news', function (data) {
-        //      console.log(data);
-        //    });
-        //    socket.on('connect_error', function (err) {
-        //        socket.emit('news', { news: 'Node socket connection error.' });
-        //        console.log("Socket.io Error: " + err);
-        //    });
-            process.on('uncaughtException', function (err) {
-        //      socket.emit('news', { news: 'Wallet connection error.' });
-              console.log('Caught exception: ' + JSON.stringify(err));
-              tryReconnect();
+        var io = require('socket.io')(server, {
+                port: port
             });
-        //});
+        io.on('connection', function (socket) {
+            socket.emit('news', { news: 'Socket.io connected!' });
+            socket.on('news', function (data) {
+                console.log(data);
+            });
+            socket.on('connect_error', function (err) {
+                socket.emit('news', { news: 'INFO: Socket connect error.' });
+                console.log("Socket.io: Connect Error: " + err);
+            });
+            process.on('rpc_connect_error', function (err) {
+                socket.emit('news', { news: 'ABORT: RPC connect error.' });
+                console.log("Process: RPC Connect Error: " + err);
+            });
+            process.on('database_connect_error', function (err) {
+                socket.emit('news', { news: 'ABORT: Database connect error.' });
+                console.log("Process: Database Connect Error: " + err);
+            });
+            process.on('uncaughtException', function (err) {
+                socket.emit('news', { news: 'ABORT: Uncaught exception received.' });
+                console.log('Process: Caught Exception: ' + err);
+                tryReconnect();
+            });
+        });
         console.log('  Server listening on port ' + port);
         console.log('  Wallet is: ' + (coin.isLocal ? 'Local' : 'Not-Local'));
     });
