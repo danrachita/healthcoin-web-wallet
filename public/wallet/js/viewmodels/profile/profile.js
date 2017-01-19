@@ -189,8 +189,8 @@ define(['knockout',
                                                 self.wallet.settings().chRoot,
                                                 self.wallet.settings().env);
         saveUserProfileCommand.execute()
-            .done(function(){
-                console.log("Profile Saved!");
+            .done(function(data){
+                console.log(data);
                 self.statusMessage("Profile Saved!");
                 self.dirtyFlag(false);
                 self.wallet.initUser(); // wallet needs updating.

@@ -87,9 +87,14 @@ dbString = dbString + '/' + coin.settings.mdb.database;
 coin.settings.mdb.password = "XXXXXXXX";
 coin.settings.mdb = null; // garbage collection
 
-// Connects or exits
-mdb.connect(dbString, function() {
-    console.log('Connected to database.');
+// Connect to Database
+mdb.connect(dbString, function(err) {
+    if (err){
+        console.log('Exiting App.');
+        process.exit(1);
+    } else {
+        console.log('Connecting to database...');
+    }
 });
 
 // Localizations for EJS rendering [MUST COME AFTER DB FUNCTIONS AND BEFORE AUTH ROUTES]
@@ -151,9 +156,7 @@ function coinHandler(err, result){
         result: result
     };
     if (Error && typeof Error.code !== 'undefined'){
-        if (Error.code === "ECONNREFUSED"){
-            process.emit('rpc_connect_error', Error.code);
-        }
+        process.emit('rpc_error', 'RPC Error: ' + Error.code);
     } else {
         if (typeof this.res.send !== 'undefined' && this.res.send){
             this.res.send(response);
@@ -191,17 +194,22 @@ app.get(chRoot + '/getuseraccount', function(req,res){
 
 // Saves user profile.
 app.get(chRoot + '/saveuserprofile/:profile', function(req,res){
-    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.user.profile,
-        result = null;
+    var profile = JSON.parse(atob(decodeURIComponent(req.params.profile))) || req.user.profile;
     if (profile && profile.login_type){
         req.user.profile = profile;
-        result = mdb.saveUserProfile(req.user._id, profile);
+        mdb.saveUserProfile(req.user._id, profile, function(err, data){
+            if (err) {
+                res.status(500).send(JSON.stringify(data));
+            } else {
+                //console.log("DEBUG: data = " + JSON.stringify(data));
+                var response = {
+                    error: null,
+                    result: data
+                };
+                res.send(JSON.stringify(response));
+            }
+        });
     }
-    var response = {
-        error: null,
-        result: result
-    };
-    res.send(JSON.stringify(response));
 });
 
 // Gets Employer's Employees.
@@ -478,15 +486,6 @@ app.use(function(req, res, next) {
 });
 
 
-// TODO: Needs testing
-function tryReconnect(){
-    setTimeout(function(){
-        mdb.connect(dbString, function(){
-            console.log('Reconnected to database.');
-        });
-    },5000);
-}
-
 // Start it up!
 function startApp(app) {
     // Start the Express server
@@ -496,37 +495,33 @@ function startApp(app) {
     var port = coin.isLocal ? coin.settings.port : coin.settings.sslPort;
 
     server.listen(port, function(){
+        console.log('  Server listening on port ' + port);
+        console.log('  Wallet is: ' + (coin.isLocal ? 'Local' : 'Not-Local'));
+
         // Init MASTER_ACCOUNT in wallet and database for this node_id (Requires exported 'coin')
         require('./lib/init-wallet')();
 
-        var io = require('socket.io')(server, {
-                port: port
-            });
-        io.on('connection', function (socket) {
-            socket.emit('news', { news: 'Socket.io connected!' });
-            socket.on('news', function (data) {
+        var io = require('socket.io')(server, { port: port });
+        io.on('connection', function (socket){
+            socket.on('news', function (data){
                 console.log(data);
             });
             socket.on('connect_error', function (err) {
-                socket.emit('news', { news: 'INFO: Socket connect error.' });
-                console.log("Socket.io: Connect Error: " + err);
+                console.log("Socket connection error: " + err);
             });
-            process.on('rpc_connect_error', function (err) {
-                socket.emit('news', { news: 'ABORT: RPC connect error.' });
-                console.log("Process: RPC Connect Error: " + err);
+            process.on('rpc_error', function (err) {
+                console.log(err);
+                socket.emit('abort', 'maintenance');
             });
-            process.on('database_connect_error', function (err) {
-                socket.emit('news', { news: 'ABORT: Database connect error.' });
-                console.log("Process: Database Connect Error: " + err);
+            process.on('database_closed', function (err) {
+                console.log(err);
+                socket.emit('abort', 'maintenance');
             });
             process.on('uncaughtException', function (err) {
-                socket.emit('news', { news: 'ABORT: Uncaught exception received.' });
-                console.log('Process: Caught Exception: ' + err);
-                tryReconnect();
+                console.log('Caught unknown exception: ' + err);
             });
+            socket.emit('news', 'Socket connected!');
         });
-        console.log('  Server listening on port ' + port);
-        console.log('  Wallet is: ' + (coin.isLocal ? 'Local' : 'Not-Local'));
     });
 }
 startApp(app);
