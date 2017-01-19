@@ -511,18 +511,23 @@ function startApp(app) {
             socket.on('connect_error', function (err) {
                 console.log("Socket connection error: " + err);
             });
-            process.on('rpc_error', function (err) {
-                console.log(err);
-                socket.emit('abort', 'maintenance');
-            });
-            process.on('database_closed', function (err) {
-                console.log(err);
-                socket.emit('abort', 'maintenance');
-            });
-            process.on('uncaughtException', function (err) {
-                console.log('Caught unknown exception: ' + err);
-            });
+            // Send a message to newly connected client
             socket.emit('news', 'Socket connected!');
+        });
+        process.on('rpc_error', function (err) {
+            console.log(err);
+            // Send abort message to all clients
+            io.sockets.emit('news', 'Going down for wallet maintenance...');
+            io.sockets.emit('abort', 'maintenance');
+        });
+        process.on('database_closed', function (err) {
+            console.log(err);
+            // Send abort message to all clients
+            io.sockets.emit('news', 'Going down for database maintenance...');
+            io.sockets.emit('abort', 'maintenance');
+        });
+        process.on('uncaughtException', function (err) {
+            console.log('Caught unknown exception: ' + err);
         });
     });
 }

@@ -38,7 +38,7 @@ define( [
             "transports" : ["websocket"]
         };
 
-        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port + '/', sockOpt);
+        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port, sockOpt);
         socket.on('news', function (data) {
             console.log(data);
         });
