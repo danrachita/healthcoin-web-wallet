@@ -31,7 +31,14 @@ define( [
         var wallet = new Wallet();
 
         var port = (window.location.port === '' ? '' : ":" + window.location.port);
-        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port + '/');
+        var sockOpt = {
+            "force new connection" : true,
+            "reconnectionAttempts": "Infinity",
+            "timeout" : 10000,
+            "transports" : ["websocket"]
+        };
+
+        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port + '/', sockOpt);
         socket.on('news', function (data) {
             console.log(data);
         });

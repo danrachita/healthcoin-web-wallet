@@ -502,6 +502,8 @@ function startApp(app) {
         require('./lib/init-wallet')();
 
         var io = require('socket.io')(server, { port: port });
+        //Allow Cross Domain Requests
+        io.set('transports', [ 'websocket' ]);
         io.on('connection', function (socket){
             socket.on('news', function (data){
                 console.log(data);
