@@ -38,10 +38,10 @@ define( [
             "transports" : ["websocket"]
         };
 
-        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port + '/socket/', sockOpt);
+        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port + '/socket.io/', sockOpt);
         socket.on('news', function (data) {
             console.log(data);
-            console.log('DEBUG: URL=' + window.location.protocol + '//' + window.location.hostname + port + '/socket/');
+            console.log('DEBUG: URL=' + window.location.protocol + '//' + window.location.hostname + port + '/socket.io/');
         });
         socket.on('abort', function(page) {
             // handle abort request and redirect to page.
@@ -50,7 +50,7 @@ define( [
         socket.on('connect_error', function(err) {
             // handle server error
             console.log('Error connecting to server. ' + err);
-            console.log('DEBUG: URL=' + window.location.protocol + '//' + window.location.hostname + port + '/socket/');
+            console.log('DEBUG: URL=' + window.location.protocol + '//' + window.location.hostname + port + '/socket.io/');
         });
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
