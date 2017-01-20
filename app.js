@@ -495,7 +495,7 @@ function startApp(app) {
     var server = coin.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
     var port = app.get('port'); // 8181 or 8383 depending on coin.isLocal
 
-    server.listen(port, '0.0.0.0', function(){
+    server.listen(port, function(){
         console.log('  Server listening on port ' + port);
         console.log('  Wallet is: ' + (coin.isLocal ? 'Local' : 'Not-Local'));
 
