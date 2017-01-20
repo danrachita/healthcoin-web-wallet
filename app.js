@@ -533,10 +533,10 @@ function startApp(app) {
         process.on('SIGINT', function(err){
             console.log('SIGINT Received: ' + err);
             listener.close(function() {
-                mdb.close(function() {
+                //mdb.close(function() {
                     console.log('Exiting App.');
                     process.exit(2);
-                });
+                //});
             });
         });
     });
