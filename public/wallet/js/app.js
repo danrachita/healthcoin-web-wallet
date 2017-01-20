@@ -30,8 +30,7 @@ define( [
     App.prototype.init = function() {
         var wallet = new Wallet();
 
-        //var port = (window.location.port === '' ? '' : ":" + window.location.port);
-        var port = ":8383";
+        var port = (window.location.port === '' ? '' : ":" + window.location.port);
         var sockOpt = {
             "force new connection" : true,
             "reconnectionAttempts": "Infinity",
