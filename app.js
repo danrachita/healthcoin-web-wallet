@@ -532,9 +532,9 @@ function startApp(app) {
         });
         process.on('SIGINT', function(err){
             console.log('SIGINT Received: ' + err);
-            listener.close(function(err) {
-                if (err) throw err;
-                mdb.close(function() {
+            mdb.close(function() {
+                listener.close(function(err) {
+                    if (err) throw err;
                     console.log('Exiting App.');
                     process.exit(2);
                 });
