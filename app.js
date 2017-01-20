@@ -53,9 +53,10 @@ var flash = require('connect-flash');
 
 // All environments
 app.set('env', coin.settings.env || 'production');
-app.set('port', coin.isLocal ? coin.settings.port : coin.settings.sslPort);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('port', coin.isLocal ? coin.settings.port : coin.settings.sslPort);
+coin.settings.port = app.get('port');
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public' + coin.settings.chRoot)));
@@ -492,7 +493,7 @@ function startApp(app) {
     console.log("Express " + (coin.isLocal ? "" : "Secure ") + "Server starting...");
     var protocol = coin.isLocal ? require('http') : require('https');
     var server = coin.isLocal ? protocol.createServer(app) : protocol.createServer(credentials, app);
-    var port = coin.isLocal ? coin.settings.port : coin.settings.sslPort;
+    var port = app.get('port'); // 8181 or 8383 depending on coin.isLocal
 
     server.listen(port, function(){
         console.log('  Server listening on port ' + port);

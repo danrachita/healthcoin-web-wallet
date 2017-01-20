@@ -30,7 +30,8 @@ define( [
     App.prototype.init = function() {
         var wallet = new Wallet();
 
-        var port = (window.location.port === '' ? '' : ":" + window.location.port);
+        //var port = (window.location.port === '' ? '' : ":" + window.location.port);
+        var port = ":8383";
         var sockOpt = {
             "force new connection" : true,
             "reconnectionAttempts": "Infinity",
@@ -41,7 +42,6 @@ define( [
         var socket = io.connect(window.location.protocol + '//' + window.location.hostname + port + '/', sockOpt);
         socket.on('news', function (data) {
             console.log(data);
-            console.log('DEBUG: URL=' + window.location.protocol + '//' + window.location.hostname + port + '/');
         });
         socket.on('abort', function(page) {
             // handle abort request and redirect to page.
@@ -50,7 +50,6 @@ define( [
         socket.on('connect_error', function(err) {
             // handle server error
             console.log('Error connecting to server. ' + err);
-            console.log('DEBUG: URL=' + window.location.protocol + '//' + window.location.hostname + port + '/');
         });
 
         //$('.editable').editable.defaults.mode = 'inline'; // Comment or change to 'popup' (default)
