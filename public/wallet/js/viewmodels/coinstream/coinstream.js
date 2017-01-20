@@ -171,6 +171,7 @@ define(['knockout',
                         self.profilePulldown.employerValues([self.employer()]);
                     }
                 }
+                self.dirtyFlag(false); // Temp reset
                 self.startDate(Moment(self.wallet.User().profile.dob).utc().format("YYYY-MM-DD"));
                 self.getBiomarkerScores();
             }
@@ -214,6 +215,7 @@ define(['knockout',
                 var scorePoints = [], coinPoints = [], backgroundCoins = [], backgroundScores = [], year = 0, dp = 0;
                 // Adjust startYear to first datapoint found
                 if (data && data.length){
+                    self.dirtyFlag(false); // Temp reset
                     self.startDate(Moment(data[0].biomarker.Date).utc().format("YYYY-MM-DD"));
                     startYear = Number(Moment(self.startDate()).utc().format("YYYY"));
                 }
