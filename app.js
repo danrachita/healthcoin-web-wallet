@@ -532,7 +532,6 @@ function startApp(app) {
         });
         process.on('SIGINT', function(err){
             console.log('SIGINT Received: ' + err);
-            mdb.close();
             setTimeout(function(){
                 console.log('Exiting App.');
                 process.exit(2);
