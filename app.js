@@ -91,7 +91,7 @@ coin.settings.mdb = null; // garbage collection
 // Connect to Database
 mdb.connect(dbString, function(err) {
     if (err){
-        console.log('Exiting App.');
+        console.log('Database is down. Exiting App.');
         process.exit(1);
     } else {
         console.log('Connecting to database...');
@@ -529,6 +529,13 @@ function startApp(app) {
         });
         process.on('uncaughtException', function (err) {
             console.log('Caught unknown exception: ' + err);
+        });
+        process.on('SIGINT', function(err){
+            console.log('SIGINT Received: ' + err);
+            mdb.close(function() {
+                console.log('Exiting App.');
+                process.exit(2);
+            });
         });
     });
 }
