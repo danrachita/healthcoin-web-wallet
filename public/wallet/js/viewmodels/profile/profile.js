@@ -190,13 +190,11 @@ define(['knockout',
                                                 self.wallet.settings().env);
         saveUserProfileCommand.execute()
             .done(function(data){
-                console.log(data);
-                self.statusMessage("Profile Saved!");
+                self.statusMessage(data);
                 self.dirtyFlag(false);
                 self.wallet.initUser(); // wallet needs updating.
             })
-            .fail(function(error){
-                console.log("Error:" + error.toString());
+            .fail(function(){
                 self.statusMessage("Save Error!");
             });
     };

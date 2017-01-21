@@ -56,7 +56,6 @@ app.set('env', coin.settings.env || 'production');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('port', coin.isLocal ? coin.settings.port : coin.settings.sslPort);
-coin.settings.port = app.get('port');
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public' + coin.settings.chRoot)));
@@ -122,10 +121,6 @@ var chRoot = app.get('chRoot') || '';
 require('./routes/auth.js')(app, passport); // Auth routes (includes: '/', '/signup', '/login', '/logout', '/profile', '/password', + oauth routes).
 require('./lib/passport')(passport);        // Requires exported 'coin'
 
-
-////////// Routes //////////
-
-
 // Add CORS headers to all requests
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -164,6 +159,8 @@ function coinHandler(err, result){
         }
     }
 }
+
+////////// Routes //////////
 
 // Non-RPC routes //
 
@@ -212,6 +209,8 @@ app.get(chRoot + '/saveuserprofile/:profile', function(req,res){
         });
     }
 });
+
+// Healthcoin Routes //
 
 // Gets Employer's Employees.
 app.get(chRoot + '/getemployees/:employer', function(req,res){
@@ -287,7 +286,6 @@ app.post(chRoot + '/sendbiomarker', function(req, res){
             res.send(JSON.stringify("Error: Invalid sendbiomarker parameters."));
     }
 });
-
 
 // RPC routes //
 
@@ -472,7 +470,6 @@ app.get('*', function(req, res) {
     res.type('txt').send(err);
 });
 
-
 // *** Express 4.x requires these app.use calls to be after any app.get or app.post routes.
 // *** "Your code should move any calls to app.use that came after app.use(app.router) after any routes (HTTP verbs)."
 
@@ -491,6 +488,7 @@ app.use(function(err, req, res, next) {
         return;
     }
     res.type('txt').send(msg);
+    next();
 });
 
 // Catch session timeout
@@ -501,7 +499,6 @@ app.use(function(req, res, next) {
    		res.redirect(app.get('chRoot') + '/');
     }
 });
-
 
 // Start it up!
 function startApp(app) {
