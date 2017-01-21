@@ -459,7 +459,6 @@ app.get(chRoot + '/', function(req, res){
 app.get('*', function(req, res) {
     var err = 'The document you requested was not found.';
     if (req.accepts('html')) {
-        // development error handler will print stacktrace
         res.render('error', {
             message: err,
             error: 404
@@ -476,6 +475,23 @@ app.get('*', function(req, res) {
 
 // *** Express 4.x requires these app.use calls to be after any app.get or app.post routes.
 // *** "Your code should move any calls to app.use that came after app.use(app.router) after any routes (HTTP verbs)."
+
+app.use(function(err, req, res, next) {
+    // Handle error message display
+    var msg = app.get('env') === 'production' ? 'An internal error occurred. Please try again later.': err;
+    if (req.accepts('html')) {
+        res.render('error', {
+            message: msg,
+            error: 500
+        });
+        return;
+    }
+    if (req.accepts('json')) {
+        res.send({ error: msg });
+        return;
+    }
+    res.type('txt').send(msg);
+});
 
 // Catch session timeout
 app.use(function(req, res, next) {
