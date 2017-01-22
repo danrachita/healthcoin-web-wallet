@@ -236,8 +236,6 @@ define(['knockout',
                     for (var mo = 0; mo < 12; mo++){
                         scorePoints.push(0);
                         backgroundScores.push(self.colorApproved); // TODO: Change default bg to colorUnapproved
-                        //coinPoints.push(0);
-                        //backgroundCoins.push(self.colorCoins); // TODO: Change default bg to colorNoCoins
                     }
                     self.coinstreamData.labels(self.labelsMonth);
                 }
@@ -294,20 +292,6 @@ define(['knockout',
                                     backgroundScores[mm - 1] = self.colorApproved;
                                 }
                             }
-                            // Convert scores to coins. Must have minimum 2 datapoints
-                            /*** Don't calculate coins in monthView. ***
-                            if (dp > 0){
-                                // Always uses the most coins if duplicate years
-                                coins = self.coinsEarned(dates, scores, dp);
-                                if (coins > coinPoints[mm - 1]){
-                                    coinPoints[mm - 1] = coins;
-                                    coinsTotal += Number(coins);
-                                    if (approved[dp]){ // TODO: Later
-                                        backgroundCoins[mm - 1] = self.colorCoins;
-                                    }
-                                }
-                            }
-                            */
                         }
                     }
                     // Load the user's scores/coins

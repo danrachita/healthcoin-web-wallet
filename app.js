@@ -235,7 +235,7 @@ app.get(chRoot + '/getbiomarkerscores/:employee/:startdate/:enddate', function(r
         startdate = atob(decodeURIComponent(req.params.startdate)) || '',
         enddate = atob(decodeURIComponent(req.params.enddate)) || '';
 
-    var version = coin.settings.version;
+    var version = coin.settings.biomarker_version;
     mdb.getBiomarkerScores(version, employee, startdate, enddate, function(err, data){
         if (err) {
             res.status(500).send(JSON.stringify(err));
