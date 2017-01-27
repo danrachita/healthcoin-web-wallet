@@ -44,6 +44,11 @@ define( [
         });
         socket.on('abort', function(page) {
             // handle abort request and redirect to page.
+            window.stop();
+            window.location = wallet.settings().chRoot + '/' + page;
+        });
+        socket.on('continue', function(page) {
+            // handle abort request and redirect to page.
             window.location = wallet.settings().chRoot + '/' + page;
         });
         socket.on('connect_error', function(err) {
