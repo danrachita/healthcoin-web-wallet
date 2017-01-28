@@ -18,6 +18,8 @@
 						<!-- show any status messages from server -->
 						<% if (settings.status.length > 0) { %>
 							<div class="alert alert-danger"><%= settings.status %></div>
+							<p>We appologize for the inconvenience, and are working to resolve the issue.</p>
+							<p><br><a href="<%= settings.chRoot %>/" class="btn btn-primary btn-lg"><span class="fa fa-home"></span> Try Later...</a></p>
 						<% } %>
 						<% if (settings.status.length == 0) { %>
 							<a href="signup" class="btn btn-primary btn-lg"><span class="fa fa-user"></span> Signup</a>
