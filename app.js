@@ -543,21 +543,21 @@ function startApp(app) {
         });
         process.on('rpc_error', function (err) {
             console.log(err);
-            app.set('status', coin.settings.coinName + ' Maintenance Underway');
+            app.set('status', coin.settings.coinName + ' Maintenance');
             // Send abort message to all clients
             io.sockets.emit('news', 'Down for wallet maintenance...');
             io.sockets.emit('abort', 'maintenance');
         });
         process.on('database_disconnected', function (err) {
             console.log(err);
-            app.set('status', coin.settings.coinName + ' Maintenance Underway');
+            app.set('status', coin.settings.coinName + ' Maintenance');
             // Send abort message to all clients
             io.sockets.emit('news', 'Down for database maintenance...');
             io.sockets.emit('abort', 'maintenance');
         });
         process.on('database_error', function (err) {
             console.log(err);
-            app.set('status', coin.settings.coinName + ' Maintenance Underway');
+            app.set('status', coin.settings.coinName + ' Maintenance');
             // Send abort message to all clients
             io.sockets.emit('news', 'Database error...');
             io.sockets.emit('abort', 'maintenance');
