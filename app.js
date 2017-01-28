@@ -163,7 +163,7 @@ function coinHandler(err, result){
         if (app.get('status').length > 0){
             process.emit('rpc_connected', 'RPC Connected.');
         }
-        if (typeof this.res.send !== 'undefined' && this.res.send){
+        if (this.res && typeof this.res.send !== 'undefined'){
             this.res.send(response);
         }
     }
@@ -612,10 +612,18 @@ function startApp(app) {
         // Poll Status
         setInterval(function(){
             var status = app.get('status');
-            if (status.length > 0 && status.indexOf('Database') > 0){
-                // Reconnect DB
-                console.log('Attempting to reconnect database...');
-                databaseConnect();
+            if (status.length > 0){
+                if (status.indexOf('Wallet') > 0){
+                    // Recconnect Wallet
+                    console.log('Attempting to reconnect wallet...');
+                    callCoin('getBlockCount', res, coinHandler);
+                } else {
+                    if (status.indexOf('Database') > 0){
+                        // Reconnect DB
+                        console.log('Attempting to reconnect database...');
+                        databaseConnect();
+                    }
+                }
             }
         }, 5000);
     });
