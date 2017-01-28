@@ -569,6 +569,13 @@ function startApp(app) {
             io.sockets.emit('news', 'Database is connected...');
             io.sockets.emit('continue', '');
         });
+        process.on('database_error', function (err) {
+            console.log(err);
+            app.set('status', '');
+            // Send abort message to all clients
+            io.sockets.emit('news', 'Database error...');
+            io.sockets.emit('abort', 'maintenance');
+        });
         process.on('SIGINT', function(err){
             console.log('SIGINT Received: ' + err);
             app.set('status', coin.settings.coinName + ' Maintenance');

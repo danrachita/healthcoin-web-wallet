@@ -33,8 +33,8 @@ define( [
         var port = (window.location.port === '' ? '' : ":" + window.location.port);
         var sockOpt = {
             "force new connection" : true,
-            "reconnectionAttempts": "Infinity",
-            "timeout" : 10000,
+            "reconnectionAttempts": 3,
+            "timeout" : 3000,
             "transports" : ["websocket"]
         };
 
