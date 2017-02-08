@@ -616,7 +616,7 @@ function startApp(app) {
                 if (status.indexOf('Wallet') > 0){
                     // Recconnect Wallet
                     console.log('Attempting to reconnect wallet...');
-                    callCoin('getBlockCount', res, coinHandler);
+                    callCoin('getBlockCount', null, coinHandler);
                 } else {
                     if (status.indexOf('Database') > 0){
                         // Reconnect DB
