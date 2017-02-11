@@ -304,7 +304,7 @@ define(['knockout',
             self.hcbmGender(self.wallet.User().profile.gender);
             self.hcbmEthnicity(self.wallet.User().profile.ethnicity);
             self.hcbmCountry(self.wallet.User().profile.country);
-            self.recipientAddress(self.wallet.address()); // Send to self
+            self.recipientAddress(self.wallet.addresses()[0]); // Send to self
             self.dirtyFlag(false);
         }
     };
